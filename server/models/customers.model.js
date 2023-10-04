@@ -12,17 +12,16 @@ const CustomersSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        required: [true, 'Please provide email address'],
+        required: [true, 'Please provide email address.'],
+        unique: [true, 'Email already tied to another account.'],
         match: [/^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/, "Please provide a valid email address."]
     },
     mobilePhone: {
         type: String,
-        required: [true, "Please provide a phone number"],
         match: [/^\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/, "Please use this format: +1 (123) 123-4567"]
     },
     homePhone: {
         type: String,
-        required: [true, "Please provide a phone number"],
         match: [/^\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/, "Please use this format: +1 (123) 123-4567"]
     },
     comment: {
