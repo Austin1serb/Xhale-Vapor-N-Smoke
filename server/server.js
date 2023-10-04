@@ -8,7 +8,10 @@ const port = process.env.PORT;
 
 app.use(cors(),express.json(),express.urlencoded({ extended: true }));
 
-require('./routes/customers.routes')(app);
-require('./routes/products.routes')(app);
+const customerRoutes = require('./routes/customers.routes');
+const productRoutes = require('./routes/products.routes');
+
+app.use("/api/customer", customerRoutes);
+app.use("/api/product", productRoutes);
 
 app.listen(port, () => console.log(`Listening on port: ${port}`) );

@@ -1,9 +1,12 @@
 const ProductsController = require('../controllers/products.controller')
-module.exports = function(app){
-    app.get('/product/test', ProductsController.test);
-    app.get('/product', ProductsController.getAll);
-    app.get('/product/:id', ProductsController.getOne);
-    app.post('/product', ProductsController.createOne);    
-    app.put('/product/:id', ProductsController.updateOne);
-    app.delete('/product/:id', ProductsController.deleteOne);
-}
+const express = require("express");
+const router = express.Router();
+
+router.route("/test").get(ProductsController.test);
+router.route('/').get(ProductsController.getAll);
+router.route('/:id').get(ProductsController.getOne);
+router.route('/').post(ProductsController.createOne);
+router.route('/:id').put(ProductsController.updateOne);
+router.route('/:id').delete(ProductsController.deleteOne);
+
+module.exports = router;
