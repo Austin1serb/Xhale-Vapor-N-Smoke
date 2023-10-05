@@ -1,0 +1,53 @@
+/* TopBar.css */
+
+.nav-link {
+    color: #282F48;
+    text-decoration: none;
+    font-family: Apercu, sans-serif;
+    transition: color 0.3s ease-in-out;
+
+}
+
+.nav-link:hover {
+    color: #FE6F49;
+
+}
+
+.menu-icon {
+    color: #282F48;
+    transition: color 0.3s ease;
+}
+
+.menu-icon:hover {
+    transition: color 0.3s ease;
+    color: #FE6F49;
+
+}
+
+.brand-icon {
+    height: 60px;
+    width: auto;
+    margin-top: 10px;
+}
+
+.brand-icon:hover {
+    animation: wave 2s ease infinite;
+}
+
+@keyframes wave {
+    0% {
+        transform: translateY(0);
+
+    }
+
+    10% {}
+
+    50% {
+        filter: hue-rotate(180deg);
+        transform: scale(1.1);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
+}

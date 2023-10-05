@@ -1,0 +1,86 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display&family=Source+Sans+3:wght@400;600;700&display=swap');
+
+.home-container {
+    padding-top: 40px;
+
+    font-family: 'Playfair Display', serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+
+}
+
+.left-content {
+    flex: 1;
+    background-color: #EDF8FE;
+    /* Your desired background color */
+    padding: 20px;
+    text-align: center;
+    width: 550px;
+    height: 426px;
+    transform: translate(50px, 50px);
+}
+
+.colored-square {
+    transform: translate(0px, 120px);
+
+}
+
+.colored-square h1 {
+    color: #282F48;
+    margin-bottom: 10px;
+
+}
+
+.colored-square button {
+    background-color: #FE6F49;
+    color: #FFFFFF;
+    padding: 20px 40px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+    margin-top: 20px;
+}
+
+.colored-square button:hover {
+    background-color: #282F48;
+}
+
+.right-content {}
+
+.right-content img {
+    width: 645px;
+    height: auto;
+}
+
+@media (max-width: 910px) {
+    .home-container {
+        flex-direction: column-reverse;
+        width: 95%;
+
+    }
+
+    .right-content {
+        width: 100%;
+    }
+
+    .right-content img {
+        width: 100%;
+        height: auto;
+    }
+
+    .left-content {
+        margin-top: -50px;
+        transform: translate(0px, -50px);
+        width: 80%;
+    }
+
+    .colored-square {
+        margin-top: -50px;
+        padding: 10px 0px 10px 0px;
+        transform: none;
+        display: inherit;
+
+    }
+}
