@@ -1,17 +1,26 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&family=Source+Sans+3:wght@400;600;700&display=swap');
 
+
+::selection {
+    background-color: #073CA1;
+    color: white;
+}
+
+
 .home-container {
     padding-top: 40px;
-
     font-family: 'Playfair Display', serif;
     display: flex;
     justify-content: center;
     align-items: center;
 
 
+
+
 }
 
 .left-content {
+    z-index: 1;
     flex: 1;
     background-color: #EDF8FE;
     /* Your desired background color */
@@ -19,7 +28,7 @@
     text-align: center;
     width: 550px;
     height: 426px;
-    transform: translate(50px, 50px);
+
 }
 
 .colored-square {
@@ -33,7 +42,9 @@
 
 }
 
+
 .colored-square button {
+    border-radius: 0;
     background-color: #FE6F49;
     color: #FFFFFF;
     padding: 20px 40px;
@@ -43,14 +54,52 @@
     margin-top: 20px;
 }
 
+.bottom-box-button1 {
+    border-radius: 0;
+    background-color: #282F48;
+    color: #FFFFFF;
+    padding: 20px 40px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+    margin-top: 20px;
+}
+
+.bottom-box-button2 {
+    border-radius: 0;
+    border-color: #282F48;
+    background-color: #ffffff;
+    color: #282F48;
+    padding: 19px 30px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+    margin-top: 20px;
+}
+
+
+
+.bottom-box-button1:hover {
+    background-color: #FE6F49;
+}
+
+.bottom-box-button2:hover {
+    background-color: #282F48;
+    color: #FFFFFF;
+}
+
 .colored-square button:hover {
     background-color: #282F48;
 }
 
-.right-content {}
+.right-content {
+    background-color: #F4CDAA;
+    margin-left: -200px;
+}
 
 .right-content img {
-    width: 645px;
+
+    border: .1px solid black;
+    width: 765px;
     height: auto;
 }
 
@@ -73,7 +122,7 @@
     .left-content {
         margin-top: -50px;
         transform: translate(0px, -50px);
-        width: 80%;
+        width: 400px;
     }
 
     .colored-square {
@@ -83,4 +132,85 @@
         display: inherit;
 
     }
+}
+
+
+.li-icon2 {
+    color: #FE6F49;
+    font-size: x-large;
+}
+
+.li-icon1,
+.li-icon3,
+.li-icon4,
+.li-icon6 {
+    color: #FE6F49;
+    font-size: xx-large;
+}
+
+.ListItem1 {
+    border-top: 0.1px solid gray;
+
+}
+
+.ListItem1:hover .li-icon1,
+.ListItem1:hover .li-icon2,
+.ListItem1:hover .li-icon3,
+.ListItem1:hover .li-icon4,
+.ListItem1:hover .li-icon6 {
+    transition: color 0.3s ease;
+    color: #282F48;
+    /* Change the color on hover (you can use any color you want) */
+}
+
+.ListItem1:hover .icon5 path {
+    transition: stroke 0.3s ease;
+    stroke: #282F48;
+}
+
+.icon5 path {
+    stroke: #FE6F49;
+}
+
+.li-icon4 path {
+    stroke: #df4e26;
+    stroke-width: 0.4px;
+}
+
+.icon5 {
+    font-size: x-large;
+}
+
+
+
+.list-home:hover .icon11 path {
+    transition: stroke 0.3s ease;
+    stroke: #282F48;
+}
+
+/* CSS */
+
+/* Initial positions */
+.animated-left {
+
+
+    transition: transform 0.5s ease, opacity .5s ease;
+}
+
+/* Keyframes animation */
+@keyframes slideInFromLeft {
+    0% {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Apply animation to elements */
+.slide-in {
+    animation: slideInFromLeft 1s cubic-bezier(0.4, 0, 1, 1);
 }

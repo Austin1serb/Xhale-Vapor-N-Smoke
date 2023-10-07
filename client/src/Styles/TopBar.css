@@ -1,10 +1,13 @@
 /* TopBar.css */
+.app-bar {}
+
 
 .nav-link {
     color: #282F48;
     text-decoration: none;
     font-family: Apercu, sans-serif;
     transition: color 0.3s ease-in-out;
+    border: none;
 
 }
 

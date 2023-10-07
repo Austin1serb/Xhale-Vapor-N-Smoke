@@ -1,0 +1,44 @@
+.best-seller-header {
+    font-family: 'Playfair Display', serif;
+    margin-left: 180px;
+}
+
+.best-sellers {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.best-seller-item {
+    display: grid;
+    margin: 20px;
+}
+
+.best-seller-image {
+    width: 280px;
+    height: auto;
+}
+
+.best-sellers-button {
+    border-radius: 0;
+    background-color: #282F48;
+    color: #FFFFFF;
+    padding: 20px 40px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.best-sellers-button:hover {
+    background-color: #FE6F49;
+}
+
+.best-seller-name {
+    padding: none;
+    margin: none;
+}
+
+.best-seller-price {
+    padding: 0;
+    margin: 0;
+}
