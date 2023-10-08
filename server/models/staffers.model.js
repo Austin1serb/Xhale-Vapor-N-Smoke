@@ -1,5 +1,13 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
+
 const StaffersSchema = new mongoose.Schema({
+    username: {
+        type: String,
+        minlength: [4, "Username must be at least 4 characters long."],
+        required: [true, "Username is required."],
+        unique: [true, "Username is already in use."],
+    },
     firstName: {
         type: String,
         minlength: [2, "First name must be at least 2 characters long."],
@@ -28,10 +36,33 @@ const StaffersSchema = new mongoose.Schema({
         type: String,
         maxlength: [256, "Please keep your description to under 256 characters."]
     },
-    consent: {
-        type: Boolean,
-        required: [true, "Please Acknowledge and Consent."]
+    password: {
+        type: String,
+        required: [true, 'Password is required.'],
+    },
+    auditTrail: [{
+        action: String,
+        timestamp: Date,
+    }],
+    profilePicture: {
+        type: String,
+        // Store the URL or path to the profile picture
+    },
+});
+
+// Hash the password before saving it to the database
+StaffersSchema.pre('save', async function (next) {
+    if (!this.isModified('password')) return next();
+
+    try {
+        const salt = await bcrypt.genSalt(10);
+        this.password = await bcrypt.hash(this.password, salt);
+        next();
+    } catch (error) {
+        next(error);
     }
-}, {timestamps:true})
-const Staffers = mongoose.model("Staff", StaffersSchema)
+});
+
+const Staffers = mongoose.model("Staff", StaffersSchema);
+
 module.exports = Staffers;
