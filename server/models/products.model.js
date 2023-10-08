@@ -24,7 +24,7 @@ const ProductSchema = new mongoose.Schema({
     category: {
         type: String,
         // Vape, Cartridge, Gummy, etc.
-        required: [true, 'Please specify the type of product'],
+        //required: [true, 'Please specify the type of product'],
     },
     description: {
         type: String,
@@ -40,72 +40,7 @@ const ProductSchema = new mongoose.Schema({
         type: Number,
         min: [0, 'Inventory cannot be negative.'],
     },
-    ingredients: {
-        type: [String], // Array of ingredient names
-    },
-    //reviews: [
-    //    {
-    //        user: {
-    //            type: mongoose.Schema.Types.ObjectId,
-    //            ref: 'User', // You can create a User model for reviews
-    //        },
-    //        text: {
-    //            type: String,
 
-    //        },
-    //        rating: {
-    //            type: Number,
-    //            min: [1, 'Minimum rating is 1'],
-    //            max: [5, 'Maximum rating is 5'],
-    //        },
-    //        createdAt: {
-    //            type: Date,
-    //            default: Date.now,
-    //        },
-    //    },
-    //],
-    //discounts: [
-    //    {
-    //        code: {
-    //            type: String,
-    //            unique: true,
-    //        },
-    //        percentage: {
-    //            type: Number,
-    //            min: [0, 'Discount percentage cannot be negative.'],
-    //            max: [100, 'Discount percentage cannot exceed 100%.'],
-    //        },
-    //    },
-    //],
-    //isFeatured: {
-    //    type: Boolean,
-    //    default: false,
-    //},
-    //tags: {
-    //    type: [String], // Array of product tags
-    //},
-    //images: {
-    //    type: [String], // Array of product image URLs
-    //},
-    //relatedProducts: [
-    //    {
-    //        type: mongoose.Schema.Types.ObjectId,
-    //        ref: 'Product',
-    //    },
-    //],
-    //seo: {
-    //    title: String,
-    //    description: String,
-    //    keywords: [String],
-    //},
-    //shipping: {
-    //    weight: Number,
-    //    dimensions: {
-    //        length: Number,
-    //        width: Number,
-    //        height: Number,
-    //    },
-    //},
 }, { timestamps: true });
 
 const Product = mongoose.model('Product', ProductSchema);
