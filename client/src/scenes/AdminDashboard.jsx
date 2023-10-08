@@ -1,5 +1,6 @@
 import React from 'react';
 import { AppBar, Toolbar, Typography, Container, Grid, Paper } from '@mui/material';
+import ProductList from '../components/ProductList';
 
 const AdminDashboard = () => {
     return (
@@ -13,7 +14,7 @@ const AdminDashboard = () => {
                 <Grid container spacing={3}>
                     <Grid item xs={12} sm={6}>
                         <Paper>
-                            {/* Add content for product management here */}
+                            <ProductList />
                             <Typography variant="h6">Product Management</Typography>
                         </Paper>
                     </Grid>
