@@ -13,10 +13,7 @@ const ProductSchema = new mongoose.Schema({
     price: {
         type: Number,
         min: [0, 'Price cannot be negative.'],
-        required: [true, 'Please provide product price.'],
-        // values are stored as cents in DB, but sent out as dollar values.
-        get: (v) => (v / 100).toFixed(2),
-        set: (v) => v * 100,
+        required: [true, 'Please provide product price.']
     },
     imgSource: {
         type: String,
