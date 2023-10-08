@@ -9,7 +9,8 @@ import { GrTest } from 'react-icons/gr'
 import { SiAtom } from 'react-icons/si'
 import { PiPlant } from 'react-icons/pi'
 import BestSellersSection from '../components/BestSellersSection';
-import ProductQuestionnaire from '../components/ProductQuestionare';
+import ShopByBrand from '../components/ShopByBrand';
+
 const Home = () => {
     const customFont = "freight-display-pro, serif";
     const listItemSx = {
@@ -94,12 +95,12 @@ const Home = () => {
                 </Box>
 
                 <Box className="bottom-box" >
-                    <Button className='bottom-box-button1' sx={{ mr: 5, mt: 5 }} color="primary">Shop CBD BESTSELLERS</Button>
-                    <Button className='bottom-box-button2' onClick={() => window.open('https://projectcbd.org/#CBD-explained')} sx={{ border: 1, mt: 5 }} color="primary">Learn More About CBD</Button>
+                    <Button className='bottom-box-button1' sx={{ mr: 5, mt: 5 }} >Shop CBD BESTSELLERS</Button>
+                    <Button className='bottom-box-button2' onClick={() => window.open('https://projectcbd.org/#CBD-explained')} sx={{ border: 1, mt: 5 }} >Learn More About CBD</Button>
                 </Box>
             </Box>
             <BestSellersSection />
-            <ProductQuestionnaire />
+            <ShopByBrand />
         </Box >
     );
 }

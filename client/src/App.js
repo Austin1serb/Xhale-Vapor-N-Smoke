@@ -1,15 +1,21 @@
 import React from 'react'
-import Navbar from './scenes/global/NavBar'
+import { BrowserRouter as Router, Route, Switch, Routes } from 'react-router-dom';
 import TopBar from './scenes/global/TopBar'
 import Home from './scenes/Home'
 import Footer from './scenes/Footer'
+import AdminDashboard from './scenes/AdminDashboard';
 
 
 const App = () => {
   return (
     <div>
       <TopBar />
-      <Home />
+      <Routes>
+        <Route>
+          <Route exact path="/" Component={Home} />
+          <Route exact path="/admin" Component={AdminDashboard} />
+        </Route>
+      </Routes>
       <Footer />
 
     </div>

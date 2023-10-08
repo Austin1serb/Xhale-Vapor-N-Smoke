@@ -1,5 +1,9 @@
 const mongoose = require('mongoose')
 const ProductsSchema = new mongoose.Schema({
+    brand: {
+        type: String,
+        required: [true, 'Please add a Brand'],
+    },
     name: {
         type: String,
         minlength: [2, "Name must be at least 2 characters long."],
@@ -10,8 +14,8 @@ const ProductsSchema = new mongoose.Schema({
         min: [0, "Price cannot be negative."],
         required: [true, "Please provide product price."],
         // values are stored as cents in DB, but sent out as dollar values.
-        get: v => (v/100).toFixed(2),
-        set: v => v*100
+        get: v => (v / 100).toFixed(2),
+        set: v => v * 100
     },
     imgSource: {
         type: String,
@@ -31,6 +35,6 @@ const ProductsSchema = new mongoose.Schema({
         min: [0, "Size cannot be negative."],
         required: [true, "Please provide product size in mg"]
     }
-}, {timestamps:true})
+}, { timestamps: true })
 const Products = mongoose.model("Product", ProductsSchema)
 module.exports = Products;
