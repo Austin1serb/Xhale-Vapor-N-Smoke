@@ -37,7 +37,56 @@ const ProductSchema = new mongoose.Schema({
         type: Number,
         min: [0, 'Inventory cannot be negative.'],
     },
+    //reviews: [
+    //    {
+    //        user: {
+    //            type: mongoose.Schema.Types.ObjectId,
+    //            ref: 'User', // You can create a User model for reviews
+    //        },
+    //        text: {
+    //            type: String,
 
+    //        },
+    //        rating: {
+    //            type: Number,
+    //            min: [1, 'Minimum rating is 1'],
+    //            max: [5, 'Maximum rating is 5'],
+    //        },
+    //        createdAt: {
+    //            type: Date,
+    //            default: Date.now,
+    //        },
+    //    },
+    //],
+    //isFeatured: {
+    //    type: Boolean,
+    //    default: false,
+    //},
+    //tags: {
+    //    type: [String], // Array of product tags
+    //},
+    //images: {
+    //    type: [String], // Array of product image URLs
+    //},
+    //relatedProducts: [
+    //    {
+    //        type: mongoose.Schema.Types.ObjectId,
+    //        ref: 'Product',
+    //    },
+    //],
+    //seo: {
+    //    title: String,
+    //    description: String,
+    //    keywords: [String],
+    //},
+    //shipping: {
+    //    weight: Number,
+    //    dimensions: {
+    //        length: Number,
+    //        width: Number,
+    //        height: Number,
+    //    },
+    //},
 }, { timestamps: true });
 
 const Product = mongoose.model('Product', ProductSchema);

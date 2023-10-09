@@ -1,6 +1,7 @@
 import React from 'react';
 import { AppBar, Toolbar, Typography, Container, Grid, Paper } from '@mui/material';
 import ProductList from '../components/ProductList';
+import UserList from '../components/UserList';
 
 const AdminDashboard = () => {
     return (
@@ -15,7 +16,7 @@ const AdminDashboard = () => {
                     <Grid item xs={12} sm={6}>
                         <Paper>
                             <ProductList />
-                            <Typography variant="h6">Product Management</Typography>
+
                         </Paper>
                     </Grid>
                     <Grid item xs={12} sm={6}>
@@ -30,6 +31,15 @@ const AdminDashboard = () => {
                             <Typography variant="h6">Financial Data</Typography>
                         </Paper>
                     </Grid>
+                </Grid>
+            </Container>
+            <Container>
+                <Grid container spacing={3}>
+                    <Paper>
+
+                        <Typography variant="h6">User Management</Typography>
+                        <UserList />
+                    </Paper>
                 </Grid>
             </Container>
         </div>
