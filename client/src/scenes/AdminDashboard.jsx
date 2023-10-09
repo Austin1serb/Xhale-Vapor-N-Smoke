@@ -2,6 +2,7 @@ import React from 'react';
 import { AppBar, Toolbar, Typography, Container, Grid, Paper } from '@mui/material';
 import ProductList from '../components/ProductList';
 import UserList from '../components/UserList';
+import OrderList from '../components/OrderList';
 
 const AdminDashboard = () => {
     return (
@@ -23,11 +24,11 @@ const AdminDashboard = () => {
                         <Paper>
                             {/* Add content for order history here */}
                             <Typography variant="h6">Order History</Typography>
+                            <OrderList />
                         </Paper>
                     </Grid>
                     <Grid item xs={12}>
                         <Paper>
-                            {/* Add content for financial data here */}
                             <Typography variant="h6">Financial Data</Typography>
                         </Paper>
                     </Grid>

@@ -138,7 +138,7 @@ const TopBar = () => {
                         <MenuIcon sx={{ fontSize: '32px' }} />
                     </IconButton>
                     <Typography variant="h6" sx={{ flexGrow: 1 }}>
-                        <Box component="a" href="#" className="nav-link">
+                        <Box component="a" href="/" className="nav-link">
                             <Box component={'img'} src={BrandIcon} alt="Brand Icon" className='brand-icon' ></Box>
                         </Box>
                     </Typography>

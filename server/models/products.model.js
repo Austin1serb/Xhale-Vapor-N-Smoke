@@ -37,6 +37,10 @@ const ProductSchema = new mongoose.Schema({
         type: Number,
         min: [0, 'Inventory cannot be negative.'],
     },
+    reorderPoint: {
+        type: Number,
+        min: [0, 'Reorder point cannot be negative.'],
+    },
     //reviews: [
     //    {
     //        user: {
