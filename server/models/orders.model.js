@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const orderSchema = new mongoose.Schema({
+const OrderSchema = new mongoose.Schema({
     orderNumber: {
         type: String,
         required: true,
@@ -61,6 +61,6 @@ const orderSchema = new mongoose.Schema({
     // Add other fields as needed
 });
 
-const Order = mongoose.model('Order', orderSchema);
+const Order = mongoose.model('Order', OrderSchema);
 
 module.exports = Order;
