@@ -1,6 +1,6 @@
 .best-seller-header {
     font-family: 'Playfair Display', serif;
-    margin-left: 180px;
+    margin-left: 10%;
 }
 
 .best-sellers {
@@ -19,7 +19,7 @@
     height: auto;
 }
 
-.best-sellers-button {
+.best-seller-item button {
     border-radius: 0;
     background-color: #282F48;
     color: #FFFFFF;
@@ -29,7 +29,7 @@
     transition: background-color 0.3s ease-in-out;
 }
 
-.best-sellers-button:hover {
+.best-seller-item button:hover {
     background-color: #FE6F49;
 }
 

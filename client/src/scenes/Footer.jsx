@@ -7,7 +7,7 @@ const Footer = () => {
         color: '#FFFFFF',
         padding: '20px', // You can customize the padding here
         marginTop: '90px',
-        height: '600px'
+        height: '100px'
     };
 
     const linkStyles = {

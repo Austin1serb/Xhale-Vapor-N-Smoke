@@ -4,6 +4,7 @@ import TopBar from './scenes/global/TopBar'
 import Home from './scenes/Home'
 import Footer from './scenes/Footer'
 import AdminDashboard from './scenes/AdminDashboard';
+import AgeVerification from './scenes/AgeVerification';
 
 
 const App = () => {
@@ -12,6 +13,7 @@ const App = () => {
       <TopBar />
       <Routes>
         <Route>
+          <Route exact path="/verify-age" Component={AgeVerification} />
           <Route exact path="/" Component={Home} />
           <Route exact path="/admin" Component={AdminDashboard} />
         </Route>

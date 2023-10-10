@@ -183,7 +183,6 @@ const TopBar = () => {
                             <AccountCircle sx={{ fontSize: '32px' }} />
                         </IconButton>
                     </Box>
-
                 </Toolbar >
             </AppBar>
             {renderMobileMenu}

@@ -186,8 +186,9 @@ const OrderList = () => {
             </div>
             <div>
                 <span>showing {perPage} item per page out of {totalPages} pages</span>
-                <Button disabled={totalPages === 1 ? (true) : (false)} onClick={() => setPerPage(perPage + 1)}>more</Button>
                 <Button disabled={perPage === 1 ? (true) : (false)} onClick={() => setPerPage(perPage - 1)}>less</Button>
+                <Button disabled={totalPages === 1 ? (true) : (false)} onClick={() => setPerPage(perPage + 1)}>more</Button>
+
             </div>
             {/* Snackbar for success/error messages */}
             <Snackbar

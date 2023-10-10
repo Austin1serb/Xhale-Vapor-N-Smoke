@@ -22,6 +22,7 @@ const ProductSchema = new mongoose.Schema({
         type: String,
         // Vape, Cartridge, Gummy, etc.
         //required: [true, 'Please specify the type of product'],
+        default: ["cbd"]
     },
     description: {
         type: String,
