@@ -78,6 +78,17 @@ const AddProductModal = ({ open, onClose, onAddProduct }) => {
             });
     };
 
+  // receive file from form
+    const handleImage = (e) => {        
+        const file = e.target.files[0];
+        // convert image file to base64
+        const reader = new FileReader();
+        reader.readAsDataURL(file)
+        reader.onloadend = () => {
+            setProductData({...productData, ["imgSource"]: reader.result})
+        }
+    }
+
 
     return (
         <Dialog open={open} onClose={onClose}>
@@ -112,8 +123,10 @@ const AddProductModal = ({ open, onClose, onAddProduct }) => {
                     name="imgSource"
                     label="Image Source"
                     fullWidth
-                    value={productData.imgSource}
-                    onChange={handleChange}
+                    type="file"
+                    accept="iamge/*"
+                    // value={productData.imgSource.url}
+                    onChange={handleImage}
                 />
                 <TextField
                     name="category"

@@ -6,7 +6,7 @@ const express = require('express');
 const app = express();
 const port = process.env.PORT;
 
-app.use(cors(),express.json(),express.urlencoded({ extended: true }));
+app.use(cors(),express.json({ limit: "50mb" }),express.urlencoded({ limit: "50mb", extended: true }));
 
 const staffRoutes = require('./routes/staffers.routes');
 const productRoutes = require('./routes/products.routes');

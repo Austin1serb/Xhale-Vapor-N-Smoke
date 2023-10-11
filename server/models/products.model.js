@@ -16,7 +16,14 @@ const ProductSchema = new mongoose.Schema({
         required: [true, 'Please provide product price.']
     },
     imgSource: {
-        type: String,
+        publicId:{
+            type: String,
+            required: true,
+        },
+        url: {
+            type: String,
+            required: true,
+        }
     },
     category: {
         type: String,
