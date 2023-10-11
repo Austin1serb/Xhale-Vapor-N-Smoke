@@ -1,4 +1,4 @@
-import { Box, Button } from '@mui/material';
+import { Box, Button, Grid } from '@mui/material';
 import React from 'react';
 import '../Styles/BestSellersSection.css'
 const BestSellersSection = () => {
@@ -25,24 +25,26 @@ const BestSellersSection = () => {
     ];
 
     return (
-        <Box>
+        <Box className="best-seller-container"  >
             <h2 className='best-seller-header' >Our Customer Favorites</h2>
-            <div className="best-sellers">
-
+            <Grid container spacing={2} className="best-sellers">
                 {bestSellersData.map((item) => (
-                    <div className="best-seller-item" key={item.id}>
-                        <img
-                            src={require('../assets/cbditem.webp')}
-                            alt={item.name}
-                            className="best-seller-image"
-                        />
-                        <Button className='best-sellers-button' >SHOP NOW</Button>
-                        <p className="best-seller-name">{item.name}</p>
-                        <p className="best-seller-price">{item.price}</p>
-                    </div>
+                    <Grid item xs={12} sm={6} md={4} key={item.id}>
+                        <div className="best-seller-item" key={item.id}>
+                            <img
+                                src={require('../assets/cbditem.webp')}
+                                alt={item.name}
+                                className="best-seller-image"
+                            />
+                            <Button className='best-sellers-button' >SHOP NOW</Button>
+                            <p className="best-seller-name">{item.name}</p>
+                            <p className="best-seller-price">{item.price}</p>
+                        </div>
+                    </Grid>
                 ))}
-            </div>
-        </Box>
+            </Grid>
+
+        </Box >
     );
 };
 

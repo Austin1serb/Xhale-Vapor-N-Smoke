@@ -20,6 +20,7 @@
 }
 
 .best-seller-item button {
+    max-width: 280px;
     border-radius: 0;
     background-color: #282F48;
     color: #FFFFFF;
@@ -35,10 +36,29 @@
 
 .best-seller-name {
     padding: none;
-    margin: none;
+    margin-left: 5px;
 }
 
 .best-seller-price {
     padding: 0;
-    margin: 0;
+    margin-left: 5px;
+}
+
+@media (max-width: 900px) {
+    .best-sellers {
+        justify-content: left;
+    }
+}
+
+@media (max-width: 360px) {
+    .best-seller-container {
+        margin-left: -30px;
+    }
+
+    .best-seller-name,
+    .best-seller-price {
+        text-align: center;
+    }
+
+
 }

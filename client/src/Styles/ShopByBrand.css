@@ -16,7 +16,6 @@
 }
 
 .brand-item {
-
     display: grid;
     margin: 20px;
 
@@ -24,15 +23,17 @@
 }
 
 .brand-image {
-
-    width: 100%;
-    height: 100%;
+    width: 280px;
+    height: auto;
     object-fit: scale-down;
 }
 
 
 
 .brand-item button {
+    width: 100%;
+    max-width: 280px;
+    min-width: 280px;
     margin-top: -40px;
     border-radius: 0;
     background-color: #FE6F49;
@@ -65,9 +66,28 @@
     text-align: center;
     padding-top: 10px;
     padding-bottom: 10px;
-    width: 50%;
+    width: 140px;
     background-color: #282F48;
     color: #FFFFFF;
     transform: translate(50%, -40px);
     justify-content: center;
+}
+
+@media (max-width: 900px) {
+    .brand {
+        justify-content: left;
+    }
+}
+
+@media (max-width: 360px) {
+    .brand {
+        margin-left: -45px;
+    }
+
+    .brand-name,
+    .brand-price {
+        text-align: center;
+    }
+
+
 }
