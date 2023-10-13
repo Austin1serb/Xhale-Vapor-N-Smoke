@@ -1,12 +1,13 @@
 require('dotenv').config();
-require('./config/mongoose.config'); 
-
+require('./config/mongoose.config');
+const jwt = require('jsonwebtoken');
 const cors = require('cors')
 const express = require('express');
 const app = express();
 const port = process.env.PORT;
+const secretKey = process.env.JWT_SECRET_KEY; //
 
-app.use(cors(),express.json({ limit: "50mb" }),express.urlencoded({ limit: "50mb", extended: true }));
+app.use(cors(), express.json({ limit: "50mb" }), express.urlencoded({ limit: "50mb", extended: true }));
 
 const staffRoutes = require('./routes/staffers.routes');
 const productRoutes = require('./routes/products.routes');
@@ -24,4 +25,4 @@ app.use("/api/customer", customerRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/payment", paymentRoutes);
 
-app.listen(port, () => console.log(`Listening on port: ${port}`) );
+app.listen(port, () => console.log(`Listening on port: ${port}`));

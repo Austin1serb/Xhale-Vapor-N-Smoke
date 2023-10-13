@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, Button } from '@mui/material';
+import { Box, Typography, Button, Paper } from '@mui/material';
 
 const AgeVerificationOverlay = ({ onVerify }) => {
     return (
@@ -18,23 +18,21 @@ const AgeVerificationOverlay = ({ onVerify }) => {
 
             }}
         >
-            <Box
+            <Paper
                 sx={{
                     display: 'inline-grid',
                     alignItems: 'center',
-                    backgroundColor: '#282F48',
-                    color: '#64B7C0',
+                    backgroundColor: 'white',
                     padding: '40px',
-                    borderRadius: '0px',
                     textAlign: 'center',
                     height: '400px',
                     width: '80%'
                 }}
             >
-                <Typography variant="h3" sx={{ color: '#00BFFF' }}>
+                <Typography variant="h3" sx={{}}>
                     Are You at Least 18?
                 </Typography>
-                <Typography variant="body1" sx={{ color: '#00BFFF', margin: '10px 0' }}>
+                <Typography variant="body1" sx={{ margin: '10px 0' }}>
                     You must be 18 or older to enter this site.
                 </Typography>
                 <Button
@@ -47,13 +45,13 @@ const AgeVerificationOverlay = ({ onVerify }) => {
                 </Button>
                 <Button
                     variant="outlined" // Use outlined buttons
-                    color="secondary" // Light blue color
+                    color="error" // Light blue color
                     sx={{ margin: '0  20%', py: 2 }}
                     onClick={() => window.close()}
                 >
                     I am not over 18
                 </Button>
-            </Box>
+            </Paper>
         </Box>
     );
 };

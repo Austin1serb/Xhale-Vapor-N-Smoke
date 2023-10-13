@@ -9,6 +9,8 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import BrandIcon from '../../assets/brandIcon.png'
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 const TopBar = () => {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
@@ -16,6 +18,8 @@ const TopBar = () => {
     const isMobile = useMediaQuery('(max-width:600px)');
     const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -36,6 +40,7 @@ const TopBar = () => {
             window.removeEventListener('scroll', handleScroll);
         };
     }, []);
+
     const handleProfileMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
     };

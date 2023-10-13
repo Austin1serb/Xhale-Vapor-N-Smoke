@@ -4,7 +4,7 @@ import { Box, Typography } from '@mui/material';
 
 export default function MonthlySalesChart() {
     const [salesData, setSalesData] = useState([{}]);
-    const [products, setProducts] = useState([]); // State to store the products
+    const [products, setProducts] = useState(['']); // State to store the products
 
     useEffect(() => {
         // Fetch product information when the component mounts

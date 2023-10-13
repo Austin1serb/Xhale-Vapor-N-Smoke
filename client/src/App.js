@@ -5,6 +5,8 @@ import Home from './scenes/Home'
 import Footer from './scenes/Footer'
 import AdminDashboard from './scenes/AdminDashboard';
 import AgeVerification from './scenes/AgeVerification';
+import LoginRegistration from './scenes/LoginRegistration';
+import RegistrationPage from './components/RegistrationPage';
 
 
 const App = () => {
@@ -16,6 +18,8 @@ const App = () => {
           <Route exact path="/verify-age" Component={AgeVerification} />
           <Route exact path="/" Component={Home} />
           <Route exact path="/admin" Component={AdminDashboard} />
+          <Route exact path="/login" Component={LoginRegistration} />
+          <Route exact path="/registration" Component={RegistrationPage} />
         </Route>
       </Routes>
       <Footer />

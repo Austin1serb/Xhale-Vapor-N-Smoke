@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import '../Styles/Home.css'; // You can create a CSS file for styling
 import cdbImage from '../assets/cbd.jpeg'
 import { Box, Typography, List, ListItem, ListItemText, ListItemIcon, Button } from '@mui/material';
@@ -17,10 +17,22 @@ const Home = () => {
     const [showAgeVerification, setShowAgeVerification] = useState(true);
     const [isUserOver18, setIsUserOver18] = useState(false);
 
+    useEffect(() => {
+        // Check if the user has already verified their age in session storage
+        const ageVerified = sessionStorage.getItem('ageVerified');
+        if (ageVerified === 'true') {
+            setIsUserOver18(true);
+            setShowAgeVerification(false);
+        }
+    }, []);
+
     const handleAgeVerification = (isOver18) => {
         if (isOver18) {
-            setIsUserOver18(true); // Set a flag to indicate user is over 18
+            setIsUserOver18(true);
             setShowAgeVerification(false);
+
+            // Save the verification status in session storage
+            sessionStorage.setItem('ageVerified', 'true');
         } else {
             setIsUserOver18(false);
             setShowAgeVerification(false);
