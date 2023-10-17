@@ -213,13 +213,15 @@ const AddProductModal = ({ open, onClose, onAddProduct }) => {
     const { length, width, height } = dimensions;
     return (
         <Dialog open={open} onClose={onClose}>
-            <DialogTitle>Add New Product</DialogTitle>
+            <DialogTitle
+                sx={{ backgroundColor: '#1776D1', color: 'white', borderRadius: 1 }}
+            >Add New Product</DialogTitle>
             <DialogContent>
-                <DialogContentText>
+                <DialogContentText sx={{ my: 2 }} >
                     Please fill in the details of the new product.
                 </DialogContentText>
 
-                <DialogContentText variant='caption' sx={{ m: 2 }}>
+                <DialogContentText variant='caption' sx={{ m: 2, color: '#D23030' }}>
                     Fields with * are required.
                 </DialogContentText>
 
@@ -277,55 +279,71 @@ const AddProductModal = ({ open, onClose, onAddProduct }) => {
                 />
 
                 {/* Image Upload */}
-                <Box sx={{
-                    my: 2, ml: .25, pl: 1,
-                    py: 1,
-                    border: 1,
-                    borderRadius: 1,
-                    borderColor: '#CACACA',
-                    "&:hover": {
-                        borderColor: "black",
-                    },
-                }}>
-                    <Typography variant="body2" color={error ? "error" : "textSecondary"}>
-                        Upload an Image:*
-                    </Typography>
-                    <input
-                        type="file"
-                        accept="image/*"
-                        style={{ display: 'none' }}
-                        id="image-upload"
-                        onChange={handleImage}
-                    />
-                    <label htmlFor="image-upload">
-                        <Button
-                            sx={{ m: 1 }}
-                            component="span"
-                            variant="outlined"
-                            startIcon={<CloudUploadIcon />}
-                        >
-                            Choose File
-                        </Button>
-                    </label>
-                    {selectedImage && (
-                        <Typography variant="body2" color="textSecondary">
-                            Selected image: {selectedImage.name}
-                        </Typography>
-                    )}
-                    {error && (
-                        <Typography variant='caption' sx={{ ml: 1.2 }} color="error">
-                            {error && error['imgSource.url']}
-                        </Typography>
-                    )}
-                    {selectedImageData && (
-                        <img
-                            src={selectedImageData}
-                            alt="Selected Thumbnail"
-                            style={{ maxWidth: '100px', maxHeight: '100px' }}
-                        />
-                    )}
-                </Box>
 
+                <FormControl
+
+                    sx={{
+                        width: '97%',
+                        my: 2,
+                        pl: 1,
+                        py: 1,
+                        pr: 1,
+                        border: 1,
+                        borderRadius: 1,
+                        borderColor: '#CACACA',
+                        '&:hover': {
+                            borderColor: 'black',
+                        },
+                    }}
+                    component="fieldset"
+                >
+                    <FormLabel component="legend"> Upload an image*</FormLabel>
+                    <Box sx={{
+                        my: 2, ml: .25, pl: 1,
+                        py: 1,
+                        border: 1,
+                        borderRadius: 1,
+                        borderColor: '#CACACA',
+                        "&:hover": {
+                            borderColor: "black",
+                        },
+                    }}>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            style={{ display: 'none' }}
+                            id="image-upload"
+                            onChange={handleImage}
+                        />
+                        <label htmlFor="image-upload">
+                            <Button
+                                sx={{ m: 1, flexWrap: 'wrap' }}
+                                component="span"
+                                variant="outlined"
+                                startIcon={<CloudUploadIcon />}
+                            >
+                                Choose File
+                            </Button>
+                        </label>
+                        {selectedImage && (
+                            <Typography variant="body2" color="textSecondary">
+                                Selected image: {selectedImage.name}
+                            </Typography>
+                        )}
+                        {error && (
+                            <Typography variant='caption' sx={{ ml: 1.2 }} color="error">
+                                {error && error['imgSource.url']}
+                            </Typography>
+                        )}
+                        {selectedImageData && (
+                            <img
+                                src={selectedImageData}
+                                alt="Selected Thumbnail"
+                                style={{ maxWidth: '100px', maxHeight: '100px' }}
+                            />
+                        )}
+                    </Box>
+                </FormControl>
                 {/* Category Input Component */}
                 <CategoryInput
                     category={productData.category}
@@ -336,7 +354,13 @@ const AddProductModal = ({ open, onClose, onAddProduct }) => {
 
 
                 {/* Strength and Featured */}
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Box sx={{
+                    display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexDirection: {
+                        sm: 'row',
+                        xs: 'column',
+                    },
+
+                }}>
                     <FormControl sx={{
                         my: 4,
                         pl: 1,
@@ -390,6 +414,7 @@ const AddProductModal = ({ open, onClose, onAddProduct }) => {
                             "&:hover": {
                                 borderColor: "black",
                             },
+
                         }}
                         component="fieldset"
                     >
@@ -415,89 +440,125 @@ const AddProductModal = ({ open, onClose, onAddProduct }) => {
                     </FormControl>
                 </Box>
 
+
+
                 {/* SEO Section */}
-                <Box sx={{
-                    pl: 1,
-                    pr: 1,
-                    pb: 1,
-                    my: 2,
-                    border: 1,
-                    borderRadius: 1,
-                    borderColor: '#CACACA',
-                    "&:hover": {
-                        borderColor: "black",
-                    },
-                }} >
-                    <Typography variant="body2" sx={{ mt: 2, ml: '25%' }}>
-                        Search Engine Optimization (Optional)
-                    </Typography>
+                <FormControl
 
-                    <TextField
-                        sx={{ my: 2 }}
-                        name="seo.title"
-                        label="SEO Title"
-                        fullWidth
-                        value={productData['seo.title'] ? productData['seo.title'] : ''}
+                    sx={{
+                        width: '97%',
+                        my: 2,
+                        pl: 1,
+                        py: 1,
+                        pr: 1,
+                        border: 1,
+                        borderRadius: 1,
+                        borderColor: '#CACACA',
+                        '&:hover': {
+                            borderColor: 'black',
+                        },
+                    }}
+                    component="fieldset"
+                >
+                    <FormLabel component="legend">   Search Engine Optimization (Optional)</FormLabel>
+                    <Box sx={{}} >
+                        {/*<Typography variant="body2" sx={{ mt: 2, ml: '25%' }}>
+                            Search Engine Optimization (Optional)
+                        </Typography>*/}
 
-                        onChange={handleChange}
-                    />
-                    <TextField
-                        sx={{ my: 2 }}
-                        name="seo.description"
-                        label="SEO Description"
-                        fullWidth
-                        multiline
-                        rows={2}
-                        value={productData['seo.description']}
-                        onChange={handleChange}
-                    />
+                        <TextField
+                            sx={{ my: 2 }}
+                            name="seo.title"
+                            label="SEO Title"
+                            fullWidth
+                            value={productData['seo.title'] ? productData['seo.title'] : ''}
 
-                    {/* SEO Keywords Input Component */}
-                    <SeoKeywordsInput
-                        seoKeywords={productData.seoKeywords}
-                        onAddKeyword={handleAddKeyword}
-                        onRemoveKeyword={handleRemoveKeyword}
-                    />
+                            onChange={handleChange}
+                        />
+                        <TextField
+                            sx={{ my: 2 }}
+                            name="seo.description"
+                            label="SEO Description"
+                            fullWidth
+                            multiline
+                            rows={2}
+                            value={productData['seo.description']}
+                            onChange={handleChange}
+                        />
 
-                </Box>
+                        {/* SEO Keywords Input Component */}
+                        <SeoKeywordsInput
+                            seoKeywords={productData.seoKeywords}
+                            onAddKeyword={handleAddKeyword}
+                            onRemoveKeyword={handleRemoveKeyword}
+                        />
 
+                    </Box>
+                </FormControl>
                 {/* SHIPPING INPUT */}
-                <TextField
-                    sx={{ my: 2 }}
-                    name="shipping.weight"
-                    label="Weight (oz)"
-                    type="number"
-                    fullWidth
-                    value={weight}
-                    onChange={handleChange}
-                />
-                <TextField
-                    sx={{ my: 2 }}
-                    name="shipping.dimensions.length"
-                    label="Length (in)"
-                    type="number"
-                    fullWidth
-                    value={length}
-                    onChange={handleChange}
-                />
-                <TextField
-                    sx={{ my: 2 }}
-                    name="shipping.dimensions.width"
-                    label="Width (in)"
-                    type="number"
-                    fullWidth
-                    value={width}
-                    onChange={handleChange}
-                />
-                <TextField
-                    sx={{ my: 2 }}
-                    name="shipping.dimensions.height"
-                    label="Height (in)"
-                    type="number"
-                    fullWidth
-                    value={height}
-                    onChange={handleChange}
-                />
+                <FormControl
+
+                    sx={{
+                        width: '97%',
+
+                        pl: 1,
+                        py: 1,
+                        pr: 1,
+                        border: 1,
+                        borderRadius: 1,
+                        borderColor: '#CACACA',
+                        '&:hover': {
+                            borderColor: 'black',
+                        },
+
+                    }}
+                    component="fieldset"
+                >
+                    <FormLabel component="legend">Shipping Details (Optional).</FormLabel>
+                    <Box sx={{
+                        display: 'flex', alignItems: 'center', flexDirection: {
+                            sm: 'row',
+                            xs: 'column',
+                        },
+                    }} >
+                        <TextField
+                            sx={{ my: 2 }}
+                            name="shipping.weight"
+                            label="Weight (oz)"
+                            type="number"
+                            fullWidth
+                            value={weight}
+                            onChange={handleChange}
+                        />
+                        <TextField
+                            sx={{ my: 2 }}
+                            name="shipping.dimensions.length"
+                            label="Length (in)"
+                            type="number"
+                            fullWidth
+                            value={length}
+                            onChange={handleChange}
+                        />
+                        <TextField
+                            sx={{ my: 2 }}
+                            name="shipping.dimensions.width"
+                            label="Width (in)"
+                            type="number"
+                            fullWidth
+                            value={width}
+                            onChange={handleChange}
+                        />
+                        <TextField
+                            sx={{ my: 2 }}
+                            name="shipping.dimensions.height"
+                            label="Height (in)"
+                            type="number"
+                            fullWidth
+                            value={height}
+                            onChange={handleChange}
+                        />
+                    </Box>
+                </FormControl>
 
                 {/* Add more fields as needed */}
             </DialogContent>
