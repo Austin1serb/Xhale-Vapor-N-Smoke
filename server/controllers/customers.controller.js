@@ -3,6 +3,9 @@ const bcrypt = require('bcrypt');
 const saltRounds = 10; //
 const secretKey = process.env.JWT_SECRET_KEY;
 const jwt = require('jsonwebtoken');
+const RevokedToken = require('../models/revokedToken.model');
+const crypto = require('crypto'); // Import the crypto module
+
 
 module.exports = {
     test: (req, res) => {
@@ -13,11 +16,56 @@ module.exports = {
             .then(data => { res.json(data) })
             .catch(err => res.json(err))
     },
+
+
     getOne: (req, res) => {
-        Customers.findOne({ _id: req.params.id })
+        const userId = req.params.id; // Retrieve the user's ID from the request parameter
+
+        Customers.findOne({ _id: userId }) // Query the database using the user's ID
             .then(data => {
-                res.json(data)
-            }).catch(err => res.json(err))
+                if (data) {
+                    // User data found
+                    res.json(data);
+                } else {
+                    // User not found
+                    res.status(404).json({ message: 'User not found' });
+                }
+            })
+            .catch(err => res.status(500).json({ message: 'Error fetching user data', error: err }));
+    },
+
+
+
+
+    // Controller for token refresh
+    refreshToken: async (req, res) => {
+        try {
+            const { refreshToken } = req.body;
+
+            if (!refreshToken) {
+                return res.status(401).json({ message: 'Refresh token is missing' });
+            }
+
+            const existingRevokedToken = await RevokedToken.findOne({ token: refreshToken });
+
+            if (existingRevokedToken) {
+                return res.status(401).json({ message: 'Refresh token is revoked' });
+            }
+
+            // You should also check if the refresh token is expired and handle expiration.
+
+            const user = await Customers.findById(req.user.userId);
+
+            if (!user) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+
+            const accessToken = jwt.sign({ userId: user._id }, secretKey, { expiresIn: '12h' });
+
+            return res.json({ message: 'Token refreshed successfully', accessToken });
+        } catch (err) {
+            return res.status(500).json({ message: 'Server error', error: err });
+        }
     },
 
     createOne: async (req, res) => {
@@ -30,18 +78,30 @@ module.exports = {
                 return res.status(400).json({ errors: { email: 'Email already in use.' } });
             }
 
+            // Generate a secure refresh token
+            const refreshToken = crypto.randomBytes(64).toString('hex'); // Create a secure refresh token
+
             // Hash the password before storing it
-            const hashedPassword = await bcrypt.hash(password, 10);
+            const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+            // Hash the refreshToken before storing it
+            const hashedToken = await bcrypt.hash(refreshToken, saltRounds);
 
             const customer = await Customers.create({
                 firstName,
                 lastName,
                 email,
                 password: hashedPassword,
+                refreshToken: hashedToken,
             });
 
-            // Send a success response with the created customer
-            res.status(201).json(customer);
+            // Store the refresh token securely (e.g., in a database)
+            await customer.save();
+
+            // Generate the initial access token
+            const accessToken = jwt.sign({ userId: customer._id }, secretKey, { expiresIn: '12h' });
+            // Send the initial access token and refresh token to the client
+            res.status(201).json({ customer, accessToken, refreshToken });
         } catch (error) {
             if (error.name === 'ValidationError') {
                 const errors = {};
@@ -50,34 +110,74 @@ module.exports = {
                 }
                 return res.status(400).json({ errors });
             }
-            return res.status(500).json({ message: 'Server error', error: error });
+            return res.status(500).json({ message: 'Server error' + error, error: error });
         }
     },
-
-
-
     loginUser: async (req, res) => {
         try {
             const { email, password } = req.body;
 
-            // Find the user using promises
-            const user = await Customers.findOne({ email }).exec();
+            // Find the user by email
+            const user = await Customers.findOne({ email });
 
             if (!user) {
                 return res.status(404).json({ message: 'Incorrect email or password.' });
             }
 
-            // Compare the hashed password provided in Postman with the hashed password in the database
+            // Compare the hashed password provided in the request with the hashed password in the database
             const passwordMatch = await bcrypt.compare(password, user.password);
 
             if (passwordMatch) {
                 // Passwords match, user is authenticated
-                const token = jwt.sign({ userId: user._id }, secretKey, { expiresIn: '1h' });
-                return res.json({ message: 'Login successful', token });
+
+                // Generate a new access token
+                const accessToken = jwt.sign({ userId: user._id }, secretKey, { expiresIn: '12h' });
+
+                // Generate a new refresh token
+                const newRefreshToken = crypto.randomBytes(64).toString('hex');
+                // Store the hashed refresh token in the user's document
+                user.refreshToken = await bcrypt.hash(newRefreshToken, saltRounds);
+                await user.save();
+
+                // Send the new access token and refresh token to the client
+                return res.json({ message: 'Login successful', accessToken, refreshToken: newRefreshToken });
             } else {
                 // Passwords don't match, authentication failed
                 return res.status(401).json({ message: 'Incorrect email or password.' });
             }
+        } catch (err) {
+            return res.status(500).json({ message: 'Server error', error: err });
+        }
+    },
+
+    revokeToken: async (refreshToken) => {
+        const revokedToken = new RevokedToken({ token: refreshToken });
+        await revokedToken.save();
+    },
+
+    logoutUser: async (req, res) => {
+        try {
+            const refreshToken = req.body.refreshToken;
+
+            // Check if a refreshToken is provided
+            if (!refreshToken) {
+                return res.status(401).json({ message: 'Refresh token is missing' + res });
+            }
+
+            // Check if the refresh token is revoked
+            const existingRevokedToken = await RevokedToken.findOne({ token: refreshToken });
+
+            if (existingRevokedToken) {
+                return res.status(401).json({ message: 'Refresh token is revoked' });
+            }
+
+            // If the refresh token is valid, you can clear it and handle any other logout actions
+
+            // Clear the refresh token (or perform any other required actions)
+            // ...
+
+            // Send a success response
+            return res.status(200).json({ message: 'Logout successful' });
         } catch (err) {
             return res.status(500).json({ message: 'Server error' + err });
         }

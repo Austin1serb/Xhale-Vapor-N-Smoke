@@ -1,22 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import { Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from '@mui/material';
+import { Typography, Button, Box } from '@mui/material';
 import AddProductModal from '../models/AddProductModal.jsx';
 import EditProductModal from '../models/EditProductModal.jsx';
-
+import { DataGrid } from '@mui/x-data-grid';
 
 const ProductList = () => {
     const [products, setProducts] = useState([]);
-    const [isAddProductModalOpen, setAddProductModalOpen] = useState(false); // Add state for the modal
+    const [isAddProductModalOpen, setAddProductModalOpen] = useState(false);
     const [isEditProductModalOpen, setEditProductModalOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
 
-    // Fetch products from your backend API
+        const options = {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+        };
+
+        return new Intl.DateTimeFormat('en-US', options).format(date);
+    };
+
     useEffect(() => {
-        // Replace with your API call to retrieve products
-        fetch('http://localhost:8000/api/product/') // Adjust the URL to match your backend endpoint
+        // Fetch products from your backend API
+        fetch('http://localhost:8000/api/product/')
             .then((response) => response.json())
             .then((data) => {
-                // Update the 'products' state with the fetched data
                 setProducts(data);
             })
             .catch((error) => {
@@ -32,23 +41,18 @@ const ProductList = () => {
         setAddProductModalOpen(false);
     };
 
-    // logic to open a modal for adding a new product
     const handleAddProduct = (newProductData) => {
         // You can update the 'products' state with the new product data here
-        // For example:
         setProducts([...products, newProductData]);
-        // Close the "Add Product" modal
         handleCloseAddProductModal();
     };
-
     const handleEditProduct = (product) => {
         setSelectedProduct(product);
         setEditProductModalOpen(true);
     };
     const handleUpdateProduct = (updatedProduct) => {
-        // Update the products state with the edited product data
         const updatedProducts = products.map((product) => {
-            if (product.id === updatedProduct.id) {
+            if (product._id === updatedProduct._id) {
                 return updatedProduct;
             }
             return product;
@@ -58,17 +62,14 @@ const ProductList = () => {
     };
 
     const handleDeleteProduct = (productId) => {
-        // Prompt the admin for confirmation before deleting the product
         const confirmDelete = window.confirm('Are you sure you want to delete this product?');
 
         if (confirmDelete) {
-            // Send a DELETE request to your backend API to delete the product
             fetch(`http://localhost:8000/api/product/${productId}`, {
                 method: 'DELETE',
             })
                 .then((response) => {
                     if (response.ok) {
-                        // If deletion is successful, remove the product from the products state
                         const updatedProducts = products.filter((product) => product._id !== productId);
                         setProducts(updatedProducts);
                     } else {
@@ -82,60 +83,61 @@ const ProductList = () => {
     };
 
     return (
-        <div>
-            <Typography variant="h6">Product Management</Typography>
-            <Button variant="contained" color="primary" onClick={handleOpenAddProductModal}>
-                Add Product
-            </Button>
-            <TableContainer component={Paper}>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>ID</TableCell>
-                            <TableCell>Name</TableCell>
-                            <TableCell>Description</TableCell>
-                            <TableCell>Price</TableCell>
-                            <TableCell>Actions</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {products.map((product) => (
-                            <TableRow key={product._id}>
-                                <TableCell>{product._id}</TableCell>
-                                <TableCell>{product.name}</TableCell>
-                                <TableCell>{product.description}</TableCell>
-                                <TableCell>${product.price ? product.price.toFixed(2) : ''}</TableCell>
+        <Box sx={{ p: 2 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', py: 2 }} >
+                <Typography variant="h6">Product Management</Typography>
+                <Button variant="outlined" color="success" onClick={handleOpenAddProductModal}>
+                    Add Product
+                </Button>
+            </Box>
+            <DataGrid
+                //for date time converstion
+                rows={products.map(product => ({
+                    ...product,
+                    createdAt: formatDate(product.createdAt), // Format the date
+                }))}
+                //rows={products}
+                columns={[
+                    { field: '_id', headerName: 'ID', flex: 1 },
+                    { field: 'name', headerName: 'Name', flex: 1 },
+                    { field: 'description', headerName: 'Description', flex: 1 },
+                    { field: 'category', headerName: 'Category', flex: 1 },
+                    { field: 'createdAt', headerName: 'Date Added', flex: 1 },
+                    { field: 'price', headerName: 'Price', flex: 1, valueFormatter: ({ value }) => `${value.toFixed(2)}` },
+                    {
+                        field: 'actions',
+                        headerName: 'Actions',
+                        flex: 1,
+                        renderCell: (params) => (
+                            <Box sx={{ ml: -1 }} >
+                                <Button sx={{ fontSize: 8, mr: 1 }} variant="outlined" color="primary" onClick={() => handleEditProduct(params.row)}>
+                                    Edit
+                                </Button>
+                                <Button sx={{ fontSize: 8 }} variant="outlined" color="secondary" onClick={() => handleDeleteProduct(params.row._id)}>
+                                    Delete
+                                </Button>
+                            </Box>
+                        ),
+                    },
+                ]}
+                autoHeight
+                disableSelectionOnClick
+                getRowId={(row) => row._id}
+            />
 
-                                <TableCell>
-                                    <Button variant="outlined" color="primary" onClick={() => handleEditProduct(product)}>
-                                        Edit
-                                    </Button>
-                                    <Button variant="outlined" color="secondary" onClick={() => handleDeleteProduct(product._id)}>
-                                        Delete
-                                    </Button>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                        <EditProductModal
-                            open={isEditProductModalOpen}
-                            onClose={() => {
-                                setEditProductModalOpen(false);
-                                setSelectedProduct(null);
-                            }}
-                            product={selectedProduct}
-                            onUpdateProduct={handleUpdateProduct}
-                        />
-                    </TableBody>
-                </Table>
-            </TableContainer>
-
-            {/* AddProductModal component */}
             <AddProductModal
                 open={isAddProductModalOpen}
                 onClose={handleCloseAddProductModal}
                 onAddProduct={handleAddProduct}
             />
-        </div>
+
+            <EditProductModal
+                open={isEditProductModalOpen}
+                onClose={() => setEditProductModalOpen(false)}
+                product={selectedProduct}
+                onUpdateProduct={handleUpdateProduct}
+            />
+        </Box>
     );
 };
 

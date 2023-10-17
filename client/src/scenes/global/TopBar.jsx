@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { AppBar, Toolbar, Typography, IconButton, Badge, Box } from '@mui/material';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import '../../Styles/TopBar.css';
@@ -8,8 +8,9 @@ import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import BrandIcon from '../../assets/brandIcon.png'
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import LogoutButton from '../../components/LogoutButton';
 
 const TopBar = () => {
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -20,6 +21,7 @@ const TopBar = () => {
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
     const navigate = useNavigate();
+    const isLoggedIn = Boolean(localStorage.getItem('token')) || Boolean(sessionStorage.getItem('token')); // Check if the user is logged in
 
     useEffect(() => {
         const handleScroll = () => {
@@ -76,8 +78,12 @@ const TopBar = () => {
                 open={isMenuOpen}
                 onClose={handleMenuClose}
             >
-                <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-                <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+                {isLoggedIn ? <MenuItem onClick={handleMenuClose}><Link style={{ textDecoration: 'none' }} to={'/details'}>Account</Link></MenuItem>
+                    : null
+                }
+                {isLoggedIn ?
+                    <MenuItem onClick={handleMenuClose}><LogoutButton /></MenuItem> : <MenuItem onClick={handleMenuClose}><Link style={{ textDecoration: 'none' }} to={'/login'}>Login</Link></MenuItem>
+                }
             </Menu>
         </Box>
     );
@@ -187,6 +193,9 @@ const TopBar = () => {
                         >
                             <AccountCircle sx={{ fontSize: '32px' }} />
                         </IconButton>
+                    </Box>
+                    <Box>
+                        <LogoutButton />
                     </Box>
                 </Toolbar >
             </AppBar>

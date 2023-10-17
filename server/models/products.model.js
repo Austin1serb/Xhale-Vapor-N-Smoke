@@ -16,39 +16,40 @@ const ProductSchema = new mongoose.Schema({
         required: [true, 'Please provide product price.']
     },
     imgSource: {
-        publicId:{
+        publicId: {
             type: String,
-            required: true,
+            required: [true, 'Please provide product image.']
         },
         url: {
             type: String,
-            required: true,
-        }
+            required: [true, 'Please provide product image.']
+        },
+
     },
     category: {
-        type: String,
-        // Vape, Cartridge, Gummy, etc.
-        //required: [true, 'Please specify the type of product'],
-        default: ["cbd"]
+        type: [String], // Use an array of strings to support multiple categories
+        required: [true, 'Please specify the type of product'],
     },
+
     description: {
         type: String,
         minlength: [2, 'Description must be at least 2 characters long.'],
         maxlength: [750, 'Description cannot be longer than 750 characters.'],
     },
     strength: {
-        type: Number,
-        min: [0, 'strength cannot be negative.'],
-        required: [true, 'Please provide product strength in mg'],
+        type: String,
+        enum: ["low", "medium", "high"],
+        required: [true, 'Please select product strength.'],
     },
-    inventory: {
-        type: Number,
-        min: [0, 'Inventory cannot be negative.'],
-    },
-    reorderPoint: {
-        type: Number,
-        min: [0, 'Reorder point cannot be negative.'],
-    },
+
+    //inventory: {
+    //    type: Number,
+    //    min: [0, 'Inventory cannot be negative.'],
+    //},
+    //reorderPoint: {
+    //    type: Number,
+    //    min: [0, 'Reorder point cannot be negative.'],
+    //},
     //reviews: [
     //    {
     //        user: {
@@ -70,35 +71,33 @@ const ProductSchema = new mongoose.Schema({
     //        },
     //    },
     //],
-    //isFeatured: {
-    //    type: Boolean,
-    //    default: false,
-    //},
-    //tags: {
-    //    type: [String], // Array of product tags
-    //},
-    //images: {
-    //    type: [String], // Array of product image URLs
-    //},
+    isFeatured: {
+        type: Boolean,
+        default: false,
+    },
+
+
     //relatedProducts: [
     //    {
     //        type: mongoose.Schema.Types.ObjectId,
     //        ref: 'Product',
     //    },
     //],
-    //seo: {
-    //    title: String,
-    //    description: String,
-    //    keywords: [String],
-    //},
-    //shipping: {
-    //    weight: Number,
-    //    dimensions: {
-    //        length: Number,
-    //        width: Number,
-    //        height: Number,
-    //    },
-    //},
+    seo: {
+        title: String,
+        description: String,
+    },
+    seoKeywords: {
+        type: [String],
+    },
+    shipping: {
+        weight: Number,
+        dimensions: {
+            length: Number,
+            width: Number,
+            height: Number,
+        },
+    },
 }, { timestamps: true });
 
 const Product = mongoose.model('Product', ProductSchema);

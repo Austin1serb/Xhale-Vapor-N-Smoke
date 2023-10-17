@@ -102,6 +102,7 @@ const RegistrationPage = () => {
             setErrors({ ...errors, confirmPassword: 'Passwords do not match' });
             hasErrors = true;
         }
+
         if (!hasErrors) {
             try {
                 const response = await fetch('http://localhost:8000/api/customer/register', {
@@ -112,17 +113,14 @@ const RegistrationPage = () => {
                     body: JSON.stringify(formData),
                 });
 
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    if (errorData.errors) {
-                        setErrors(errorData.errors);
-                    }
-                } else {
+                if (response.ok) {
+                    // Registration successful
                     const responseData = await response.json();
-                    const token = responseData.token;
-
+                    const token = responseData.accessToken;
+                    const refreshToken = responseData.refreshToken;
+                    // Store the token securely
                     localStorage.setItem('token', token);
-
+                    localStorage.setItem('refreshToken', refreshToken);
                     setFormData({
                         firstName: '',
                         lastName: '',
@@ -134,6 +132,15 @@ const RegistrationPage = () => {
 
                     // Redirect to the '/' page
                     navigate('/'); // Redirect to the '/' page
+                } else {
+                    // Registration failed, handle error response
+                    const errorData = await response.json();
+                    if (errorData.errors) {
+                        setErrors(errorData.errors);
+                    } else {
+                        console.error('Registration error:', errorData.message);
+                        // Handle other error cases as needed
+                    }
                 }
             } catch (error) {
                 console.error('API request error:', error);

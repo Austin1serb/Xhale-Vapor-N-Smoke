@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import jwtDecode from 'jwt-decode'; // Import jwt-decode
 import {
     Box,
     Paper,
@@ -22,9 +23,19 @@ const LoginPage = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [rememberMe, setRememberMe] = useState(false); // Changed to 'false' by default
-    const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
+    const navigate = useNavigate();
 
+    // Check if the user is logged in by verifying the presence of the access token
+
+    // If the user is already logged in, you can redirect them to another page
+    //const isUserLoggedIn = Boolean(localStorage.getItem('token'));
+
+    //if (isUserLoggedIn) {
+    //    // Redirect to a different route, e.g., the home page
+    //    navigate('/');
+
+    //}
     const handleClickShowPassword = () => {
         setShowPassword((show) => !show);
     };
@@ -32,6 +43,7 @@ const LoginPage = () => {
     const handleMouseDownPassword = (event) => {
         event.preventDefault();
     };
+
     const handleLogin = async () => {
         try {
             setLoading(true);
@@ -46,15 +58,12 @@ const LoginPage = () => {
 
             if (response.ok) {
                 // Login successful
-                // Store JWT in localStorage only if 'rememberMe' is checked
+                // Store JWT and refresh token
                 const data = await response.json();
-                const token = data.token;
-                if (rememberMe) {
-                    localStorage.setItem('token', token); // Store in localStorage for persistent login
-                } else {
-                    sessionStorage.setItem('token', token); // Store in sessionStorage for session-based login
-                }
-
+                const token = data.accessToken;
+                const refreshToken = data.refreshToken;
+                localStorage.setItem('token', token); // Store in localStorage for persistent login
+                localStorage.setItem('refreshToken', refreshToken); // Store the refresh token
                 // Redirect to the home page
                 navigate('/');
             } else {

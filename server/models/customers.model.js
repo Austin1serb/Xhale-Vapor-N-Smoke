@@ -23,6 +23,11 @@ const CustomerSchema = new mongoose.Schema({
             'Please provide a valid email address.',
         ],
     },
+    refreshToken: {
+        type: String,
+        required: false, // Make this field optional
+    },
+
     mobilePhone: {
         type: String,
         match: [

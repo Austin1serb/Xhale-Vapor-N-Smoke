@@ -7,6 +7,7 @@ import AdminDashboard from './scenes/AdminDashboard';
 import AgeVerification from './scenes/AgeVerification';
 import LoginRegistration from './scenes/LoginRegistration';
 import RegistrationPage from './components/RegistrationPage';
+import AccountDetails from './scenes/AccountDetails';
 
 
 const App = () => {
@@ -20,6 +21,7 @@ const App = () => {
           <Route exact path="/admin" Component={AdminDashboard} />
           <Route exact path="/login" Component={LoginRegistration} />
           <Route exact path="/registration" Component={RegistrationPage} />
+          <Route exact path="/details" Component={AccountDetails} />
         </Route>
       </Routes>
       <Footer />

@@ -89,7 +89,7 @@ export default function MonthlySalesChart() {
             <Typography variant='h6' sx={{ textAlign: 'center' }}>
                 <Box>Last Six Months Sales Data by Product</Box>
             </Typography>
-            <BarChart
+            {/*<BarChart
                 dataset={salesData}
                 xAxis={[
                     {
@@ -102,7 +102,7 @@ export default function MonthlySalesChart() {
                     label: product.name,
                 }))}
                 {...chartSetting}
-            />
+            />*/}
         </Box>
     );
 }

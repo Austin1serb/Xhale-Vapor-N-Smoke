@@ -26,7 +26,6 @@ const EditProductModal = ({ open, onClose, product, onUpdateProduct }) => {
         reviews: [],
         discounts: [],
         isFeatured: false,
-        tags: [],
         images: [],
         relatedProducts: [],
         seo: {
@@ -43,6 +42,8 @@ const EditProductModal = ({ open, onClose, product, onUpdateProduct }) => {
             },
         },
     });
+
+    const [categoryOptions, setCategoryOptions] = useState([]); // State to store category options
 
     // Set initial form values based on the selected product
     useEffect(() => {
@@ -90,7 +91,7 @@ const EditProductModal = ({ open, onClose, product, onUpdateProduct }) => {
 
     const handleUpdate = () => {
         // Make a PUT request to update the product data
-        fetch(`/api/product/${product.id}`, {
+        fetch(`http://localhost:8000/api/product/${product._id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -135,21 +136,15 @@ const EditProductModal = ({ open, onClose, product, onUpdateProduct }) => {
                     value={editedProductData.price}
                     onChange={handleChange}
                 />
+                <TextField
+                    name="category"
+                    label="Category"
+                    fullWidth
+                    value={editedProductData.category}
+                    onChange={handleChange}
+                />
                 {/* Add more fields as needed */}
-                {/* For example, the category field */}
-                <FormControl fullWidth>
-                    <InputLabel>Category</InputLabel>
-                    <Select
-                        name="category"
-                        value={editedProductData.category}
-                        onChange={handleChange}
-                    >
-                        <MenuItem value="Vape">Vape</MenuItem>
-                        <MenuItem value="Cartridge">Cartridge</MenuItem>
-                        <MenuItem value="Gummy">Gummy</MenuItem>
-                        {/* Add more category options */}
-                    </Select>
-                </FormControl>
+
             </DialogContent>
             <DialogActions>
                 <Button onClick={onClose} color="secondary">

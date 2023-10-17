@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Table, TableHead, TableRow, TableCell, TableBody, Button } from '@mui/material';
+import { Button } from '@mui/material';
+import { DataGrid } from '@mui/x-data-grid';
 import AddAdminModal from '../models/AddAdminModal';
 
 const UserList = () => {
@@ -32,6 +33,7 @@ const UserList = () => {
                 console.error('Error fetching customer data:', error);
             });
     }, []);
+
     const handleDeleteAdmin = (adminId) => {
         const confirmDelete = window.confirm('Are you sure you want to delete this admin?');
 
@@ -58,96 +60,89 @@ const UserList = () => {
     const handleOpenAddAdminModal = () => {
         setAddAdminModalOpen(true);
     };
+
     const handleCloseAddAdminModal = () => {
         setAddAdminModalOpen(false);
     };
+
     const handleOpenEditAdminModal = (admin) => {
-        setEditAdminModalOpen(true);
-        setAdminDataForEdit(admin); // Populate admin data for editing
+        setAdminDataForEdit(admin);
+        setEditAdminModalOpen(true); // Open the modal for editing
     };
+
     const handleCloseEditAdminModal = () => {
         setEditAdminModalOpen(false);
-        setAdminDataForEdit(null); // Reset admin data for editing
+        setAdminDataForEdit(null);
     };
 
     return (
         <div>
             <h2>Admin List</h2>
-            <Table>
-                <TableHead>
-                    <TableRow>
-                        <TableCell>Admin Name</TableCell>
-                        <TableCell>Email</TableCell>
-                        <TableCell>ID</TableCell>
-                        <TableCell>Registration Date</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {admins.map((admin) => (
-                        <TableRow key={admin._id}>
-                            <TableCell>{admin.username}</TableCell>
-                            <TableCell>{admin.email}</TableCell>
-                            <TableCell>{admin._id}</TableCell>
-                            <TableCell>{admin.registrationDate}</TableCell>
-                            <TableCell>
-                                <Button onClick={() => handleOpenEditAdminModal(admin)}>Edit</Button>
-                                <AddAdminModal
-                                    open={editAdminModalOpen}
-                                    onClose={handleCloseEditAdminModal}
-                                    adminDataForEdit={adminDataForEdit} // Pass the admin data you want to edit
-                                    admins={admins} // Pass the admins array
-                                    setAdmins={setAdmins} // Pass the setAdmins function
-                                />
-                            </TableCell>
-                            <TableCell>
+            <DataGrid
+                rows={admins}
+                columns={[
+                    { field: 'username', headerName: 'Admin Name', flex: 1 },
+                    { field: 'email', headerName: 'Email', flex: 1 },
+                    { field: '_id', headerName: 'ID', flex: 1 },
+                    { field: 'createdAt', headerName: 'Registration Date', flex: 1 },
+                    {
+                        field: 'actions',
+                        headerName: 'Actions',
+                        flex: 1,
+                        renderCell: (params) => (
+                            <div>
+                                <Button onClick={() => handleOpenEditAdminModal(params.row)}>
+                                    Edit
+                                </Button>
                                 <Button
                                     variant="outlined"
                                     color="secondary"
-                                    onClick={() => handleDeleteAdmin(admin._id)}
+                                    onClick={() => handleDeleteAdmin(params.row._id)}
                                 >
                                     Delete
                                 </Button>
+                            </div>
+                        ),
+                    },
+                ]}
+                autoHeight
+                disableSelectionOnClick
+                getRowId={(row) => row._id}
+            />
 
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-            <Button
-                variant="contained"
-                color="primary"
-                onClick={handleOpenAddAdminModal}
-            >
+            <Button variant="contained" color="primary" onClick={handleOpenAddAdminModal}>
                 Add Admin
             </Button>
+
             <AddAdminModal
                 open={addAdminModalOpen}
                 onClose={handleCloseAddAdminModal}
-                admins={admins} // Pass admins state as a prop
-                setAdmins={setAdmins} // Pass setAdmins function as a prop
+                admins={admins}
+                setAdmins={setAdmins}
+            />
+
+            <AddAdminModal
+                open={editAdminModalOpen} // Open the modal for editing
+                onClose={handleCloseEditAdminModal}
+                adminDataForEdit={adminDataForEdit} // Pass the admin data for editing
+                admins={admins}
+                setAdmins={setAdmins}
             />
 
             <h2>Customer List</h2>
-            <Table>
-                <TableHead>
-                    <TableRow>
-                        <TableCell>Customer Name</TableCell>
-                        <TableCell>Email</TableCell>
-                        <TableCell>Roles</TableCell>
-                        <TableCell>Registration Date</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {customers.map((customer) => (
-                        <TableRow key={customer._id}>
-                            <TableCell>{customer.username}</TableCell>
-                            <TableCell>{customer.email}</TableCell>
-                            <TableCell>{customer._id}</TableCell>
-                            <TableCell>{customer.registrationDate}</TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
+            <DataGrid
+                rows={customers}
+                columns={[
+                    { field: `firstName`, headerName: 'First Name', flex: 1 },
+                    { field: `lastName`, headerName: 'Last Name', flex: 1 },
+                    { field: 'email', headerName: 'Email', flex: 1 },
+                    { field: '_id', headerName: 'ID', flex: 1 },
+                    { field: 'registrationDate', headerName: 'Registration Date', flex: 1 },
+                ]}
+                autoHeight
+                disableSelectionOnClick
+                getRowId={(row) => row._id}
+            />
         </div>
     );
 };
