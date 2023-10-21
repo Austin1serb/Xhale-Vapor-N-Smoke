@@ -14,14 +14,13 @@ import {
     Box,
     ListItemIcon,
 } from '@mui/material';
-import { FcTodoList, FcBusinessman, FcComboChart, FcHome } from "react-icons/fc";
-import AccountCircle from '@mui/icons-material/AccountCircle'
+import { FcTodoList, FcBusinessman, FcComboChart, FcHome } from 'react-icons/fc';
+import AccountCircle from '@mui/icons-material/AccountCircle';
 import MenuIcon from '@mui/icons-material/Menu';
 import ProductList from '../components/ProductList';
 import UserList from '../components/UserList';
 import OrderList from '../components/OrderList';
 import SalesOverview from '../components/SalesOverview';
-
 const AdminDashboard = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [selectedComponent, setSelectedComponent] = useState(null);
@@ -63,7 +62,6 @@ const AdminDashboard = () => {
             <Container>
                 <Grid container spacing={3}>
                     <Grid item xs={12}>
-                        <SalesOverview />
                         <Paper>
                             {selectedComponent === 'AdminDashboard' && <SalesOverview />}
                             {selectedComponent === 'productList' && <ProductList />}
@@ -75,21 +73,19 @@ const AdminDashboard = () => {
             </Container>
             <Drawer anchor="left" open={sidebarOpen} onClose={handleSidebarToggle}>
                 <List>
-                    <ListItem sx={{ backgroundColor: '', text: 'center' }} >
-                        <ListItemText primary='MENU' />
+                    <ListItem sx={{ backgroundColor: 'inherit', textAlign: 'center' }}>
+                        <ListItemText primary="MENU" />
                     </ListItem>
                     <ListItem button onClick={() => handleSidebarItemClick('AdminDashboard')}>
                         <ListItemIcon>
                             <FcHome />
                         </ListItemIcon>
-
                         <ListItemText primary="Dashboard Home" />
                     </ListItem>
                     <ListItem button onClick={() => handleSidebarItemClick('productList')}>
                         <ListItemIcon>
                             <FcTodoList />
                         </ListItemIcon>
-
                         <ListItemText primary="Product List" />
                     </ListItem>
                     <ListItem button onClick={() => handleSidebarItemClick('userList')}>
@@ -105,9 +101,7 @@ const AdminDashboard = () => {
                         <ListItemText primary="Order List" />
                     </ListItem>
                 </List>
-
             </Drawer>
-
         </div>
     );
 };

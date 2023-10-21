@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     TextField,
     Button,
@@ -6,9 +6,12 @@ import {
     FormControl,
     FormLabel,
     Chip,
+    Typography,
 } from '@mui/material';
-const CategoryInput = ({ category, onAddCategory, onRemoveCategory }) => {
+
+const CategoryInput = ({ category, onAddCategory, onRemoveCategory, error }) => {
     const [newCategory, setNewCategory] = useState('');
+    const [localError, setLocalError] = useState(error);
 
     const handleAddCategory = () => {
         if (newCategory.trim() !== '') {
@@ -18,42 +21,71 @@ const CategoryInput = ({ category, onAddCategory, onRemoveCategory }) => {
             // Check if the category already exists in the list
             if (!category.includes(formattedCategory)) {
                 onAddCategory(formattedCategory);
+                setLocalError(null); // Clear the local error state when a new category is successfully added
+            } else {
+                setLocalError('Category already exists');
             }
 
             setNewCategory('');
+        } else {
+            setLocalError('Category name cannot be empty');
         }
     };
 
+    useEffect(() => {
+        // Update the local error state when the error prop changes
+        setLocalError(error);
+    }, [error]);
+
     return (
         <FormControl
-
             sx={{
                 width: '97%',
-
                 pl: 1,
                 py: 1,
                 pr: 1,
                 border: 1,
                 borderRadius: 1,
-                borderColor: '#CACACA',
+                borderColor: localError ? (theme) => theme.palette.error.main : 'black',
                 '&:hover': {
-                    borderColor: 'black',
+                    borderColor: localError ? (theme) => theme.palette.error.main : '#1776D1',
+                    '& .form-label-sx': {
+                        color: localError ? (theme) => theme.palette.error.main : '#1776D1',
+                        fontSize: '14px',
+                        transition: 'color 0.4s, font-size 0.4s',
+                    },
+                },
+                '&:not(:hover)': {
+                    '& .form-label-sx': {
+                        color: localError ? (theme) => theme.palette.error.main : 'initial',
+                        fontSize: 'initial',
+                        transition: 'color 0.4s, font-size 0.4s',
+                    },
                 },
             }}
             component="fieldset"
         >
-            <FormLabel component="legend">Add product categories.</FormLabel>
-            <Box sx={{ display: 'flex', alignItems: 'center' }} >
+            <FormLabel
+                component="legend"
+                className="form-label-sx"
+                sx={{
+                    fontSize: 16,
+                }}
+            >
+                Add product categories.*
+            </FormLabel>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <TextField
                     spellCheck={true}
                     label="Categories*"
                     value={newCategory}
+                    error={localError}
                     onChange={(e) => setNewCategory(e.target.value)}
                 />
                 <Button
                     sx={{ fontSize: 10, m: 2 }}
                     variant="outlined"
-                    color="primary"
+                    color={localError ? 'error' : 'primary'}
                     onClick={handleAddCategory}
                 >
                     Add
@@ -63,18 +95,22 @@ const CategoryInput = ({ category, onAddCategory, onRemoveCategory }) => {
                 {category.map((category, index) => (
                     <Chip
                         sx={{
-                            m: 1, "&:hover": {
-                                borderColor: "red",
+                            m: 1,
+                            '&:hover': {
+                                borderColor: 'red',
                             },
                         }}
-                        size='small'
+                        size="small"
                         key={index}
                         label={category}
                         onDelete={() => onRemoveCategory(category)}
                         color="secondary"
-                        variant='outlined'
+                        variant="outlined"
                     />
                 ))}
+                <Typography variant="caption" color="error">
+                    {localError}
+                </Typography>
             </Box>
         </FormControl>
     );

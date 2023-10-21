@@ -17,19 +17,28 @@ const ProductSchema = new mongoose.Schema({
     },
     imgSource: {
         publicId: {
-            type: String,
-            required: [true, 'Please provide product image.']
+            type: [String],
+
+            required: [true, 'Please provide product image id.']
         },
         url: {
-            type: String,
-            required: [true, 'Please provide product image.']
+            type: [String],
+
+            required: [true, 'Please provide product image url.']
         },
 
     },
     category: {
-        type: [String], // Use an array of strings to support multiple categories
-        required: [true, 'Please specify the type of product'],
+        type: [String],
+        required: true,
+        validate: {
+            validator: function (value) {
+                return value.length > 0; // Custom validation function to check if the array is not empty
+            },
+            message: 'Please specify at least one category for the product',
+        },
     },
+
 
     description: {
         type: String,
@@ -89,6 +98,8 @@ const ProductSchema = new mongoose.Schema({
     },
     seoKeywords: {
         type: [String],
+        required: [true, 'Please provide product seo keywords.']
+
     },
     shipping: {
         weight: Number,

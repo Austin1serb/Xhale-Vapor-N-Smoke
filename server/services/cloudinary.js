@@ -1,5 +1,4 @@
-// import {v2 as cloudinary} from 'cloudinary';
-const cloudinary = require('cloudinary').v2
+const cloudinary = require('cloudinary').v2;
 
 cloudinary.config({
     cloud_name: process.env.CLOUD_NAME,
@@ -17,4 +16,15 @@ const uploadToCloudinary = async (path, folder = "product_images") => {
         throw err;
     }
 };
-module.exports = { uploadToCloudinary }
+
+const deleteFromCloudinary = async (publicId) => {
+    try {
+        await cloudinary.uploader.destroy(publicId);
+    } catch (err) {
+        console.log("delete from cloudinary error:");
+        console.log(err);
+        throw err;
+    }
+};
+
+module.exports = { uploadToCloudinary, deleteFromCloudinary };

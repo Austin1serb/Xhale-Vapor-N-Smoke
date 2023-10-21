@@ -1,5 +1,10 @@
 
-import React, { useState } from 'react';
+
+
+
+
+
+import React, { useEffect, useState } from 'react';
 import {
     Button,
     Dialog,
@@ -16,12 +21,13 @@ import {
     FormLabel,
     RadioGroup,
     FormControlLabel,
-    Radio, // Import MenuItem for category selection
+    Radio,
+    Paper, // Import MenuItem for category selection
 } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CategoryInput from '../components/CategoryInput';
 import SeoKeywordsInput from '../components/SeoKeywordsInput';
-
+import { styled } from '@mui/material/styles';
 
 const initialProductData = {
     brand: '',
@@ -38,30 +44,32 @@ const initialProductData = {
     },
     seoKeywords: [],
     shipping: {
-        weight: '',
+        weight: 0,
         dimensions: {
-            length: '',
-            width: '',
-            height: '',
+            length: 0,
+            width: 0,
+            height: 0,
         },
     },
 };
 
 
 
-const AddProductModal = ({ open, onClose, onAddProduct }) => {
-    const [productData, setProductData] = useState(initialProductData);
+const AddProductModal = ({ open, onClose, onAddProduct, selectedProduct, onUpdateProduct, }) => {
+    const [productData, setProductData] = useState(selectedProduct || initialProductData);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
     const [selectedImageData, setSelectedImageData] = useState(null);
     const [selectedStrength, setSelectedStrength] = useState('low');
-
-
+    const [isNewImageSelected, setIsNewImageSelected] = useState(false);
 
     const handleStrengthChange = (event) => {
-        setSelectedStrength(event.target.value);
+        const newStrength = event.target.value;
+        setSelectedStrength(newStrength);
+        setProductData({ ...productData, strength: newStrength });
     };
+
 
     const handleAddKeyword = (newKeyword) => {
         setProductData({
@@ -78,14 +86,42 @@ const AddProductModal = ({ open, onClose, onAddProduct }) => {
         });
     };
 
+    useEffect(() => {
+        if (selectedProduct) {
+            setProductData(selectedProduct);
+            setSelectedStrength(selectedProduct.strength);
+            // Check if selectedProduct has an image source
+            if (selectedProduct.imgSource && selectedProduct.imgSource.url) {
+                fetch(selectedProduct.imgSource.url)
+                    .then((response) => response.blob())
+                    .then((blob) => {
+                        const url = URL.createObjectURL(blob);
+                        setSelectedImageData(url);
+                    })
+                    .catch((error) => {
+                        console.error('Error fetching image:', error);
+                    });
+            } else {
+                // Clear the selectedImageData when there is no image
+                setSelectedImageData(null);
+            }
+            // Handle other states as needed
+        } else {
+            setProductData(initialProductData);
+            setSelectedImageData(null);
+            // Handle other states as needed for a new product
+        }
+    }, [selectedProduct]);
+
+
 
 
 
     const handleChange = (event) => {
         const { name, value } = event.target;
 
-        if (name.startsWith('seoKeywords')) {
-            const seoField = name.split('.')[1];
+        if (name.startsWith('seo.')) {
+            const seoField = name.replace('seo.', ''); // Remove "seo." from the field name
             setProductData({
                 ...productData,
                 seo: {
@@ -93,7 +129,8 @@ const AddProductModal = ({ open, onClose, onAddProduct }) => {
                     [seoField]: value,
                 },
             });
-        } else if (name.startsWith('shipping.')) {
+        }
+        else if (name.startsWith('shipping.')) {
             // Check if it's shipping.weight or shipping.dimensions properties
             if (name === 'shipping.weight') {
                 setProductData({
@@ -119,6 +156,11 @@ const AddProductModal = ({ open, onClose, onAddProduct }) => {
         } else if (name === 'category') {
             const formattedCategory = value.toLowerCase().replace(/\s/g, '');
             setProductData({ ...productData, [name]: formattedCategory });
+        } else if (name === 'isFeatured') {
+            // Convert the value to a boolean
+            const isFeatured = value === 'true';
+            setProductData({ ...productData, [name]: isFeatured });
+
         } else {
             setProductData({ ...productData, [name]: value });
         }
@@ -126,42 +168,95 @@ const AddProductModal = ({ open, onClose, onAddProduct }) => {
 
 
 
+    if (productData) console.log(productData)
+
 
     const handleAddProduct = async () => {
         try {
             setLoading(true);
             const strength = selectedStrength; // Store the selected strength
             productData.strength = strength;
-            const response = await fetch('http://localhost:8000/api/product/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(productData),
-            });
 
-            if (response.ok) {
-                const newProduct = await response.json();
-                onAddProduct(newProduct);
+            if (selectedProduct) {
+                let productToUpdate = { ...productData };
 
-                setProductData(initialProductData);
-                setSelectedStrength('low'); // Reset selectedStrength
-                setError(false); // Reset the error state
-                setSelectedImage(null);
-                setSelectedImageData(null);
-                onClose();
-            } else {
-                // Registration failed, handle error response
-                const errorData = await response.json();
-                if (errorData.errors) {
-                    setError(errorData.errors);
+                // Check if a new image has been selected
+                if (selectedImage) {
+                    productToUpdate.imgSource = {
+                        url: selectedImageData,
+                        publicId: selectedProduct.imgSource.publicId,
+                    };
                 } else {
-                    console.error('Registration error:', errorData.message);
-                    // Handle other error cases as needed
+                    // If no new image is selected, keep the existing image data
+                    productToUpdate.imgSource = selectedProduct.imgSource;
+                }
+                console.log("******" + selectedImage)
+                console.log("isFeatured value: ", productData.isFeatured);
+
+                // Editing an existing product
+                const response = await fetch(`http://localhost:8000/api/product/${selectedProduct._id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(productToUpdate),
+                });
+
+
+                if (response.ok) {
+                    const updatedProduct = await response.json();
+                    onUpdateProduct(updatedProduct);
+                    setError(false); // Reset the error state
+                    setSelectedImage(null);
+                    setSelectedImageData(null);
+                    onClose();
+
+
+                } else {
+                    // Update failed, handle error response
+                    const errorData = await response.json();
+                    if (errorData.errors) {
+                        setError(errorData.errors);
+                    } else {
+                        console.error('Update error:', errorData.message);
+                        // Handle other error cases as needed
+                    }
+                }
+            } else {
+                // Creating a new product
+                productData.imgSource = selectedImageData;
+
+                const response = await fetch('http://localhost:8000/api/product/', {
+                    method: 'POST', // Use POST to create a new product
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(productData),
+                });
+
+                if (response.ok) {
+                    const newProduct = await response.json();
+                    onAddProduct(newProduct);
+
+                    setProductData(initialProductData);
+                    setSelectedStrength('low'); // Reset selectedStrength
+                    setError(false); // Reset the error state
+                    setSelectedImage(null);
+                    setSelectedImageData(null);
+                    onClose();
+                } else {
+                    // Registration or update failed, handle error response
+                    const errorData = await response.json();
+                    if (errorData.errors) {
+                        setError(errorData.errors);
+                    } else {
+                        console.error('Registration error:', errorData.message);
+                        // Handle other error cases as needed
+                    }
                 }
             }
         } catch (error) {
-            console.error('Error adding product:', error);
+            console.error('Error adding/updating product:', error);
         } finally {
             setLoading(false);
         }
@@ -175,9 +270,10 @@ const AddProductModal = ({ open, onClose, onAddProduct }) => {
         const reader = new FileReader();
         reader.readAsDataURL(file)
         reader.onloadend = () => {
-            setProductData({ ...productData, ["imgSource"]: reader.result })
+            setProductData({ ...productData, "imgSource": reader.result })
             setSelectedImage(file);
             setSelectedImageData(reader.result); // Set the selected image data for the thumbnail
+            setIsNewImageSelected(true); // Set the flag to indicate a new image is selected
         };
 
     };
@@ -208,15 +304,42 @@ const AddProductModal = ({ open, onClose, onAddProduct }) => {
         });
     };
     const { shipping } = productData;
-    const { weight, dimensions } = shipping;
-    // Destructure the properties within dimensions
-    const { length, width, height } = dimensions;
+    const weight = shipping?.weight || ''; // Provide a default value for weight if shipping or weight is undefined
+    const dimensions = shipping?.dimensions || {};
+    const length = dimensions.length || '';
+    const width = dimensions.width || '';
+    const height = dimensions.height || '';
+
+    const paperProps = {
+        style: {
+            borderRadius: '5px', // Set the border radius to 10px
+        },
+    };
+
+    const VisuallyHiddenInput = styled('input')({
+        clip: 'rect(0 0 0 0)',
+        clipPath: 'inset(50%)',
+        height: 1,
+        overflow: 'hidden',
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        whiteSpace: 'nowrap',
+        width: 1,
+    });
+
+
+
+
     return (
-        <Dialog open={open} onClose={onClose}>
+        <Dialog open={open} onClose={onClose} PaperProps={paperProps}>
+
             <DialogTitle
-                sx={{ backgroundColor: '#1776D1', color: 'white', borderRadius: 1 }}
-            >Add New Product</DialogTitle>
+                sx={{ backgroundColor: '#282F48', color: 'white', borderRadius: "5px 5px 0px 0" }}
+            >{selectedProduct ? 'Edit Product Details' : 'Add New Product'}</DialogTitle>
+
             <DialogContent>
+
                 <DialogContentText sx={{ my: 2 }} >
                     Please fill in the details of the new product.
                 </DialogContentText>
@@ -229,11 +352,11 @@ const AddProductModal = ({ open, onClose, onAddProduct }) => {
 
                 {/* Brand */}
                 <TextField
-                    sx={{ my: 2 }}
+                    sx={{ my: 2, }}
                     name="brand"
                     label="Brand*"
                     fullWidth
-                    error={Boolean(error)}
+                    error={Boolean(error.brand)}
                     helperText={error.brand}
                     value={productData.brand}
                     onChange={handleChange}
@@ -245,7 +368,7 @@ const AddProductModal = ({ open, onClose, onAddProduct }) => {
                     name="name"
                     label="Name*"
                     fullWidth
-                    error={Boolean(error)}
+                    error={Boolean(error.name)}
                     helperText={error.name}
                     value={productData.name}
                     onChange={handleChange}
@@ -258,7 +381,7 @@ const AddProductModal = ({ open, onClose, onAddProduct }) => {
                     label="Price*"
                     type="number"
                     fullWidth
-                    error={Boolean(error)}
+                    error={Boolean(error.price)}
                     helperText={error.price}
                     value={productData.price}
                     onChange={handleChange}
@@ -272,84 +395,115 @@ const AddProductModal = ({ open, onClose, onAddProduct }) => {
                     multiline
                     rows={4}
                     fullWidth
-                    error={Boolean(error)}
+                    error={Boolean(error.description)}
                     helperText={error.description}
                     value={productData.description}
                     onChange={handleChange}
                 />
 
                 {/* Image Upload */}
-
                 <FormControl
-
                     sx={{
                         width: '97%',
+                        fontSize: 8,
                         my: 2,
                         pl: 1,
                         py: 1,
                         pr: 1,
                         border: 1,
                         borderRadius: 1,
-                        borderColor: '#CACACA',
+                        // Apply MUI error color to border when there is an error
+                        borderColor: error['imgSource.url'] ? theme => theme.palette.error.main : 'black',
                         '&:hover': {
-                            borderColor: 'black',
+                            borderColor: error['imgSource.url'] ? theme => theme.palette.error.main : '#1776D1',
+                            '& .MuiFormLabel-root': {
+                                // Apply MUI error color to title when there is an error
+                                color: error['imgSource.url'] ? theme => theme.palette.error.main : '#1776D1',
+                                fontSize: '14px',
+                                transition: 'color 0.4s, font-size 0.4s',
+                            },
+                        },
+                        ' &:not(:hover)': {
+                            '& .MuiFormLabel-root': {
+                                // Apply MUI error color to title when there is an error
+                                color: error['imgSource.url'] ? theme => theme.palette.error.main : 'initial',
+                                fontSize: 'inital',
+                                transition: 'color 0.4s, font-size 0.4s',
+                            },
                         },
                     }}
                     component="fieldset"
                 >
-                    <FormLabel component="legend"> Upload an image*</FormLabel>
-                    <Box sx={{
-                        my: 2, ml: .25, pl: 1,
-                        py: 1,
-                        border: 1,
-                        borderRadius: 1,
-                        borderColor: '#CACACA',
-                        "&:hover": {
-                            borderColor: "black",
-                        },
-                    }}>
-                        <input
-                            type="file"
-                            accept="image/*"
-                            style={{ display: 'none' }}
+                    <FormLabel component="legend"
+                        sx={{
+                            fontSize: 16,
+                            pr: 0.5,
+                            pl: .5,
+                            // Apply MUI error color to title when there is an error
+                            color: error['imgSource.url'] ? theme => theme.palette.error.main : 'initial',
+                        }}
+                    > Upload an image*</FormLabel>
+                    <Box>
+                        <Button accept="image/*"
+
                             id="image-upload"
-                            onChange={handleImage}
-                        />
-                        <label htmlFor="image-upload">
-                            <Button
-                                sx={{ m: 1, flexWrap: 'wrap' }}
-                                component="span"
-                                variant="outlined"
-                                startIcon={<CloudUploadIcon />}
-                            >
-                                Choose File
-                            </Button>
-                        </label>
-                        {selectedImage && (
+                            component="label"
+                            variant="outlined"
+                            startIcon={<CloudUploadIcon />}
+
+                            // Apply MUI error color to button when there is an error
+                            sx={{
+                                my: 1
+                            }}
+                            color={error['imgSource.url'] ? 'error' : 'primary'}
+                            disabled={loading}
+                        >
+                            {loading ? ( // Display CircularProgress while loading
+                                <CircularProgress size={24} color="inherit" />
+                            ) : (
+                                'Upload file'
+                            )}
+                            <VisuallyHiddenInput accept="image/*"
+                                id="image-upload" type="file" multiple onChange={handleImage}
+                            />
+                        </Button>
+                        {selectedImage ? (
                             <Typography variant="body2" color="textSecondary">
                                 Selected image: {selectedImage.name}
                             </Typography>
+                        ) : (
+                            <Box>
+                                <Typography variant="body2" color="textSecondary">Uploaded Image(s)</Typography>
+                            </Box>
                         )}
-                        {error && (
+
+                        {error['imgSource.url'] && (
                             <Typography variant='caption' sx={{ ml: 1.2 }} color="error">
-                                {error && error['imgSource.url']}
+                                {error['imgSource.url'].message}
                             </Typography>
                         )}
-                        {selectedImageData && (
+                        {selectedImageData && typeof selectedImageData === 'string' ? (
                             <img
                                 src={selectedImageData}
                                 alt="Selected Thumbnail"
-                                style={{ maxWidth: '100px', maxHeight: '100px' }}
+                                style={{ maxWidth: '100px', maxHeight: '100px', margin: '5px' }}
                             />
+                        ) : (
+                            <Typography sx={{ m: 1 }} variant='caption' color="textSecondary">
+                                Preview will appear here after selecting an image.
+                            </Typography>
                         )}
                     </Box>
                 </FormControl>
+
                 {/* Category Input Component */}
                 <CategoryInput
                     category={productData.category}
                     onAddCategory={handleAddCategory}
                     onRemoveCategory={handleRemoveCategory}
+                    error={error && error.category}
                 />
+
 
 
 
@@ -368,11 +522,32 @@ const AddProductModal = ({ open, onClose, onAddProduct }) => {
                         border: 1,
                         borderRadius: 1,
                         borderColor: '#CACACA',
-                        "&:hover": {
-                            borderColor: "black",
+                        '&:hover': {
+                            borderColor: 'black',
+                            '& .form-label-sx': {
+                                color: '#1776D1',
+                                fontSize: '14px',
+                                transition: 'color 0.4s, font-size 0.4s',
+
+                            },
+                        },
+                        ' &:not(:hover)': {
+                            '& .form-label-sx': {
+                                color: 'initial', // Return the text color to its original state
+                                fontSize: 'inital',
+                                transition: 'color 0.4s, font-size 0.4s',
+                            },
                         },
                     }} component="fieldset">
-                        <FormLabel component="legend">Strength</FormLabel>
+                        <FormLabel
+                            sx={{
+                                fontSize: 16,
+                                pr: 0.5,
+                                pl: .5,
+                            }}
+                            className='form-label-sx'
+                            component="legend"
+                        >Strength</FormLabel>
                         <RadioGroup
                             row
                             aria-label="strength"
@@ -402,42 +577,63 @@ const AddProductModal = ({ open, onClose, onAddProduct }) => {
                             </Typography>
                         )}
                     </FormControl>
+                    <Box sx={{ display: 'flex', justifyContent: 'end' }} >
+                        <FormControl
+                            sx={{
+                                pl: 1,
+                                pr: 3,
+                                pb: 1,
+                                border: 1,
+                                borderRadius: 1,
+                                borderColor: '#CACACA',
+                                '&:hover': {
+                                    borderColor: 'black',
+                                    '& .form-label-sx': {
+                                        color: '#1776D1',
+                                        fontSize: '14px',
+                                        transition: 'color 0.4s, font-size 0.4s',
+                                        textAlign: 'center'
+                                    },
+                                },
+                                ' &:not(:hover)': {
+                                    '& .form-label-sx': {
+                                        color: 'initial', // Return the text color to its original state
+                                        fontSize: 'inital',
+                                        transition: 'color 0.4s, font-size 0.4s',
 
-                    <FormControl
-                        sx={{
-                            pl: 1,
-                            pr: 1,
-                            pb: 1,
-                            border: 1,
-                            borderRadius: 1,
-                            borderColor: '#CACACA',
-                            "&:hover": {
-                                borderColor: "black",
-                            },
-
-                        }}
-                        component="fieldset"
-                    >
-                        <FormLabel sx={{ px: 0.1 }} component="legend">Feature on Home page?</FormLabel>
-                        <RadioGroup
-                            row
-                            aria-label="isFeatured"
-                            name="isFeatured"
-                            value={productData.isFeatured} // Use the actual Boolean value
-                            onChange={handleChange}
+                                    },
+                                },
+                            }}
+                            component="fieldset"
                         >
-                            <FormControlLabel
-                                value={true}
-                                control={<Radio />}
-                                label="Yes"
-                            />
-                            <FormControlLabel
-                                value={false}
-                                control={<Radio />}
-                                label="No"
-                            />
-                        </RadioGroup>
-                    </FormControl>
+                            <FormLabel sx={{
+                                fontSize: 16,
+
+                                pl: .5,
+
+
+                            }}
+                                className='form-label-sx' component="legend">Feature on Home page?</FormLabel>
+                            <RadioGroup
+                                row
+                                aria-label="isFeatured"
+                                name="isFeatured"
+                                value={Boolean(productData.isFeatured)} // Use the actual Boolean value
+                                onChange={handleChange}
+                            >
+                                <FormControlLabel
+                                    value={Boolean(true)}
+                                    control={<Radio />}
+                                    label="Yes"
+                                />
+                                <FormControlLabel
+                                    value={Boolean(false)}
+                                    control={<Radio />}
+                                    label="No"
+                                />
+                            </RadioGroup>
+                        </FormControl>
+                    </Box>
                 </Box>
 
 
@@ -456,11 +652,26 @@ const AddProductModal = ({ open, onClose, onAddProduct }) => {
                         borderColor: '#CACACA',
                         '&:hover': {
                             borderColor: 'black',
+                            '& .form-label-sx': {
+                                color: '#1776D1',
+                                fontSize: '14px',
+                                transition: 'color 0.4s, font-size 0.4s',
+
+                            },
+                        },
+                        ' &:not(:hover)': {
+                            '& .form-label-sx': {
+                                color: 'initial', // Return the text color to its original state
+                                fontSize: 'inital',
+                                transition: 'color 0.4s, font-size 0.4s',
+                            },
                         },
                     }}
                     component="fieldset"
                 >
-                    <FormLabel component="legend">   Search Engine Optimization (Optional)</FormLabel>
+                    <FormLabel
+                        className='form-label-sx'
+                        component="legend">   Search Engine Optimization (Optional)</FormLabel>
                     <Box sx={{}} >
                         {/*<Typography variant="body2" sx={{ mt: 2, ml: '25%' }}>
                             Search Engine Optimization (Optional)
@@ -471,7 +682,7 @@ const AddProductModal = ({ open, onClose, onAddProduct }) => {
                             name="seo.title"
                             label="SEO Title"
                             fullWidth
-                            value={productData['seo.title'] ? productData['seo.title'] : ''}
+                            value={productData.seo['title'] ? productData.seo['title'] : ''}
 
                             onChange={handleChange}
                         />
@@ -482,7 +693,7 @@ const AddProductModal = ({ open, onClose, onAddProduct }) => {
                             fullWidth
                             multiline
                             rows={2}
-                            value={productData['seo.description']}
+                            value={productData.seo['description']}
                             onChange={handleChange}
                         />
 
@@ -509,12 +720,30 @@ const AddProductModal = ({ open, onClose, onAddProduct }) => {
                         borderColor: '#CACACA',
                         '&:hover': {
                             borderColor: 'black',
-                        },
+                            '& .form-label-sx': {
+                                color: '#1776D1',
+                                fontSize: '14px',
+                                transition: 'color 0.4s, font-size 0.4s',
 
+                            },
+                        },
+                        ' &:not(:hover)': {
+                            '& .form-label-sx': {
+                                color: 'initial', // Return the text color to its original state
+                                fontSize: 'inital',
+                                transition: 'color 0.4s, font-size 0.4s',
+                            },
+                        },
                     }}
                     component="fieldset"
                 >
-                    <FormLabel component="legend">Shipping Details (Optional).</FormLabel>
+                    <FormLabel
+                        className="form-label-sx"
+                        sx={{
+                            fontSize: 16,
+
+                        }}
+                        component="legend">Shipping Details (Optional).</FormLabel>
                     <Box sx={{
                         display: 'flex', alignItems: 'center', flexDirection: {
                             sm: 'row',
@@ -562,18 +791,24 @@ const AddProductModal = ({ open, onClose, onAddProduct }) => {
 
                 {/* Add more fields as needed */}
             </DialogContent>
-            <DialogActions sx={{ display: 'flex', justifyContent: 'space-between', border: .1, borderRadius: 1, m: 1 }} >
+            <DialogActions sx={{
+                display: 'flex', justifyContent: 'space-between', borderTop: 1, py: 2, borderColor: '#CACACA',
+                '&:hover': {
+                    borderColor: 'black',
+                },
+            }} >
                 <Button onClick={clearForm} variant='outlined' color="secondary">
                     Clear Form
                 </Button>
-                <Button onClick={onClose} variant='outlined' color="error">
+                <Button onClick={onClose ? () => { onClose(); clearForm(); } : clearForm} variant='outlined' color="error">
                     Cancel
                 </Button>
                 <Button onClick={handleAddProduct} variant='outlined' color="primary">
-                    {loading ? <CircularProgress /> : 'Add Product'}
+                    {loading ? <CircularProgress /> : selectedProduct ? 'Save Changes' : 'Add Product'}
                 </Button>
             </DialogActions>
-        </Dialog>
+
+        </Dialog >
     )
 };
 

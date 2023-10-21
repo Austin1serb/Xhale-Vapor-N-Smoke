@@ -34,15 +34,35 @@ const SeoKeywordsInput = ({ seoKeywords, onAddKeyword, onRemoveKeyword }) => {
                 borderColor: '#CACACA',
                 '&:hover': {
                     borderColor: 'black',
+                    '& .form-label-sx1': {
+                        color: '#1776D1',
+                        fontSize: '14px',
+                        transition: 'color 0.4s, font-size 0.4s',
+
+                    },
+                },
+                ' &:not(:hover)': {
+                    '& .form-label-sx1': {
+                        color: 'initial', // Return the text color to its original state
+                        fontSize: 'inital',
+                        transition: 'color 0.4s, font-size 0.4s',
+                    },
                 },
             }}
             component="fieldset"
         >
-            <FormLabel component="legend">Add SEO keywords.</FormLabel>
+            <FormLabel
+                className="form-label-sx1"
+                sx={{
+                    fontSize: 16,
+
+                }}
+                component="legend">Add SEO keywords.</FormLabel>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <TextField
                     spellCheck={true}
                     label="Keywords"
+
                     value={newKeyword}
                     onChange={(e) => setNewKeyword(e.target.value)}
                 />
