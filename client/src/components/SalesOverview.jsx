@@ -5,6 +5,61 @@ import { Box, Typography } from '@mui/material';
 export default function MonthlySalesChart() {
     const [salesData, setSalesData] = useState([{}]);
     const [products, setProducts] = useState(['']); // State to store the products
+    const [totalProducts, setTotalProducts] = useState(0);
+    const [totalOrders, setTotalOrders] = useState(0);
+    const [totalSales, setTotalSales] = useState(0);
+    const [pendingOrders, setPendingOrders] = useState(0);
+    const [recentOrders, setRecentOrders] = useState([]);
+    const [totalAdmins, setTotalAdmins] = useState(0);
+    const [totalCustomers, setTotalCustomers] = useState(0);
+    const [recentAdmins, setRecentAdmins] = useState([]);
+    const [recentCustomers, setRecentCustomers] = useState([]);
+
+    useEffect(() => {
+        // Fetch total number of admins
+        fetch('http://localhost:8000/api/staff')
+            .then(response => response.json())
+            .then(data => {
+                setTotalAdmins(data.length);
+                // Sort and get the most recent 5 admins
+                const recent = data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 5);
+                setRecentAdmins(recent);
+            });
+
+        // Fetch total number of customers
+        fetch('http://localhost:8000/api/customer')
+            .then(response => response.json())
+            .then(data => {
+                setTotalCustomers(data.length);
+                // Sort and get the most recent 5 customers
+                const recent = data.sort((a, b) => new Date(b.registrationDate) - new Date(a.registrationDate)).slice(0, 5);
+                setRecentCustomers(recent);
+            });
+    }, []);
+    useEffect(() => {
+        fetch('http://localhost:8000/api/order')
+            .then(response => response.json())
+            .then(data => {
+                // Sort by date and get the most recent 5 orders
+                const sortedOrders = data.sort((a, b) => new Date(b.orderDate) - new Date(a.orderDate)).slice(0, 5);
+                setRecentOrders(sortedOrders);
+            });
+    }, []);
+    useEffect(() => {
+        // Fetch total number of products
+        fetch('http://localhost:8000/api/product')
+            .then(response => response.json())
+            .then(data => setTotalProducts(data.length));
+
+        // Fetch total number of orders and other related metrics
+        fetch('http://localhost:8000/api/order')
+            .then(response => response.json())
+            .then(data => {
+                setTotalOrders(data.length);
+                setTotalSales(data.reduce((sum, order) => sum + order.totalAmount, 0));
+                setPendingOrders(data.filter(order => order.orderStatus === 'Pending').length);
+            });
+    }, []);
 
     useEffect(() => {
         // Fetch product information when the component mounts
@@ -86,10 +141,34 @@ export default function MonthlySalesChart() {
 
     return (
         <Box>
+            {/* Display summary widgets */}
+            <Typography variant="h6">Total Products: {totalProducts}</Typography>
+            <Typography variant="h6">Total Orders: {totalOrders}</Typography>
+            <Typography variant="h6">Total Sales: ${totalSales.toFixed(2)}</Typography>
+            <Typography variant="h6">Pending Orders: {pendingOrders}</Typography>
+            <Typography variant="h6">Total Admins: {totalAdmins}</Typography>
+            <Typography variant="h6">Total Customers: {totalCustomers}</Typography>
+            <Typography variant="h6">Recent Admin Registrations:</Typography>
+            <ul>
+                {recentAdmins.map(admin => <li key={admin._id}>{admin.username} - {admin.email}</li>)}
+            </ul>
+            <Typography variant="h6">Recent Customer Registrations:</Typography>
+            <ul>
+                {recentCustomers.map(customer => <li key={customer._id}>{customer.firstName} {customer.lastName} - {customer.email}</li>)}
+            </ul>
+
             <Typography variant='h6' sx={{ textAlign: 'center' }}>
                 <Box>Last Six Months Sales Data by Product</Box>
             </Typography>
-            {/*<BarChart
+            <Typography variant="h6">Latest Orders</Typography>
+            {/* Display recent orders */}
+            {recentOrders.map(order => (
+                <Box key={order._id}>
+                    <Typography variant="body1">Order ID: {order._id}</Typography>
+                    {/* ... display other details */}
+                </Box>
+            ))}
+            <BarChart
                 dataset={salesData}
                 xAxis={[
                     {
@@ -102,7 +181,7 @@ export default function MonthlySalesChart() {
                     label: product.name,
                 }))}
                 {...chartSetting}
-            />*/}
+            />
         </Box>
     );
 }

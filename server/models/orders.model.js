@@ -58,6 +58,11 @@ const OrderSchema = new mongoose.Schema({
         enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'],
         default: 'Pending',
     },
+    noteFromCustomer: {
+        type: String,
+        required: false,
+    }
+
     // Add other fields as needed
 });
 

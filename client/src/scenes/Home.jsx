@@ -16,6 +16,7 @@ const Home = () => {
 
     const [showAgeVerification, setShowAgeVerification] = useState(true);
     const [isUserOver18, setIsUserOver18] = useState(false);
+    const [shake, setShake] = useState(false);
 
     useEffect(() => {
         // Check if the user has already verified their age in session storage
@@ -60,7 +61,7 @@ const Home = () => {
                         <div className='colored-square-content'>
                             <div className="colored-square">
                                 <h1>Clean & Premium CBD</h1>
-                                <Button>SHOP CBD</Button>
+                                <Button >SHOP CBD</Button>
                             </div>
                         </div>
                     </div>

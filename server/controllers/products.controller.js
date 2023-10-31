@@ -1,8 +1,8 @@
 const Products = require('../models/products.model');
 const { uploadToCloudinary, deleteFromCloudinary } = require('../services/cloudinary');
 
-
 const createOneProd = async (req, res) => {
+    console.log(req.body);
     const {
         brand,
         name,
@@ -19,87 +19,83 @@ const createOneProd = async (req, res) => {
     } = req.body;
 
     const isUpdate = Boolean(req.params.id); // Check if an ID is provided to determine if it's an update
-
+    let originalImages = [];
+    let originalProduct;
 
     try {
-        let imageData = {};
-        if (imgSource && imgSource.url) {
-            // Use the imgSource.url as the local file path
-            const results = await uploadToCloudinary(imgSource.url, "product_images");
-            imageData = results;
+        let imageData = [];
 
-        } else if (imgSource) {
-            const results = await uploadToCloudinary(imgSource, "product_images");
-            imageData = results;
-        }
-        console.log(imageData)
         if (isUpdate) {
-            // Handle product update
-            const updatedProduct = await Products.findOneAndUpdate(
-                { _id: req.params.id },
-                {
-                    brand,
-                    name,
-                    price,
-                    imgSource: imageData,
-                    category,
-                    description,
-                    strength,
-                    reorderPoint,
-                    seo,
-                    seoKeywords,
-                    shipping,
-                    isFeatured,
-                },
-                { new: true, runValidators: true }
-            );
-
-            if (updatedProduct) {
-                res.status(200).json(updatedProduct);
-            } else {
-                // Handle product not found or other errors
-                res.status(404).json({ message: 'Product not found' });
+            // Fetch the original product first
+            originalProduct = await Products.findById(req.params.id);
+            if (!originalProduct) {
+                return res.status(404).json({ message: 'Product not found' });
             }
-        } else {
-            // Handle product creation
-            const product = await Products.create({
-                brand,
-                name,
-                price,
-                imgSource: imageData,
-                category,
-                description,
-                strength,
-                reorderPoint,
-                seo,
-                seoKeywords,
-                shipping,
-                isFeatured,
-            });
-
-            res.status(200).json(product);
+            originalImages = originalProduct.imgSource.map(img => img.url);
         }
+
+        if (imgSource && Array.isArray(imgSource) && imgSource.length > 0) {
+            for (let image of imgSource) {
+                if (image.url && image.url.includes('cloudinary.com')) {
+                    imageData.push(image);
+                } else {
+                    const results = await uploadToCloudinary(image.url, "product_images");
+                    imageData.push(results);
+                }
+            }
+        }
+
+        if (isUpdate) {
+            // Identify removed images
+            const removedImages = originalImages.filter(oriUrl => !imageData.some(newImg => newImg.url === oriUrl));
+
+            // Delete them from Cloudinary
+            for (const removedImage of removedImages) {
+                const publicId = originalProduct.imgSource.find(img => img.url === removedImage).publicId;
+                await deleteFromCloudinary(publicId);
+            }
+        }
+
+        const productData = {
+            brand,
+            name,
+            price,
+            imgSource: imageData,
+            category,
+            description,
+            strength,
+            reorderPoint,
+            seo,
+            seoKeywords,
+            shipping,
+            isFeatured,
+        };
+
+        let product;
+        if (isUpdate) {
+            product = await Products.findOneAndUpdate({ _id: req.params.id }, productData, {
+                new: true,
+                runValidators: true,
+            });
+        } else {
+            product = await Products.create(productData);
+        }
+
+        if (product) {
+            res.status(200).json(product);
+        } else {
+            res.status(404).json({ message: 'Product not found or could not be updated' });
+        }
+
     } catch (error) {
+        console.error(error);
         if (error.name === 'ValidationError') {
             const errors = {};
-            // Handle nested fields
-            if (error.errors['imgSource']) {
-                errors.imgSource = {};
-
-                if (error.errors['imgSource.publicId']) {
-                    errors.imgSource.publicId = error.errors['imgSource.publicId'].message;
-                }
-
-                if (error.errors['imgSource.url']) {
-                    errors.imgSource.url = error.errors['imgSource.url'].message;
-                }
-            }
             for (const field in error.errors) {
                 errors[field] = error.errors[field].message;
             }
             return res.status(400).json(errors);
         }
-        return res.status(500).json({ message: 'Server error' + error, error: error });
     }
 };
 
@@ -135,9 +131,12 @@ module.exports = {
                 return res.status(404).json({ message: 'Product not found' });
             }
 
-            // Check if the product has an associated image and delete it from Cloudinary
-            if (product.imgSource && product.imgSource.publicId) {
-                await deleteFromCloudinary(product.imgSource.publicId);
+            // Check if the product has associated images and delete them from Cloudinary
+            if (product.imgSource && product.imgSource.length > 0) {
+                // Loop through the images and delete them
+                for (const image of product.imgSource) {
+                    await deleteFromCloudinary(image.publicId);
+                }
             }
 
             // Delete the product from the database
@@ -152,4 +151,5 @@ module.exports = {
             res.status(500).json({ message: 'Server error', error: error });
         }
     },
+
 }

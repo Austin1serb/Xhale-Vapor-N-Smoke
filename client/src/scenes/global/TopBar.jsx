@@ -1,5 +1,5 @@
 
-import { AppBar, Toolbar, Typography, IconButton, Badge, Box } from '@mui/material';
+import { AppBar, Toolbar, Typography, IconButton, Badge, Box, Drawer, List, ListItem, ListItemText, ListItemIcon, Button } from '@mui/material';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import '../../Styles/TopBar.css';
 import MenuItem from '@mui/material/MenuItem';
@@ -11,17 +11,30 @@ import BrandIcon from '../../assets/brandIcon.png'
 import React, { useState, useEffect, } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import LogoutButton from '../../components/LogoutButton';
+import { FcShop } from 'react-icons/fc';
+import { useCart } from '../../components/CartContext.jsx';
+import Cart from '../../components/Cart';
+import { useAuth } from '../../useAuth';
 
 const TopBar = () => {
     const [anchorEl, setAnchorEl] = React.useState(null);
-    const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+
     const [showBorder, setShowBorder] = useState(false);
     const isMobile = useMediaQuery('(max-width:600px)');
     const isMenuOpen = Boolean(anchorEl);
-    const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+    const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
 
     const navigate = useNavigate();
-    const isLoggedIn = Boolean(localStorage.getItem('token')) || Boolean(sessionStorage.getItem('token')); // Check if the user is logged in
+
+    const { cart, } = useCart();
+    const [shake, setShake] = useState(false);
+    const [drawerOpen, setDrawerOpen] = useState(false);
+
+    const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
+
+
+
+    const { isLoggedIn, logout } = useAuth();// Check if the user is logged in
 
     useEffect(() => {
         const handleScroll = () => {
@@ -34,6 +47,7 @@ const TopBar = () => {
             }
         };
 
+
         // Attach the scroll event listener
         window.addEventListener('scroll', handleScroll);
 
@@ -43,21 +57,42 @@ const TopBar = () => {
         };
     }, []);
 
+
+    useEffect(() => {
+        if (cart.length > 0) {
+            setShake(true);
+
+            // Reset the shake effect after 500ms
+            const timer = setTimeout(() => {
+                setShake(false);
+            }, 500);
+
+            return () => clearTimeout(timer); // Clean up on component unmount
+        }
+    }, [cart]);
+
+
     const handleProfileMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
     };
 
-    const handleMobileMenuClose = () => {
-        setMobileMoreAnchorEl(null);
-    };
+
 
     const handleMenuClose = () => {
         setAnchorEl(null);
         handleMobileMenuClose();
     };
 
-    const handleMobileMenuOpen = (event) => {
-        setMobileMoreAnchorEl(event.currentTarget);
+    const handleMobileMenuOpen = () => {
+        setMobileDrawerOpen(true);
+    };
+
+    const handleMobileMenuClose = () => {
+        setMobileDrawerOpen(false);
+    };
+    const handleLogout = () => {
+        logout();
+        // Any other logic you want to execute on logout
     };
 
     const menuId = 'primary-search-account-menu';
@@ -82,51 +117,59 @@ const TopBar = () => {
                     : null
                 }
                 {isLoggedIn ?
-                    <MenuItem onClick={handleMenuClose}><LogoutButton /></MenuItem> : <MenuItem onClick={handleMenuClose}><Link style={{ textDecoration: 'none' }} to={'/login'}>Login</Link></MenuItem>
+                    <MenuItem onClick={handleLogout}><LogoutButton /></MenuItem> : <MenuItem onClick={handleMenuClose}><Link style={{ textDecoration: 'none' }} to={'/login'}>Login</Link></MenuItem>
                 }
             </Menu>
         </Box>
     );
 
-    const mobileMenuId = 'primary-search-account-menu-mobile';
-    const renderMobileMenu = (
 
-        <Menu
-            anchorEl={mobileMoreAnchorEl}
-            anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'right',
-            }}
-            id={mobileMenuId}
-            keepMounted
-            transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-            }}
-            open={isMobileMenuOpen}
+
+    const renderMobileMenu = (
+        <Drawer
+            anchor="left" // You can change the anchor to "left" if needed
+            open={mobileDrawerOpen}
             onClose={handleMobileMenuClose}
         >
-            <MenuItem className='nav-link' >
-                <Typography variant="body1" sx={{ flexGrow: 1 }}  >
-                    <Box component="a" href="#" className="nav-link" sx={{ marginRight: 2 }}>
-                        Shop
-                    </Box>
-                    <Box component="a" href="#99" className="nav-link" sx={{ marginRight: 2 }}>
-                        Subscribe
-                    </Box>
-                    <Box component="a" href="#" className="nav-link" sx={{ marginRight: 2 }}>
-                        30-Day Trial
-                    </Box>
-                    <Box component="a" href="#" className="nav-link" sx={{ marginRight: 2 }}>
-                        Support
-                    </Box>
-                    <Box component="a" href="#" className="nav-link">
-                        Reviews
-                    </Box>
-                </Typography>
-            </MenuItem>
-        </Menu>
+            <div style={{ width: 250 }}>
+                <MenuItem onClick={handleMobileMenuClose}>
+                    {/* Your menu items here */}
+                    <List variant="body1" sx={{ flexGrow: 1 }}  >
+                        <ListItem sx={{ backgroundColor: 'inherit', textAlign: 'center' }}>
+                            <ListItemText primary="MENU" />
+                        </ListItem>
+
+                        <ListItem component="a" href="/shop" className="nav-link" sx={{ marginRight: 2 }}>
+                            <ListItemIcon sx={{ fontSize: 20 }}>
+                                <FcShop />
+                            </ListItemIcon>
+                            <ListItemText primary="SHOP" />
+                        </ListItem>
+
+                        <ListItem component="a" href="#99" className="nav-link" sx={{ marginRight: 2 }}>
+                            <ListItemIcon sx={{ fontSize: 20 }}>
+                                <FcShop />
+                            </ListItemIcon>
+                            <ListItemText primary="SUBSCRIBE" />
+                        </ListItem>
+                        <ListItem component="a" href="#" className="nav-link" sx={{ marginRight: 2 }}>
+                            <ListItemIcon sx={{ fontSize: 20 }}>
+                                <FcShop />
+                            </ListItemIcon>
+                            <ListItemText primary="30 Day TRIAL" />
+                        </ListItem>
+                        <ListItem component="a" href="#" className="nav-link" sx={{ marginRight: 2 }}>
+                            Support
+                        </ListItem>
+                        <ListItem component="a" href="#" className="nav-link">
+                            Reviews
+                        </ListItem>
+                    </List>
+                </MenuItem>
+            </div>
+        </Drawer>
     );
+
 
     return (
         <Box sx={{ flexGrow: 1, mb: 10 }}   >
@@ -141,13 +184,12 @@ const TopBar = () => {
                     <IconButton
                         className='menu-icon'
                         aria-label="show more"
-                        aria-controls={mobileMenuId}
-                        aria-haspopup="true"
                         onClick={handleMobileMenuOpen}
                         sx={{ mr: 2, display: { xs: 'flex', md: 'none' }, backgroundColor: 'white' }}
                     >
                         <MenuIcon sx={{ fontSize: '32px' }} />
                     </IconButton>
+
                     <Typography variant="h6" sx={{ flexGrow: 1 }}>
                         <Box component="a" href="/" className="nav-link">
                             <Box component={'img'} src={BrandIcon} alt="Brand Icon" className='brand-icon' ></Box>
@@ -155,7 +197,7 @@ const TopBar = () => {
                     </Typography>
                     {!isMobile ? (
                         <Typography className='nav-typography' variant="body1" sx={{ flexGrow: 10, display: { sm: 'none', md: 'flex', fontFamily: "freight-display-pro, serif " } }}  >
-                            <Box component="a" href="#" className="nav-link" sx={{ marginRight: 2 }}>
+                            <Box component="a" href="/shop" className="nav-link" sx={{ marginRight: 2 }}>
                                 Shop
                             </Box>
                             <Box component="a" href="#99" className="nav-link" sx={{ marginRight: 2 }}>
@@ -172,12 +214,12 @@ const TopBar = () => {
                             </Box>
                         </Typography>
                     ) : null}
-                    <Box component="a" href="#" className="nav-link">
-                        <IconButton
-                            color="inherit"
-                        >
-                            <Badge badgeContent={3} color="secondary">
-                                <ShoppingCartIcon sx={{ fontSize: '32px' }} />
+                    <Box component="a" className="nav-link" onClick={() => setDrawerOpen(true)}>
+                        <IconButton color="inherit">
+                            <Badge badgeContent={totalItems} color="secondary">
+                                <ShoppingCartIcon className={shake ? 'shake-animation' : ''} sx={{ fontSize: '32px' }}
+
+                                />
                             </Badge>
                         </IconButton>
                     </Box>
@@ -201,6 +243,20 @@ const TopBar = () => {
             </AppBar>
             {renderMobileMenu}
             {renderMenu}
+            <Drawer anchor="right" open={drawerOpen} onClose={() => setDrawerOpen(false)}>
+                <Box sx={{
+                    width: { xs: '250px', sm: '385px', md: '385px' },  // Responsive widths
+                    py: 3,
+
+
+                    height: '100vh'  // Taking up the entire viewport height
+                }}>
+                    <Cart
+                        setDrawerOpen={setDrawerOpen}
+                    />
+
+                </Box>
+            </Drawer >
         </Box >
     );
 };

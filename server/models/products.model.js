@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
-
+function arrayLimit(val) {
+    return val.length > 0;
+}
 const ProductSchema = new mongoose.Schema({
     brand: {
         type: String,
@@ -16,17 +18,17 @@ const ProductSchema = new mongoose.Schema({
         required: [true, 'Please provide product price.']
     },
     imgSource: {
-        publicId: {
-            type: [String],
-
-            required: [true, 'Please provide product image id.']
-        },
-        url: {
-            type: [String],
-
-            required: [true, 'Please provide product image url.']
-        },
-
+        type: [{
+            publicId: {
+                type: String,
+                required: [true, 'Please provide product image id.']
+            },
+            url: {
+                type: String,
+                required: [true, 'Please provide product image url.']
+            },
+        }],
+        validate: [arrayLimit, 'Product must have at least one image.']
     },
     category: {
         type: [String],
@@ -37,6 +39,9 @@ const ProductSchema = new mongoose.Schema({
             },
             message: 'Please specify at least one category for the product',
         },
+    },
+    flavor: {
+        type: String,
     },
 
 

@@ -8,24 +8,28 @@ import AgeVerification from './scenes/AgeVerification';
 import LoginRegistration from './scenes/LoginRegistration';
 import RegistrationPage from './components/RegistrationPage';
 import AccountDetails from './scenes/AccountDetails';
+import Shop from './scenes/Shop';
+import { CartProvider } from './components/CartContext';
 
 
 const App = () => {
   return (
     <div>
-      <TopBar />
-      <Routes>
-        <Route>
-          <Route exact path="/verify-age" Component={AgeVerification} />
-          <Route exact path="/" Component={Home} />
-          <Route exact path="/admin" Component={AdminDashboard} />
-          <Route exact path="/login" Component={LoginRegistration} />
-          <Route exact path="/registration" Component={RegistrationPage} />
-          <Route exact path="/details" Component={AccountDetails} />
-        </Route>
-      </Routes>
-      <Footer />
-
+      <CartProvider>
+        <TopBar />
+        <Routes>
+          <Route>
+            <Route exact path="/verify-age" Component={AgeVerification} />
+            <Route exact path="/" Component={Home} />
+            <Route exact path="/admin" Component={AdminDashboard} />
+            <Route exact path="/login" Component={LoginRegistration} />
+            <Route exact path="/registration" Component={RegistrationPage} />
+            <Route exact path="/details" Component={AccountDetails} />
+            <Route exact path="/shop" Component={Shop} />
+          </Route>
+        </Routes>
+        <Footer />
+      </CartProvider>
     </div>
   )
 }

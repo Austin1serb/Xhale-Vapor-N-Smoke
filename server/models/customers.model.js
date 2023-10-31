@@ -65,6 +65,28 @@ const CustomerSchema = new mongoose.Schema({
             ref: 'Order',
         },
     ],
+    defaultShippingAddress: {
+        street: {
+            type: String,
+            required: false,
+        },
+        city: {
+            type: String,
+            required: false,
+        },
+        state: {
+            type: String,
+            required: false,
+        },
+        zipCode: {
+            type: String,
+            required: false,
+        },
+        country: {
+            type: String,
+            required: false,
+        },
+    },
     // You can add other fields here as needed.
 },
     { timestamps: true });

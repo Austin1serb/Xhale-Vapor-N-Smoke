@@ -21,9 +21,10 @@ import ProductList from '../components/ProductList';
 import UserList from '../components/UserList';
 import OrderList from '../components/OrderList';
 import SalesOverview from '../components/SalesOverview';
+
 const AdminDashboard = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
-    const [selectedComponent, setSelectedComponent] = useState(null);
+    const [selectedComponent, setSelectedComponent] = useState('AdminDashboard');
 
     const handleSidebarToggle = () => {
         setSidebarOpen(!sidebarOpen);
@@ -31,13 +32,34 @@ const AdminDashboard = () => {
 
     const handleSidebarItemClick = (component) => {
         setSelectedComponent(component);
-        setSidebarOpen(false); // Close the sidebar when an item is clicked
+        setSidebarOpen(false);
+    };
+
+    // Function to generate sidebar menu items
+    const generateSidebarItems = () => {
+        const menuItems = [
+            { icon: <FcHome />, text: 'Dashboard Home', component: 'AdminDashboard' },
+            { icon: <FcTodoList />, text: 'Product List', component: 'productList' },
+            { icon: <FcBusinessman />, text: 'User List', component: 'userList' },
+            { icon: <FcComboChart />, text: 'Order List', component: 'orderList' },
+        ];
+
+        return menuItems.map((item, index) => (
+            <ListItem
+                key={index}
+                button
+                onClick={() => handleSidebarItemClick(item.component)}
+            >
+                <ListItemIcon>{item.icon}</ListItemIcon>
+                <ListItemText primary={item.text} />
+            </ListItem>
+        ));
     };
 
     return (
         <div>
             <AppBar position="static">
-                <Toolbar sx={{ justifyContent: 'space-between' }}>
+                <Toolbar sx={{ justifyContent: 'space-between', backgroundColor: '#283047' }}>
                     <IconButton
                         edge="start"
                         color="inherit"
@@ -63,7 +85,12 @@ const AdminDashboard = () => {
                 <Grid container spacing={3}>
                     <Grid item xs={12}>
                         <Paper>
-                            {selectedComponent === 'AdminDashboard' && <SalesOverview />}
+                            {selectedComponent === 'AdminDashboard' && (
+                                <div>
+                                    <SalesOverview />
+                                    {/* Add summary widgets and charts here */}
+                                </div>
+                            )}
                             {selectedComponent === 'productList' && <ProductList />}
                             {selectedComponent === 'userList' && <UserList />}
                             {selectedComponent === 'orderList' && <OrderList />}
@@ -76,30 +103,7 @@ const AdminDashboard = () => {
                     <ListItem sx={{ backgroundColor: 'inherit', textAlign: 'center' }}>
                         <ListItemText primary="MENU" />
                     </ListItem>
-                    <ListItem button onClick={() => handleSidebarItemClick('AdminDashboard')}>
-                        <ListItemIcon>
-                            <FcHome />
-                        </ListItemIcon>
-                        <ListItemText primary="Dashboard Home" />
-                    </ListItem>
-                    <ListItem button onClick={() => handleSidebarItemClick('productList')}>
-                        <ListItemIcon>
-                            <FcTodoList />
-                        </ListItemIcon>
-                        <ListItemText primary="Product List" />
-                    </ListItem>
-                    <ListItem button onClick={() => handleSidebarItemClick('userList')}>
-                        <ListItemIcon>
-                            <FcBusinessman />
-                        </ListItemIcon>
-                        <ListItemText primary="User List" />
-                    </ListItem>
-                    <ListItem button onClick={() => handleSidebarItemClick('orderList')}>
-                        <ListItemIcon>
-                            <FcComboChart />
-                        </ListItemIcon>
-                        <ListItemText primary="Order List" />
-                    </ListItem>
+                    {generateSidebarItems()}
                 </List>
             </Drawer>
         </div>

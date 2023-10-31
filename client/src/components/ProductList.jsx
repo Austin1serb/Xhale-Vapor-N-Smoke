@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Typography, Button, Box, CircularProgress } from '@mui/material';
 import AddProductModal from '../models/AddProductModal.jsx';
-import EditProductModal from '../models/EditProductModal.jsx';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridToolbar } from '@mui/x-data-grid';
+import DetailsView from './DetailsView.jsx';
 
 const API_URL = 'http://localhost:8000/api/product/';
 
 const ProductList = () => {
+    const [detailsViewOpen, setDetailsViewOpen] = useState(false);
+    const [selectedProductForDetails, setSelectedProductForDetails] = useState(null);
+
     const [products, setProducts] = useState([]);
     const [isAddProductModalOpen, setAddProductModalOpen] = useState(false);
     const [isEditModalOpen, setEditModalOpen] = useState(false);
@@ -33,8 +36,12 @@ const ProductList = () => {
     };
 
 
+
+
     useEffect(() => {
         // Fetch products from your backend API
+        setIsLoading(true);
+
         fetch(API_URL)
             .then((response) => response.json())
             .then((data) => {
@@ -70,6 +77,15 @@ const ProductList = () => {
         setSelectedProduct(product);
         setEditModalOpen(true);
     };
+    const handleOpenDetailsView = (product) => {
+        setSelectedProductForDetails(product);
+        setDetailsViewOpen(true);
+    };
+
+
+
+
+
 
 
     const handleUpdateProduct = (updatedProduct) => {
@@ -86,8 +102,6 @@ const ProductList = () => {
 
 
 
-
-    //console.log(products)
 
     const handleDeleteProduct = (productId) => {
         const confirmDelete = window.confirm('Are you sure you want to delete this product?');
@@ -110,6 +124,10 @@ const ProductList = () => {
         }
     };
 
+
+
+    //console.log(products[0].imgSource);
+    //const seoTitle = products[0].seo.title
     return (
         <Box sx={{ p: 2 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', py: 2 }} >
@@ -126,29 +144,62 @@ const ProductList = () => {
                 </Typography>
             ) : (
                 <DataGrid
-                    ////for date time converstion
+                    sx={{}}
+                    //for date time converstion
+
                     rows={products.map(product => ({
                         ...product,
+
                         createdAt: formatDate(product.createdAt), // Format the date
 
+
                     }))}
+
                     //rows={products}
                     columns={[
-                        { field: '_id', headerName: 'ID', flex: 1 },
-                        { field: 'name', headerName: 'Name', flex: 1 },
+                        //{ field: '_id', headerName: 'ID', flex: 1 },
+                        //{ field: 'brand', headerName: 'Brand', flex: 1 },
+                        { field: 'name', headerName: 'Name', flex: 0.5 },
+                        {
+                            field: 'imgSource',
+                            headerName: 'Image',
+                            flex: 0.5,
+                            renderCell: (params) => (
+                                <img
+                                    src={params.row.imgSource[0].url}
+                                    alt="Product"
+                                    style={{ width: '50px', height: '50px' }}
+                                />
+                            ),
+                        },
+
                         { field: 'description', headerName: 'Description', flex: 1 },
                         { field: 'category', headerName: 'Category', flex: 1 },
+                        //{ field: 'strength', headerName: 'Strength', flex: 1 },
+                        //{ field: 'isFeatured', headerName: 'Featured', flex: 1 },
+                        //{ field: 'seoKeywords', headerName: 'SEO', flex: 1 },
+                        //{ field: 'seoTitle', headerName: 'SEO Title', flex: 1, valueGetter: (params) => params.row.seo.title, },
+                        //{ field: 'seDescription', headerName: 'SEO Description', flex: 1, valueGetter: (params) => params.row.seo.description, },
+                        //{ field: 'shipping', headerName: 'Shipping Info', flex: 1, valueGetter: (params) => params.row.shipping.weight, },
+                        { field: 'price', headerName: 'Price', flex: 0.5, valueFormatter: ({ value }) => (typeof value === 'number' ? value.toFixed(2) : 'N/A') },
                         { field: 'createdAt', headerName: 'Date Added', flex: 1 },
-                        { field: 'price', headerName: 'Price', flex: 1, valueFormatter: ({ value }) => (typeof value === 'number' ? value.toFixed(2) : 'N/A') },
 
 
                         {
                             field: 'actions',
                             headerName: 'Actions',
-                            flex: 1,
+                            flex: 1.5,
 
                             renderCell: (params) => (
                                 <Box sx={{ ml: -1 }} >
+                                    <Button
+                                        sx={{ fontSize: 8, mr: 1 }}
+                                        variant="outlined"
+                                        color="success"
+                                        onClick={() => handleOpenDetailsView(params.row)}
+                                    >
+                                        Details
+                                    </Button>
                                     <Button sx={{ fontSize: 8, mr: 1 }} variant="outlined" color="primary" onClick={() => handleEditProduct(params.row)}>
                                         Edit
                                     </Button>
@@ -162,6 +213,7 @@ const ProductList = () => {
                     autoHeight
                     disableSelectionOnClick
                     getRowId={(row) => row._id}
+                    components={{ Toolbar: GridToolbar }}
                 />
             )}
             <AddProductModal
@@ -173,9 +225,21 @@ const ProductList = () => {
 
             />
 
+            {/* Render the DetailsView component when detailsViewOpen is true */}
+            {detailsViewOpen && (
+                <DetailsView
+                    open={detailsViewOpen}
+                    product={selectedProductForDetails}
+                    onClose={() => setDetailsViewOpen(false)}
+                />
+            )}
+
 
         </Box>
     );
 };
 
 export default ProductList;
+
+
+

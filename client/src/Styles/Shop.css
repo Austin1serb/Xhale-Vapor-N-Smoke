@@ -1,0 +1,68 @@
+/* Use the same font family as the home page */
+.shop {
+    font-family: 'Playfair Display',
+        serif;
+}
+
+/* Selection color for consistency */
+::selection {
+    background-color: #073CA1;
+    color: white;
+}
+
+/* Product grid styles */
+.grid-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+/* Individual product card styles */
+.product-card {
+    border: 1px solid #E0E0E0;
+    padding: 20px;
+    border-radius: 4px;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover {
+    transform: scale(1.03);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.product-card img {
+    max-width: 100%;
+    border-radius: 4px;
+}
+
+/* Button styles for consistency */
+.product-card button {
+    background-color: #FE6F49;
+    color: #FFFFFF;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 0;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.product-card button:hover {
+    background-color: #282F48;
+}
+
+/* Search and filter styles */
+.search-filter-bar {
+    display: flex;
+    gap: 20px;
+    padding: 20px 0;
+    align-items: center;
+}
+
+/* Responsive design to stack items on smaller screens */
+@media (max-width: 768px) {
+    .search-filter-bar {
+        flex-direction: column;
+    }
+}

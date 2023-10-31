@@ -79,7 +79,7 @@ const CategoryInput = ({ category, onAddCategory, onRemoveCategory, error }) => 
                     spellCheck={true}
                     label="Categories*"
                     value={newCategory}
-                    error={localError}
+                    error={Boolean(localError)}
                     onChange={(e) => setNewCategory(e.target.value)}
                 />
                 <Button

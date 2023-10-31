@@ -1,5 +1,7 @@
 const Orders = require('../models/orders.model')
 module.exports = {
+
+
     test: (req, res) => {
         res.json({ message: "Test order response!" });
     },
@@ -65,6 +67,8 @@ module.exports = {
                 res.json(data)
             }).catch(err => res.status(400).json(err))
     },
+
+
     updateOne: (req, res) => {
         Orders.findOneAndUpdate(
             { _id: req.params.id },
@@ -82,6 +86,8 @@ module.exports = {
                 res.status(400).json(err);
             });
     },
+
+
     getAll: (req, res) => {
         Orders.find()
             .then(data => { res.json(data) })
