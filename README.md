@@ -38,6 +38,9 @@ Before you begin, ensure you have met the following requirements:
 
 Follow these steps to get your development environment set up:
 
+0. Email me at serbaustin@gmail.com for the .ENV file
+
+
 1. **Clone the repository:**
    ```sh
    git clone https://github.com/Austin1serb/Xhale-Vapor-N-Smoke.git
