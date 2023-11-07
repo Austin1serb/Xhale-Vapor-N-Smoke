@@ -2,6 +2,11 @@ const ProductsController = require('../controllers/products.controller')
 const express = require("express");
 const router = express.Router();
 
+
+router.route('/featured').get(ProductsController.getFeatured);
+
+
+
 router.route("/test").get(ProductsController.test);
 router.route('/').get(ProductsController.getAll);
 router.route('/:id').get(ProductsController.getOne);

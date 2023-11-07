@@ -1,0 +1,46 @@
+.quickview-img-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.quickview-thumbnail {
+    max-width: 75px;
+    min-width: 75px;
+    border: .1px solid black;
+    cursor: pointer;
+}
+
+.quickview-thumbnail-container {
+    display: flex;
+    flex-direction: row;
+    width: fit-content;
+    margin-right: 15px;
+
+}
+
+.image-zoom-container {
+    overflow: hidden;
+}
+
+.image-zoom-container.zooming img {
+    cursor: zoom-in;
+}
+
+.zoom-box-title {
+    background-color: white;
+    padding-left: 5px;
+    padding-right: 5px;
+    z-index: 1111;
+    border-radius: 5px;
+
+}
+
+.zoom-box {
+    border: .1px solid black;
+    height: 200px;
+    width: 200px;
+    margin-top: -10px;
+}

@@ -1,11 +1,30 @@
 /* TopBar.css */
-.app-bar {}
+@import url('https://fonts.googleapis.com/css2?family=Cormorant:wght@500&display=swap');
 
+.app-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+
+.shop-arrow {
+    margin: -5px;
+    font-size: 28px;
+    transform: translateY(3px);
+
+
+}
 
 .nav-link {
+    z-index: 1000;
+    font-size: 16px;
+    font-weight: 400;
+
+    font-family: 'Poppins', sans-serif;
     color: #282F48;
     text-decoration: none;
-    font-family: Apercu, sans-serif;
+    /*font-family: Apercu, sans-serif;*/
     transition: color 0.3s ease-in-out;
     border: none;
 
@@ -29,7 +48,7 @@
 
 .brand-icon {
     height: 60px;
-    width: auto;
+
     margin-top: 10px;
 }
 
@@ -55,11 +74,13 @@
     }
 }
 
-@media (max-width: 360px) {
+@media (max-width: 385px) {
     .brand-icon {
-        width: 100%;
+
+        margin-left: -20px;
+        width: 150px;
         height: auto;
-        min-width: 40px;
+        min-width: 80px;
     }
 }
 
@@ -107,6 +128,96 @@
 @media (max-width: 600px) {
     .textareacart {
         margin-left: 0px;
-        width: 75%;
+        width: 80%;
+        height: 45px;
+    }
+}
+
+
+
+.box-relative {
+    position: relative;
+    cursor: pointer;
+}
+
+.nav-link {
+    margin-right: 2px;
+    position: relative;
+    text-decoration: none;
+    margin-right: 15px;
+    /* This is assumed as the component was a Link */
+}
+
+.nav-link:hover {
+    color: #FE6F49;
+}
+
+
+.dropdown-box {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+    position: absolute;
+    /* This is necessary to move it below the 'Shop' link */
+    top: 54px;
+    /* This positions it right below the 'Shop' link */
+    left: -245px;
+    width: 100vw;
+    /* Full width of the screen */
+}
+
+.dropdown-separation {
+    transform: translate(230px);
+    height: 40px;
+    margin-top: -41.5px;
+    width: 180px;
+    background-color: transparent;
+}
+
+@media (max-width:1000px) {
+    .dropdown-box {
+
+        left: -235px;
+
+
+    }
+
+}
+
+
+
+.box-relative:hover .dropdown-box {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+
+.dropdown-box-mobile {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    /* Adjust if needed */
+    transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+    position: absolute;
+    top: 80px;
+    left: 0;
+    width: 100vw;
+    z-index: 100;
+
+}
+
+.dropdown-visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0px);
+}
+
+@media (max-width:600px) {
+    .dropdown-box-mobile {
+        position: absolute;
+
+        left: 0px;
     }
 }

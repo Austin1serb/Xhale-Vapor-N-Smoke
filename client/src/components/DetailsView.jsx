@@ -80,6 +80,12 @@ const DetailsView = ({ open, product, onClose }) => {
                             </TableRow>
                             <TableRow>
                                 <TableCell>
+                                    <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>Flavor:</Typography>
+                                </TableCell>
+                                <TableCell>{product.flavor}</TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell>
                                     <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>Strength:</Typography>
                                 </TableCell>
                                 <TableCell>{product.strength}</TableCell>

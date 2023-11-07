@@ -16,6 +16,7 @@ const createOneProd = async (req, res) => {
         seoKeywords,
         shipping,
         isFeatured,
+        flavor,
     } = req.body;
 
     const isUpdate = Boolean(req.params.id); // Check if an ID is provided to determine if it's an update
@@ -69,6 +70,7 @@ const createOneProd = async (req, res) => {
             seoKeywords,
             shipping,
             isFeatured,
+            flavor,
         };
 
         let product;
@@ -114,6 +116,20 @@ module.exports = {
                 res.json(data)
             }).catch(err => res.json(err))
     },
+
+
+    getFeatured: async (req, res) => {
+        try {
+            const limit = parseInt(req.query.limit) || 5; // Set a default limit or take from query string
+            const featuredProducts = await Products.find({ isFeatured: true }).limit(limit);
+            res.status(200).json(featuredProducts);
+        } catch (error) {
+            res.status(500).json({ message: 'Server error', error: error });
+        }
+    },
+
+
+
     createOne: (req, res) => {
         createOneProd(req, res)
 

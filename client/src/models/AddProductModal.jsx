@@ -32,6 +32,7 @@ const initialProductData = {
     description: '',
     strength: 'low',
     isFeatured: false,
+    flavor: '',
     seo: {
         title: '',
         description: '',
@@ -374,6 +375,7 @@ const AddProductModal = ({ open, onClose, onAddProduct, selectedProduct, onUpdat
                     helperText={error.brand}
                     value={productData.brand}
                     onChange={handleChange}
+                    autocomplete
                 />
 
                 {/* Name */}
@@ -386,6 +388,7 @@ const AddProductModal = ({ open, onClose, onAddProduct, selectedProduct, onUpdat
                     helperText={error.name}
                     value={productData.name}
                     onChange={handleChange}
+                    autocomplete
                 />
 
                 {/* Price */}
@@ -399,6 +402,7 @@ const AddProductModal = ({ open, onClose, onAddProduct, selectedProduct, onUpdat
                     helperText={error.price}
                     value={productData.price}
                     onChange={handleChange}
+                    autocomplete
                 />
 
                 {/* Description */}
@@ -413,6 +417,26 @@ const AddProductModal = ({ open, onClose, onAddProduct, selectedProduct, onUpdat
                     helperText={error.description}
                     value={productData.description}
                     onChange={handleChange}
+                    autocomplete
+                />
+                {/* Flavor */}
+                <TextField
+                    sx={{ my: 2 }}
+                    name="flavor"
+                    label="Flavor"
+                    multiline
+                    rows={1}
+                    fullWidth
+                    value={productData.flavor}
+                    onChange={handleChange}
+                    autocomplete
+                />
+                {/* Category Input Component */}
+                <CategoryInput
+                    category={productData.category}
+                    onAddCategory={handleAddCategory}
+                    onRemoveCategory={handleRemoveCategory}
+                    error={error && error.category}
                 />
 
                 {/* Image Upload */}
@@ -427,13 +451,8 @@ const AddProductModal = ({ open, onClose, onAddProduct, selectedProduct, onUpdat
 
 
 
-                {/* Category Input Component */}
-                <CategoryInput
-                    category={productData.category}
-                    onAddCategory={handleAddCategory}
-                    onRemoveCategory={handleRemoveCategory}
-                    error={error && error.category}
-                />
+
+
 
 
 

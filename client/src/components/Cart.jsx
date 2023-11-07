@@ -15,7 +15,7 @@ const Cart = ({ setDrawerOpen }) => {
         <Box sx={{}}>
 
 
-            <Box sx={{ display: 'flex', flexDirection: "column", justifyContent: 'space-between', height: '80vh', }}>
+            <Box sx={{ display: 'flex', flexDirection: "column", justifyContent: 'space-between', height: '78vh', }}>
                 <Box>
                     {/* Cart Header */}
                     <Box className="cart-drawer__top"
@@ -38,7 +38,7 @@ const Cart = ({ setDrawerOpen }) => {
                             <MdClose style={{ color: "white", fontSize: 32, }} />
                         </IconButton>
                     </Box>
-                    <Box sx={{ maxHeight: { xs: '100px', sm: '415px' }, overflowY: 'auto', }}>
+                    <Box sx={{ maxHeight: { xs: '200px', sm: '415px' }, overflowY: 'auto', }}>
                         {cart.length === 0 ? (
                             // This section renders when the cart is empty
                             <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: "center", height: 200 }}>
@@ -60,8 +60,9 @@ const Cart = ({ setDrawerOpen }) => {
                                             display: 'flex',
                                             alignItems: 'space-between',
 
+
                                         }}>
-                                            <img style={{}} src={item.product.imgSource.url} alt={item.product.name} width={100} height={100} />
+                                            <img style={{}} src={item.product.imgSource[0].url} alt={item.product.name} width={100} height={100} />
                                             <Box >
                                                 <Box sx={{
                                                     ml: 1,
@@ -72,6 +73,7 @@ const Cart = ({ setDrawerOpen }) => {
                                                         fontFamily: '"Avenir Next", sans-serif',
                                                         fontVariantCaps: 'all-small-caps',
                                                         mb: -1.5,
+                                                        width: { xs: 'auto', md: 200 }
 
                                                     }}
                                                         variant="h6">{item.product.name}</Typography>
@@ -93,7 +95,7 @@ const Cart = ({ setDrawerOpen }) => {
                                                     </Box>
 
                                                     {/* Remove Button */}
-                                                    <Box sx={{ transform: { md: 'translateX(40px)', }, }}>
+                                                    <Box sx={{ transform: { md: 'translateX(0px)', }, }}>
                                                         <Button sx={{ fontSize: 10, color: 'gray', textDecoration: 'underline' }} onClick={() => removeFromCart(item.product._id)}>Remove</Button>
                                                     </Box>
                                                 </Box>
@@ -108,11 +110,11 @@ const Cart = ({ setDrawerOpen }) => {
                 <Box>
                     {/* Notes for the seller */}
                     <Box sx={{
-                        display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: { xs: '60vh', sm: '30vh' },
+                        display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: { xs: '40vh', sm: '30vh' },
 
                     }}>
                         <Box sx={{ borderTop: 0.5, display: 'flex', flexDirection: 'column', alignItems: 'center' }} className="ajax-cart--checkout-add-note">
-                            <Typography v sx={{ textAlign: 'center', mt: 4, mb: 2, fontWeight: 100, fontSize: 14, color: 'gray', letterSpacing: 1 }}>Add a note for the seller…</Typography>
+                            <Typography sx={{ textAlign: 'center', mt: { xs: 1, sm: 4 }, mb: { xs: 0, sm: 2 }, fontWeight: 100, fontSize: 14, color: 'gray', letterSpacing: 1 }}>Add a note for the seller…(optional)</Typography>
                             <textarea className='textareacart' />
                         </Box>
 
@@ -120,7 +122,7 @@ const Cart = ({ setDrawerOpen }) => {
                         <Box className="ajax-cart--bottom-wrapper" sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                             <Typography sx={{ fontWeight: 500, letterSpacing: 2 }}>SUBTOTAL </Typography>
                             <Typography sx={{ fontSize: 32, fontWeight: 100 }}>${total.toFixed(2)}</Typography>
-                            <Typography sx={{ fontSize: 14, fontWeight: 100, my: 4, textAlign: 'center' }} >Taxes and <a href='/' style={{ color: 'inherit' }}>shipping</a> calculated at checkout</Typography>
+                            <Typography sx={{ fontSize: 14, fontWeight: 100, my: { xs: 1, sm: 4 }, textAlign: 'center' }} >Taxes and <a href='/' style={{ color: 'inherit' }}>shipping</a> calculated at checkout</Typography>
 
                             {cart.length > 0 && (
                                 <>

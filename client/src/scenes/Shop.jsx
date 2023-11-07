@@ -4,9 +4,12 @@ import React, { useEffect, useState } from 'react';
 import { Box, Typography, TextField, Button, Grid, Chip } from '@mui/material';
 import axios from 'axios';
 import { useCart } from '../components/CartContext.jsx';
+import QuickView from '../components/QuickView';
 const Shop = () => {
     const [products, setProducts] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
+    const [quickViewOpen, setQuickViewOpen] = useState(false);
+    const [quickViewProduct, setQuickViewProduct] = useState(null);
     const { addToCart } = useCart();
 
     useEffect(() => {
@@ -41,23 +44,32 @@ const Shop = () => {
                 {filteredProducts.map(product => (
                     <Grid item xs={12} sm={6} md={4} key={product._id}>
                         <Box sx={{
-                            border: '1px solid #ccc',
-                            borderRadius: '10px',
-                            padding: '20px',
+                            border: '.1px solid #ccc',
+                            borderRadius: '1px',
+                            py: '20px',
                             display: 'flex',
                             flexDirection: 'column',
-                            alignItems: 'center'
+                            alignItems: 'center',
+                            height: '300px',
+                            justifyContent: 'space-between'
                         }}>
-                            <img src={product.imgSource.url} alt={product.name} width="80%" height="200px" style={{ objectFit: 'cover' }} />
-                            <Typography variant="h6" mt={2}>{product.name}</Typography>
-                            <Typography variant="subtitle1" color="textSecondary">{product.brand}</Typography>
-                            <Typography variant="subtitle2">${product.price.toFixed(2)}</Typography>
-                            <Typography variant="body2" mt={2} noWrap>
+                            <img className="shop-img" src={product.imgSource[0].url} alt={product.name} height="150px" />
+                            <Typography variant="h6" sx={{ fontWeight: 100, fontSize: 14 }} className='shop-name' mt={2}>{product.name}</Typography>
+                            <Typography variant="subtitle1" className='shop-brand' sx={{ fontSize: 12, fontWeight: 100, color: 'gray' }}>{product.brand}</Typography>
+                            <Typography variant="subtitle2" sx={{ fontWeight: 100, fontSize: 16 }} className='shop-price'>${product.price.toFixed(2)}</Typography>
+                            {/*<Typography variant="body2" mt={2} noWrap>
                                 {product.description.length > 60 ? product.description.substring(0, 60) + "..." : product.description}
-                            </Typography>
-                            <Button variant="contained" color="primary" mt={2} onClick={() => addToCart(product)}>
-                                Add to Cart
-                            </Button>
+                            </Typography>*/}
+
+                            <Box className='shop-button-container'>
+                                <Button variant="outlined" className='shop-button-cart' sx={{ border: 1, borderRadius: 0, letterSpacing: 2, fontSize: 12, color: 'white', backgroundColor: '#283047', borderColor: '#283047', borderWidth: 1.5, transition: 'all 0.3s', '&:hover': { backgroundColor: '#FE6F49', color: 'white', borderColor: '#FE6F49', transform: 'scale(1.05)' } }} onClick={() => addToCart(product)}>
+                                    Add to Cart
+                                </Button>
+                                <Button variant="outlined" className='shop-button-view' sx={{ border: 1, borderRadius: 0, letterSpacing: 2, fontSize: 12, color: '#283047', backgroundColor: 'white', borderColor: '#283047', borderWidth: 1.5, transition: 'all 0.3s', '&:hover': { backgroundColor: '#283047', color: 'white', transform: 'scale(1.05)' } }} onClick={() => {
+                                    setQuickViewProduct(product._id);
+                                    setQuickViewOpen(true)
+                                }}>Quick View</Button>
+                            </Box>
                         </Box>
                     </Grid>
 
@@ -65,8 +77,12 @@ const Shop = () => {
             </Grid>
 
             {/* Pagination - if needed */}
+            <QuickView
+                productId={quickViewProduct}
+                open={quickViewOpen}
+                handleClose={() => setQuickViewOpen(false)}
+            />
 
-            {/* Footer - as per Home.jsx */}
         </Box>
     );
 }
