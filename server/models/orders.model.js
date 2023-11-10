@@ -4,17 +4,22 @@ const OrderSchema = new mongoose.Schema({
     orderNumber: {
         type: String,
         required: true,
+        unique: true, // Ensure the order number is unique
     },
     customer: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Customer', // Reference to the customer who placed the order
+        ref: 'Customer',
         required: true,
     },
     products: [
         {
             product: {
                 type: mongoose.Schema.Types.ObjectId,
-                ref: 'Product', // Reference to the product in the order
+                ref: 'Product',
+                required: true,
+            },
+            price: {  // Price at the time of order
+                type: Number,
                 required: true,
             },
             quantity: {
@@ -31,40 +36,55 @@ const OrderSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
-    shippingAddress: {
-        street: {
-            type: String,
-            required: true,
-        },
-        city: {
-            type: String,
-            required: true,
-        },
-        state: {
-            type: String,
-            required: true,
-        },
-        zipCode: {
-            type: String,
-            required: true,
-        },
-        country: {
-            type: String,
-            required: true,
-        },
-    },
-    orderStatus: {
-        type: String,
-        enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'],
-        default: 'Pending',
-    },
-    noteFromCustomer: {
-        type: String,
-        required: false,
-    }
 
-    // Add other fields as needed
+
+    // Payment Information
+    paymentStatus: {
+        type: String,
+        enum: ['Pending', 'Completed', 'Failed', 'Refunded'],
+        required: true,
+        default: 'Pending'
+    },
+    paymentMethod: {
+        type: String,
+        required: true
+    },
+    transactionId: {
+        type: String,
+        required: false  // Not all payment methods may provide a transaction ID
+    },
+
+    // Audit Fields
+    createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    updatedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: false
+    }
+}, { timestamps: true });  // This option adds `createdAt` and `updatedAt` fields
+
+// Pre-save hook for data integrity
+OrderSchema.pre('save', async function (next) {
+    // Example: Ensure the totalAmount is the sum of products' price * quantity
+    if (this.isModified('products')) {
+        let total = 0;
+        for (const item of this.products) {
+            const product = await mongoose.model('Product').findById(item.product);
+            total += item.quantity * product.price;
+        }
+        this.totalAmount = total;
+    }
+    next();
 });
+
+// Indexing
+OrderSchema.index({ orderNumber: 1 });  // Assuming orderNumber should be unique and often queried
+OrderSchema.index({ customer: 1 });     // Indexing on customer ID for quicker look-up
+OrderSchema.index({ orderDate: -1 });   // Indexing on orderDate if sorting by date is common
 
 const Order = mongoose.model('Order', OrderSchema);
 

@@ -27,6 +27,7 @@ const initialProductData = {
     brand: '',
     name: '',
     price: '',
+    specs: '',
     imgSource: [],
     category: [],
     description: '',
@@ -220,6 +221,7 @@ const AddProductModal = ({ open, onClose, onAddProduct, selectedProduct, onUpdat
 
                 if (response.ok) {
                     const updatedProduct = await response.json();
+                    console.log('Length of description:', updatedProduct.description.length);
                     onUpdateProduct(updatedProduct);
                     clearForm();
                     onClose();
@@ -332,7 +334,7 @@ const AddProductModal = ({ open, onClose, onAddProduct, selectedProduct, onUpdat
         });
     };
     const { shipping } = productData;
-    const weight = shipping?.weight || ''; // Provide a default value for weight if shipping or weight is undefined
+    const weight = shipping?.weight || '';
     const dimensions = shipping?.dimensions || {};
     const length = dimensions.length || '';
     const width = dimensions.width || '';
@@ -340,7 +342,7 @@ const AddProductModal = ({ open, onClose, onAddProduct, selectedProduct, onUpdat
 
     const paperProps = {
         style: {
-            borderRadius: '5px', // Set the border radius to 10px
+            borderRadius: '5px',
         },
     };
 
@@ -375,7 +377,7 @@ const AddProductModal = ({ open, onClose, onAddProduct, selectedProduct, onUpdat
                     helperText={error.brand}
                     value={productData.brand}
                     onChange={handleChange}
-                    autocomplete
+                    autoComplete='true'
                 />
 
                 {/* Name */}
@@ -388,7 +390,7 @@ const AddProductModal = ({ open, onClose, onAddProduct, selectedProduct, onUpdat
                     helperText={error.name}
                     value={productData.name}
                     onChange={handleChange}
-                    autocomplete
+                    autoComplete='true'
                 />
 
                 {/* Price */}
@@ -402,7 +404,19 @@ const AddProductModal = ({ open, onClose, onAddProduct, selectedProduct, onUpdat
                     helperText={error.price}
                     value={productData.price}
                     onChange={handleChange}
-                    autocomplete
+                    autoComplete='true'
+                />
+                {/* Specs */}
+                <TextField
+                    sx={{ my: 2 }}
+                    name="specs"
+                    label="Specs*"
+                    fullWidth
+                    error={Boolean(error.specs)}
+                    helperText={error.specs}
+                    value={productData.specs}
+                    onChange={handleChange}
+                    autoComplete='true'
                 />
 
                 {/* Description */}
@@ -417,7 +431,7 @@ const AddProductModal = ({ open, onClose, onAddProduct, selectedProduct, onUpdat
                     helperText={error.description}
                     value={productData.description}
                     onChange={handleChange}
-                    autocomplete
+                    autoComplete='true'
                 />
                 {/* Flavor */}
                 <TextField
@@ -429,7 +443,7 @@ const AddProductModal = ({ open, onClose, onAddProduct, selectedProduct, onUpdat
                     fullWidth
                     value={productData.flavor}
                     onChange={handleChange}
-                    autocomplete
+                    autoComplete='true'
                 />
                 {/* Category Input Component */}
                 <CategoryInput

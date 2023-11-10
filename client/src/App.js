@@ -10,12 +10,14 @@ import RegistrationPage from './components/RegistrationPage';
 import AccountDetails from './scenes/AccountDetails';
 import Shop from './scenes/Shop';
 import { CartProvider } from './components/CartContext';
+import CheckoutPage from './scenes/CheckoutPage';
 
 
 const App = () => {
   return (
     <div>
       <CartProvider>
+
         <TopBar />
         <Routes>
           <Route>
@@ -26,6 +28,7 @@ const App = () => {
             <Route exact path="/registration" Component={RegistrationPage} />
             <Route exact path="/details" Component={AccountDetails} />
             <Route exact path="/shop" Component={Shop} />
+            <Route exact path="/checkout" Component={CheckoutPage} />
           </Route>
         </Routes>
         <Footer />

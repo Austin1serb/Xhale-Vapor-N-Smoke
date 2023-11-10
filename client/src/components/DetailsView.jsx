@@ -42,7 +42,7 @@ const DetailsView = ({ open, product, onClose }) => {
                                     <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>Images:</Typography>
                                 </TableCell>
                                 <TableCell>    {product.imgSource && product.imgSource.map((image, index) => (
-                                    <img key={index} src={image.url} alt={`${product.name} ${index}`} style={{ width: '100px', height: '100px', marginBottom: '1rem' }} />
+                                    <img key={index} src={image.url} alt={`${product.name} ${index}`} style={{ width: '100px', height: '100px', marginBottom: '1rem' }} loading='lazy' />
                                 ))}
 
 
@@ -65,6 +65,12 @@ const DetailsView = ({ open, product, onClose }) => {
                                     <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>Price:</Typography>
                                 </TableCell>
                                 <TableCell>${product.price.toFixed(2)}</TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell>
+                                    <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>Specs:</Typography>
+                                </TableCell>
+                                <TableCell>{product.specs}</TableCell>
                             </TableRow>
                             <TableRow>
                                 <TableCell>

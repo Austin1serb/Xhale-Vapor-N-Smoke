@@ -30,6 +30,12 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Poppins:wght@200;400;600&family=Source+Sans+3:wght@400;600;700&display=swap"
     rel="stylesheet">
+
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAOIAvgfRO_yoKGeUry1pZuplH2KezGbU8&libraries=places&callback=initMap"
+    async defer></script>
+
+
 </head>
 
 <body>
@@ -45,6 +51,12 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
+  <script>
+    function initMap() {
+      window.isGoogleMapsLoaded = true;
+    }
+  </script>
+
 </body>
 
 </html>

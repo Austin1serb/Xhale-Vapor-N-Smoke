@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, Button, List, ListItem, IconButton, TextareaAutosize } from '@mui/material';
+import { Box, Typography, Button, List, ListItem, IconButton, } from '@mui/material';
 import { useCart } from './CartContext';  // Adjust the path based on your file structure
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
@@ -10,6 +10,10 @@ const Cart = ({ setDrawerOpen }) => {
     const { cart, removeFromCart, adjustQuantity } = useCart();
 
     const total = cart.reduce((acc, item) => acc + (item.product.price * item.quantity), 0);
+
+
+
+
 
     return (
         <Box sx={{}}>
@@ -62,7 +66,7 @@ const Cart = ({ setDrawerOpen }) => {
 
 
                                         }}>
-                                            <img style={{}} src={item.product.imgSource[0].url} alt={item.product.name} width={100} height={100} />
+                                            <img className='cart-img' style={{}} src={item.product.imgSource[0].url} alt={item.product.name} width={100} height={100} loading='lazy' />
                                             <Box >
                                                 <Box sx={{
                                                     ml: 1,
@@ -126,7 +130,7 @@ const Cart = ({ setDrawerOpen }) => {
 
                             {cart.length > 0 && (
                                 <>
-                                    <Button variant="outlined" sx={{ width: { xs: '75%', sm: '90%', md: '90%' }, letterSpacing: 2, color: 'white', borderRadius: 0, backgroundColor: '#283047', mb: 4, height: 56.5, "&:hover": { backgroundColor: '#FE6F49', border: 'none' } }}>Place your order</Button>
+                                    <Button component={Link} to='/checkout' onClick={() => setDrawerOpen(false)} variant="outlined" sx={{ width: { xs: '75%', sm: '90%', md: '90%' }, letterSpacing: 2, color: 'white', borderRadius: 0, backgroundColor: '#283047', mb: 4, height: 56.5, "&:hover": { backgroundColor: '#FE6F49', border: 'none' } }}>Place your order</Button>
                                     <Button onClick={() => {
                                         setDrawerOpen(false); // Close the drawer
                                     }} variant="outlined" sx={{ mb: 3, width: { xs: '75%', sm: '90%', md: '90%' }, letterSpacing: 2, color: '#283047', borderRadius: 0, backgroundColor: 'white', borderColor: '#283047', borderWidth: 1.5, height: 55, '&:hover': { backgroundColor: '#0F75E0', color: 'white' } }}>Continue Shopping</Button>

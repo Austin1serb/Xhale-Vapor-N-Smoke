@@ -35,6 +35,7 @@ const BestSellersSection = () => {
                                 src={require('../assets/cbditem.webp')}
                                 alt={item.name}
                                 className="best-seller-image"
+                                loading='lazy'
                             />
                             <Button className='best-sellers-button' >SHOP NOW</Button>
                             <p className="best-seller-name">{item.name}</p>

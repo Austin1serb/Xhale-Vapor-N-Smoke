@@ -8,6 +8,7 @@ router.route('/featured').get(ProductsController.getFeatured);
 
 
 router.route("/test").get(ProductsController.test);
+router.route('/paginate/').get(ProductsController.getAllPaginate);
 router.route('/').get(ProductsController.getAll);
 router.route('/:id').get(ProductsController.getOne);
 router.route('/').post(ProductsController.createOne);
