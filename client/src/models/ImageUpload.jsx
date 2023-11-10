@@ -144,6 +144,7 @@ const ImageUpload = ({
                                     src={imgUrl}
                                     alt={`Selected Thumbnail ${index + 1}`}
                                     style={{ maxWidth: '100px', maxHeight: '100px', minWidth: '100px', minHeight: '100px', border: '.5px solid black', }}
+                                    loading='lazy'
                                 />
                                 <Button
                                     size="small"

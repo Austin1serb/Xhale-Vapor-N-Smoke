@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Modal, Box, Typography, Button, Grid, Tabs, Tab, Select, MenuItem, InputLabel, CircularProgress, FormControl } from '@mui/material';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Modal, Box, Typography, Button, Grid, Tabs, Tab, Select, MenuItem, InputLabel, CircularProgress, FormControl, IconButton, Tooltip } from '@mui/material';
 import { useCart } from './CartContext';
 import '../Styles/QuickView.css'
-
+import { throttle } from 'lodash';
+import { AiFillCloseSquare } from 'react-icons/ai'
 // Style object for the modal content
 const modalStyle = {
+
     position: 'absolute',
     top: '50%',
     left: '50%',
@@ -17,7 +19,9 @@ const modalStyle = {
     p: 4,
 };
 
-const QuickView = ({ productId, open, handleClose }) => {
+
+
+const QuickView = ({ productId, open, handleClose, products, getRelatedProducts }) => {
     const [productDetails, setProductDetails] = useState(null);
     const [selectedTab, setSelectedTab] = useState(0);
     const [selectedImage, setSelectedImage] = useState('');
@@ -25,7 +29,7 @@ const QuickView = ({ productId, open, handleClose }) => {
     const [flavor, setFlavor] = useState(''); // State for the selected flavor
     const [loading, setLoading] = useState(false);
     const { addToCart } = useCart();
-
+    const [relatedProducts, setRelatedProducts] = useState([]);
 
     useEffect(() => {
         // If the modal is closed, clear the product details
@@ -35,33 +39,36 @@ const QuickView = ({ productId, open, handleClose }) => {
             return;
         }
 
-        // Fetch the product details when the productId changes and the modal is open
+        // Find the product details from the products array when the productId changes and the modal is open
         if (productId) {
-
-            setLoading(true);
-            const fetchProductDetails = async () => {
-                try {
-                    const response = await fetch(`http://localhost:8000/api/product/${productId}`);
-                    if (!response.ok) {
-                        throw new Error('Could not fetch product');
-                    }
-                    const data = await response.json();
-                    setProductDetails(data);
-                } catch (error) {
-                    console.error('Error fetching product details:', error);
+            const foundProduct = products.find(product => product._id === productId);
+            if (foundProduct) {
+                setProductDetails(foundProduct);
+                if (foundProduct.imgSource.length > 0) {
+                    setSelectedImage(foundProduct.imgSource[0].url);
                 }
-                finally {
-                    setLoading(false);
-                }
-            };
-
-            // Reset the product details while we're fetching new ones
-            setProductDetails(null);
-            setSelectedImage('');
-            fetchProductDetails();
+            } else {
+                console.error('Product not found');
+            }
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [productId, open]);
+    }, [productId, open, products]);
+
+
+
+
+    useEffect(() => {
+        if (productDetails) {
+            const related = products.filter(product =>
+                product._id !== productDetails._id && // This ensures the current product is not included
+                product.category.some(category =>
+                    productDetails.category.includes(category)
+                )
+            ).slice(0, 3); // Only take the first 3 related products
+
+            setRelatedProducts(related);
+        }
+    }, [productDetails, products]);
+
 
 
     useEffect(() => {
@@ -71,7 +78,12 @@ const QuickView = ({ productId, open, handleClose }) => {
         }
     }, [productDetails]); // Now it listens for changes in productDetails
 
+    useEffect(() => {
 
+        return () => {
+            handleMouseMoveThrottled.cancel();
+        };
+    }, []);
 
     const handleChangeTab = (event, newValue) => {
         setSelectedTab(newValue);
@@ -87,36 +99,39 @@ const QuickView = ({ productId, open, handleClose }) => {
     const [lensSize] = useState({ width: 200, height: 200 }); // You can adjust this size
     const [zoomFactor] = useState(2);
 
-    const handleMouseMove = (e) => {
+
+    const handleMouseMoveThrottled = useCallback(throttle((e) => {
         const target = e.target;
         // Obtain the size of the main image
         const targetRect = target.getBoundingClientRect();
-        const targetWidth = targetRect.width;
-        const targetHeight = targetRect.height;
-
         // Calculate the position of the cursor relative to the top-left corner of the image
         const x = e.pageX - targetRect.left - window.scrollX + 40;
         const y = e.pageY - targetRect.top - window.scrollY + 25;
 
         // Update the state of the lens position
+        console.log('positioning')
         setLensPosition({
+
             x: x - lensSize.width / 2,
             y: y - lensSize.height / 2,
         });
-        return targetWidth + targetHeight
-    };
 
 
 
-    return (
-        <Modal open={open} onClose={handleClose}>
-            <Box className="quickview-container" sx={modalStyle}>
-                {loading ? (
-                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-                        <CircularProgress />
-                    </Box>
-                ) : productDetails ? (
+    }, 50), [lensSize, zoomFactor, setLensPosition]); // 100 ms throttle time
 
+
+    const renderContent = () => {
+        if (loading) {
+            return (
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                    <CircularProgress />
+                </Box>
+            );
+        } else if (productDetails) {
+            // Return the complex JSX for when productDetails are present
+            return (
+                <Grid container spacing={2}>
                     <Grid container spacing={2}>
                         <Grid item xs={12} sm={5}>
 
@@ -124,23 +139,23 @@ const QuickView = ({ productId, open, handleClose }) => {
                                 {/* Thumbnails */}
                                 <Box sx={{ display: 'flex' }}>
                                     {productDetails.imgSource.map((image, i) => (
-                                        <Box className='quickview-thumbnail-container'>
+                                        <Box key={i} className='quickview-thumbnail-container'>
                                             <img
                                                 className='quickview-thumbnail'
-                                                key={i}
                                                 src={image.url}
                                                 alt={`${productDetails.name} thumbnail ${i}`}
-
                                                 onClick={() => handleThumbnailClick(image.url)}
+                                                loading='lazy'
                                             />
                                         </Box>
                                     ))}
                                 </Box>
+
                                 {/* Main Image displayed */}
                                 <Box
                                     className="image-container"
                                     onMouseEnter={() => setShowLens(true)}
-                                    onMouseMove={handleMouseMove}
+                                    onMouseMove={handleMouseMoveThrottled}
                                     onMouseLeave={() => setShowLens(false)}
                                 >
                                     <img
@@ -148,6 +163,7 @@ const QuickView = ({ productId, open, handleClose }) => {
                                         alt={productDetails.name}
                                         key={productDetails.name}
                                         style={{ maxWidth: '300px', height: 'auto' }}
+                                        loading='lazy'
                                     />
                                 </Box>
                                 <Typography className='zoom-box-title'>Zoom Box</Typography>
@@ -169,9 +185,10 @@ const QuickView = ({ productId, open, handleClose }) => {
                                                 <img
                                                     src={selectedImage}
                                                     alt={productDetails.name}
-
+                                                    loading='lazy'
                                                     style={{
                                                         position: 'absolute',
+
                                                         width: `${300 * zoomFactor}px`,
                                                         height: `${300 * zoomFactor}px`,
                                                         left: `-${lensPosition.x * zoomFactor}px`, // Update based on mouse move
@@ -187,20 +204,51 @@ const QuickView = ({ productId, open, handleClose }) => {
                             </Box>
                         </Grid>
                         <Grid item xs={12} sm={7} >
-                            <Typography variant="h5">{productDetails.name}</Typography>
-                            <Typography variant="subtitle1">{productDetails.category}</Typography>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <Typography sx={{ width: '90%', fontSize: 18 }} variant="h6" className='quickview-title'>{productDetails.name}</Typography>
+
+                                <IconButton sx={{ '&:hover': { transition: 'color 0.3s ease', color: '#282F48' } }} className='quickview-close-button' onClick={handleClose}>
+                                    <AiFillCloseSquare style={{ fontSize: 40 }} />
+                                </IconButton>
+                            </Box>
+                            <Typography sx={{ fontSize: 14, fontWeight: 100, textTransform: 'capitalize' }} >{productDetails.category.join(', ')}</Typography>
                             <Box sx={{ borderBottom: 1, borderColor: 'divider', width: 'fit-content' }}>
                                 <Tabs value={selectedTab} onChange={handleChangeTab} aria-label="Product details tabs" >
-                                    <Tab label="Details" />
-                                    <Tab label="Features" />
-                                    <Tab label="Specs" />
+                                    <Tab tabIndex={0} role="button" label="Details" />
+                                    <Tab tabIndex={1} role="button" label="Related" />
+                                    <Tab tabIndex={3} role="button" label="Specs" />
                                 </Tabs>
                             </Box>
                             {/* Content for each tab */}
-                            <Box height='360px'>
-                                <TabPanel value={selectedTab} index={0}>{productDetails.description}</TabPanel>
-                                <TabPanel value={selectedTab} index={1}>{productDetails.features}</TabPanel>
+                            <Box height='320px' sx={{
+
+                            }}>
+                                < TabPanel value={selectedTab} index={0} >
+                                    <Box sx={{ overflow: 'auto', height: '240px', border: .1, px: 2 }}>
+                                        <span className='quickview-description'>{productDetails.description}</span>
+                                    </Box>
+                                </TabPanel>
+                                <TabPanel value={selectedTab} index={1}>
+                                    {relatedProducts.map((product) => (
+                                        <Box className='quickview-related-container' key={product._id}> {/* Use `_id` or appropriate key property */}
+                                            <img className='quickview-related-img' alt='related' src={product.imgSource[0].url} loading='lazy' />
+                                            <Box variant='button' onClick={() => setProductDetails(product)}>
+                                                <Tooltip title={product.name} arrow>
+                                                    <Box className='quickview-related-name'>{product.name}</Box>
+                                                </Tooltip>
+                                            </Box>
+
+                                        </Box>
+                                    ))}
+                                </TabPanel>
                                 <TabPanel value={selectedTab} index={2}>{productDetails.specs}</TabPanel>
+
+
+
+
+                            </Box>
+                            <Box className='quickview-price'>
+                                Price: ${productDetails.price}
                             </Box>
                             {/* Quantity Selector */}
                             <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between' }}>
@@ -209,8 +257,9 @@ const QuickView = ({ productId, open, handleClose }) => {
                                     <Select
                                         sx={{ width: '100px', borderRadius: 0 }}
                                         value={quantity}
-                                        onChange={(e) => setQuantity(e.target.value)}
+                                        onChange={(e) => setQuantity(Number(e.target.value))}
                                         label="Quantity"
+                                        defaultValue={1}
                                     >
                                         {[...Array(10).keys()].map((x) => (
                                             <MenuItem key={x + 1} value={x + 1}>
@@ -238,14 +287,28 @@ const QuickView = ({ productId, open, handleClose }) => {
                                 </FormControl>
                             </Box>
                             <Box>
-                                <Button variant="outlined" className='shop-button-cart' sx={{ border: 1, borderRadius: 0, letterSpacing: 2, fontSize: 12, color: 'white', backgroundColor: '#283047', borderColor: '#283047', borderWidth: 1.5, transition: 'all 0.3s', '&:hover': { backgroundColor: '#FE6F49', color: 'white', borderColor: '#FE6F49', transform: 'scale(1.05)' } }} onClick={() => addToCart(productDetails)}>
+                                <Button variant="outlined" className='shop-button-cart' sx={{ ml: 3, border: 1, borderRadius: 0, letterSpacing: 2, fontSize: 12, color: 'white', backgroundColor: '#283047', borderColor: '#283047', borderWidth: 1.5, transition: 'all 0.3s', '&:hover': { backgroundColor: '#FE6F49', color: 'white', borderColor: '#FE6F49', transform: 'scale(1.05)' } }} o onClick={() => addToCart(productDetails, quantity)}>
                                     Add to Cart
                                 </Button>
-                                <Button variant="outlined" color="secondary">Save to Wish List</Button>
+
                             </Box>
                         </Grid>
-                    </Grid>
-                ) : null}
+                    </Grid >
+
+
+                </Grid >
+            );
+        }
+        return null; // Or some fallback component
+    };
+
+
+
+
+    return (
+        <Modal open={open} onClose={handleClose}>
+            <Box className="quickview-container" sx={modalStyle}>
+                {renderContent()}
             </Box>
         </Modal >
     );

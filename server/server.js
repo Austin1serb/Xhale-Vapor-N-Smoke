@@ -16,6 +16,7 @@ const orderItemsRoutes = require('./routes/orderItems.routes');
 const customerRoutes = require('./routes/customers.routes');
 const cartRoutes = require('./routes/carts.routes');
 const paymentRoutes = require('./routes/payments.routes');
+const shippoRoutes = require('./routes/shippo.routes');
 const { uploadToCloudinary } = require('./services/cloudinary');
 
 app.use("/api/staff", staffRoutes);
@@ -26,5 +27,5 @@ app.use("/api/customer", customerRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/upload", uploadToCloudinary);
-
+app.use('/api/shippo', shippoRoutes);
 app.listen(port, () => console.log(`Listening on port: ${port}`));

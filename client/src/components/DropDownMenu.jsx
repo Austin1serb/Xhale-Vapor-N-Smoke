@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, IconButton, List, ListItem, Paper, Tooltip, Typography } from '@mui/material';
+import { Box, Button, CircularProgress, IconButton, List, ListItem, Paper, Tooltip, } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { RiArrowDropDownLine } from 'react-icons/ri';
 import '../Styles/DropDownMenu.css';
@@ -288,7 +288,7 @@ const DropdownMenu = ({ isVisible }) => {
                         <legend className='dropdown-featured-header' >Featured Products</legend>
                         {featuredProducts.map((product) => (
                             <Box className='drowdown-featured-container' key={product._id}> {/* Use `_id` or appropriate key property */}
-                                <img className='dropdown-featured-img' alt='featured' src={product.imgSource[0].url} />
+                                <img className='dropdown-featured-img' alt='featured' src={product.imgSource[0].url} loading='lazy' />
                                 <Box>
                                     <Tooltip title={product.name} arrow>
                                         <Box className='dropdown-featured-name'>{product.name}</Box>
@@ -316,6 +316,7 @@ const DropdownMenu = ({ isVisible }) => {
                 productId={quickViewProduct}
                 open={quickViewOpen}
                 handleClose={() => setQuickViewOpen(false)}
+                products={featuredProducts}
             />
         </Paper>
 

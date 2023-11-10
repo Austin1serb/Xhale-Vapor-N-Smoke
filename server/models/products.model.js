@@ -10,12 +10,17 @@ const ProductSchema = new mongoose.Schema({
     name: {
         type: String,
         minlength: [2, 'Name must be at least 2 characters long.'],
+        maxlength: [60, 'Name cannot be longer than 60 characters'],
         required: [true, 'Please provide product name.'],
     },
     price: {
         type: Number,
         min: [0, 'Price cannot be negative.'],
         required: [true, 'Please provide product price.']
+    },
+    specs: {
+        type: String,
+        required: [true, 'Please provide product specs.']
     },
     imgSource: {
         type: [{
@@ -48,7 +53,7 @@ const ProductSchema = new mongoose.Schema({
     description: {
         type: String,
         minlength: [2, 'Description must be at least 2 characters long.'],
-        maxlength: [750, 'Description cannot be longer than 750 characters.'],
+        maxlength: [560, 'Description cannot be longer than 560 characters.'],
     },
     strength: {
         type: String,

@@ -26,7 +26,7 @@ const BestSellersSection = () => {
                     <div className="brand-item">
                         <h2 className="brand-name">WYLD</h2>
                         <div className="brand-img-container">
-                            <img className="brand-image" src={wyld} alt="" />
+                            <img className="brand-image" src={wyld} alt="" loading='lazy' />
                         </div>
                         <Box>
                             <Typography
@@ -74,6 +74,7 @@ const BestSellersSection = () => {
                                 src='https://www.beezbeecbd.com/cdn/shop/files/bzb-fullcolor_150x.png?v=1618001658'
                                 alt=''
                                 className="brand-image"
+                                loading='lazy'
                             />
 
                         </div>
@@ -122,6 +123,7 @@ const BestSellersSection = () => {
                                 alt=''
                                 className="brand-image"
                                 style={{ backgroundColor: 'black' }}
+                                loading='lazy'
                             />
 
                         </div>

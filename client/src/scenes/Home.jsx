@@ -23,7 +23,7 @@ const Home = () => {
         const ageVerified = sessionStorage.getItem('ageVerified');
         if (ageVerified === 'true') {
             setIsUserOver18(true);
-            setShowAgeVerification(false);
+            setShowAgeVerification(true);
         }
     }, []);
 

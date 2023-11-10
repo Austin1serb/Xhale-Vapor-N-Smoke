@@ -136,6 +136,12 @@ const OrderList = () => {
             width: 125,
             valueFormatter: ({ value }) => new Date(value).toLocaleDateString(),
         },
+        //{
+        //    field: 'products',
+        //    headerName: 'Product',
+        //    width: 125,
+        //    renderCell: (params) => <div>{params.row.products[0].product}</div>
+        //},
         { field: 'totalAmount', headerName: 'Order Total', width: 100 },
         {
             field: 'shippingAddress',
@@ -161,6 +167,7 @@ const OrderList = () => {
                     sx={{ height: 50, ml: -1 }}
                     value={params.row.orderStatus}
                     onChange={(e) => handleOrderStatusChange(e, params.row._id)}
+
                 >
                     <MenuItem value="Pending">
                         <MdOutlinePendingActions color='blue' /> Pending
@@ -206,7 +213,8 @@ const OrderList = () => {
                         />
                         <FormControl sx={{ width: '20%' }}>
                             <InputLabel sx={{ backgroundColor: 'white', px: 1 }}>Order Status</InputLabel>
-                            <Select value={filterCriteria} onChange={(e) => setFilterCriteria(e.target.value)}>
+                            <Select value={filterCriteria} onChange={(e) => setFilterCriteria(e.target.value)}
+                                defaultValue='All Orders'>
                                 <MenuItem value="">All Orders</MenuItem>
                                 <MenuItem value="Pending">Pending</MenuItem>
                                 <MenuItem value="Processing">Processing</MenuItem>
