@@ -49,16 +49,18 @@ To set up your development environment, follow these steps:
 cd Xhale-Vapor-N-Smoke
 
 3. install Server-Side Dependencies:
-
 npm install
+
+
 4. Navigate to the Client Directory:
-
 cd client
+
+
 5. Install Client-Side Dependencies:
-
 npm install
-6. Start the Development Server:
 
+
+6. Start the Development Server:
 npm start
 
 Access the Application:
