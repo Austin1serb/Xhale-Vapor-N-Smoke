@@ -67,22 +67,22 @@ nodemon server.js
 cd ..
 cd client
 ```
-4. install client-Side Dependencies:
+8. install client-Side Dependencies:
 ```
 npm install
 ```
 
-5. Navigate to the Client Directory:
+9. Navigate to the Client Directory:
 ```
 cd client
 ```
 
-6. Install Client-Side Dependencies:
+10. Install Client-Side Dependencies:
 ```
 npm install
 ```
 
-7. Start the Development Server:
+11. Start the Development Server:
 ```
 npm start
 ```
