@@ -1,9 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Typography, Grid, Paper, List, ListItem, ListItemText, Divider, Button, CircularProgress, Box } from '@mui/material';
-
-const ShippingComponent = ({ shippingDetails }) => {
+import '../Styles/CheckoutPage.css'
+const ShippingComponent = ({ shippingDetails, onShippingCostChange }) => {
     const [shippingOptions, setShippingOptions] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [shippingCost, setShippingCost] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 4;
+    const [buttonDisabled, setButtonDisabled] = useState([]);
+
+
+
+
     const calculateShipping = async () => {
         try {
             setLoading(true);
@@ -81,6 +89,30 @@ const ShippingComponent = ({ shippingDetails }) => {
     }, [shippingDetails]);
 
 
+    useEffect(() => {
+        // Initialize the buttonDisabled array based on shippingOptions
+        setButtonDisabled(new Array(shippingOptions.length).fill(false));
+    }, [shippingOptions]);
+
+    const handleSelectShippingOption = (cost, index) => {
+        setShippingCost(cost);
+        onShippingCostChange(cost); // Pass the cost to the parent component
+
+        // Create a new array with all false, except the index that needs to be disabled
+        const updatedDisabledState = buttonDisabled.map((item, idx) => idx === index);
+        setButtonDisabled(updatedDisabledState);
+    };
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = shippingOptions.slice(indexOfFirstItem, indexOfLastItem);
+
+    const goToNextPage = () => {
+        setCurrentPage(currentPage + 1);
+    };
+
+    const goToPreviousPage = () => {
+        setCurrentPage(currentPage - 1);
+    };
 
     return (
         <div>
@@ -98,21 +130,41 @@ const ShippingComponent = ({ shippingDetails }) => {
             </Paper>
             {loading ? <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}><CircularProgress /> Getting Shipping Rates... </Box> : <Paper elevation={3} style={{ padding: '20px' }}>
                 <List>
-                    {/* This list would be populated with shipping options returned from your API */}
+
                     {/* Shipping Options */}
                     <Paper elevation={3} style={{ padding: '20px' }}>
-                        <List>
-                            {shippingOptions.map((option, index) => (
-                                <ListItem key={index}>
-                                    <ListItemText primary={option.servicelevel.name} secondary={`Estimated ${option.duration_terms}`} />
-                                    <Typography variant="body2">${option.amount_local}</Typography>
-                                    <Button variant="outlined">
-                                        Select
+                        <List className='checkout-shipping'>
+                            {currentItems.map((option, index) => (
+                                <ListItem
+                                    key={index}
+                                    sx={{
+                                        backgroundColor: buttonDisabled[index] ? 'rgba(15, 117, 224, 0.1)' : ''
+                                    }}
+                                    className={`checkout-shipping-item-${+index}`}
+                                >
+                                    <ListItemText className='checkout-shipping-name' primary={option.servicelevel.name} secondary={`Estimated ${option.duration_terms}`} />
+                                    <Typography className='checkout-shipping-price' variant="body2">${option.amount_local}</Typography>
+                                    <Button disabled={buttonDisabled[index]} className='checkout-shipping-button' sx={{ fontSize: 12, minWidth: '80px', ml: 2 }} variant="outlined" onClick={() => handleSelectShippingOption(option.amount_local, index)}>
+                                        {buttonDisabled[index] ? 'Selected' : 'Select'}
                                     </Button>
                                 </ListItem>
                             ))}
+
                         </List>
                     </Paper>
+                    {/* Shipping Options Selector */}
+                    <Grid container style={{ marginTop: '20px', justifyContent: 'space-between' }}>
+                        {currentPage > 1 && (
+                            <Button variant="contained" onClick={goToPreviousPage}>
+                                Previous
+                            </Button>
+                        )}
+                        {indexOfLastItem < shippingOptions.length && (
+                            <Button variant="contained" onClick={goToNextPage}>
+                                {currentPage === 1 ? 'See More Shipping Options' : 'Next'}
+                            </Button>
+                        )}
+                    </Grid>
                     {/* ... other shipping options */}
                 </List>
             </Paper>

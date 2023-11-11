@@ -1,0 +1,48 @@
+.checkout-shipping {}
+
+.checkout-shipping-item-0 {
+    border-top: 1px solid gray;
+    border-radius: 5px 5px 0px 0px;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid gray;
+}
+
+.checkout-shipping-item-0,
+.checkout-shipping-item-1,
+.checkout-shipping-item-2,
+.checkout-shipping-item-3 {
+    border-bottom: 1px solid gray;
+    border-left: 1px solid gray;
+    border-right: 1px solid gray;
+    display: flex;
+    justify-content: space-between;
+    transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out, border-width 0.3s ease-in-out;
+}
+
+.checkout-shipping-item-3 {
+    border-bottom: 1px solid gray;
+    border-radius: 0px 0px 5px 5px;
+    display: flex;
+    justify-content: space-between;
+
+}
+
+.checkout-shipping-item-0:hover,
+.checkout-shipping-item-1:hover,
+.checkout-shipping-item-2:hover,
+.checkout-shipping-item-3:hover {
+    background-color: rgba(15, 117, 224, 0.1);
+    /* 50% transparency */
+    border-width: 1px;
+    border-color: #0F75E0;
+
+}
+
+
+.checkout-shipping-button {
+    margin-left: 5px;
+    min-width: 80px;
+    max-width: 80px;
+    font-size: 12px;
+}
