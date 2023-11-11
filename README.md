@@ -46,24 +46,24 @@ To set up your development environment, follow these steps:
    ```bash
    git clone https://github.com/Austin1serb/Xhale-Vapor-N-Smoke.git
 Navigate to the Project Directory:
-bash
-Copy code
+```bash
+
 cd Xhale-Vapor-N-Smoke
 stall Server-Side Dependencies:
-bash
-Copy code
+```bash
+
 npm install
 Navigate to the Client Directory:
-bash
-Copy code
+```bash
+
 cd client
 Install Client-Side Dependencies:
-bash
-Copy code
+```bash
+
 npm install
 Start the Development Server:
 bash
-Copy code
+
 npm start
 Access the Application:
 Open http://localhost:3000 in your browser.
