@@ -24,10 +24,10 @@ scheduled to be completed Nov 18th
 ### Admin Dashboard Product List (with full CRUD)
 <img src="https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/952a4080-c0c9-40c7-92e5-cd4f61d8f56c" width="800" alt="Admin Dashboard Product List">
 
-### Google Places API Address AutoCorrect (In Progress)
+### Google Places API Address AutoCorrect (Styling In Progress)
 <img src="https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/f6a39eee-22db-4ad6-810f-0129f3314bd8" width="800" alt="Google Places API Address AutoCorrect">
 
-### Shippo API Calculate Shipping Costs (In Progress)
+### Shippo API Calculate Shipping Costs (Styling In Progress)
 <img src="https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/672ba6b6-9410-42c5-9dbe-1741a22183ef" width="800" alt="Shippo API Calculate Shipping Costs">
 
 
@@ -60,7 +60,7 @@ npm install
 ```
 6. Start the back-end server:
 ```
-nodemon.server.js
+nodemon server.js
 ```
 7. Navigate to the client:
 ```
