@@ -47,7 +47,6 @@ To set up your development environment, follow these steps:
    git clone https://github.com/Austin1serb/Xhale-Vapor-N-Smoke.git
 Navigate to the Project Directory:
 ```bash
-
 cd Xhale-Vapor-N-Smoke
 stall Server-Side Dependencies:
 ```bash
