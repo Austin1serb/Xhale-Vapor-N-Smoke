@@ -50,22 +50,39 @@ To set up your development environment, follow these steps:
 ```
 cd Xhale-Vapor-N-Smoke
 ```
-3. install Server-Side Dependencies:
+4. Navigate to the server:
+```
+cd server
+```
+5. Install server-side Dependencies:
+```
+npm install
+```
+6. Start the back-end server:
+```
+nodemon.server.js
+```
+7. Navigate to the client:
+```
+cd ..
+cd client
+```
+4. install client-Side Dependencies:
 ```
 npm install
 ```
 
-4. Navigate to the Client Directory:
+5. Navigate to the Client Directory:
 ```
 cd client
 ```
 
-5. Install Client-Side Dependencies:
+6. Install Client-Side Dependencies:
 ```
 npm install
 ```
 
-6. Start the Development Server:
+7. Start the Development Server:
 ```
 npm start
 ```
