@@ -1,7 +1,7 @@
 # Xhale Vapor N Smoke
 
 Welcome to the official repository of Xhale Vapor N Smoke, an innovative e-commerce platform offering a curated selection of CBD products for a local small business.
-
+scheduled to be completed Nov 18th
 ## Project Preview
 ### Home Page
 <img src="https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/136e07e2-fcd4-4abf-95b2-b8ae827b46f9" width="800" alt="Home Page">
