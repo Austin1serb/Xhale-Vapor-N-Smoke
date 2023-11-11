@@ -5,25 +5,25 @@ Welcome to the official repository of Xhale Vapor N Smoke, an innovative e-comme
 ## Project Preview
 
 ### Home Page
-![Home Page](https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/136e07e2-fcd4-4abf-95b2-b8ae827b46f9 | width=500)
+![Home Page](https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/136e07e2-fcd4-4abf-95b2-b8ae827b46f9
 
 ### Shop Button Dropdown (on hover)
-![Shop Dropdown](https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/40a3465e-f610-4ea7-a724-c48dedf397cb | width=500)
+![Shop Dropdown](https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/40a3465e-f610-4ea7-a724-c48dedf397cb
 
 ### Cart
-![Cart](https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/a2e2efaf-39b7-49d8-8cab-fad6219c8d0c | width=500)
+![Cart](https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/a2e2efaf-39b7-49d8-8cab-fad6219c8d0c
 
 ### Shop Page
-![Shop Page](https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/0b8cd012-117e-4941-9ac0-4e1ab7a992c0 | width=500)
+![Shop Page](https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/0b8cd012-117e-4941-9ac0-4e1ab7a992c0
 
 ### Item Quickview
-![Item Quickview](https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/64036ba1-549a-4f79-80e7-76898d628b23 | width=500)
+![Item Quickview](https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/64036ba1-549a-4f79-80e7-76898d628b23
 
 ### Admin Dashboard Sales Overview
-![Admin Dashboard Sales Overview](https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/26a6309a-3b7c-4e21-82b3-0c2d01fe6599 | width=500)
+![Admin Dashboard Sales Overview](https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/26a6309a-3b7c-4e21-82b3-0c2d01fe6599
 
 ### Admin Dashboard Product List (with full CRUD)
-![Admin Dashboard Product List](https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/952a4080-c0c9-40c7-92e5-cd4f61d8f56c | width=500)
+![Admin Dashboard Product List](https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/952a4080-c0c9-40c7-92e5-cd4f61d8f56c
 
 ### Google Places API Address AutoCorrect (In Progress)
 <img src="https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/f6a39eee-22db-4ad6-810f-0129f3314bd8" width="500" alt="Google Places API Address AutoCorrect">
