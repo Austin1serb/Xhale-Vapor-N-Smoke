@@ -3,33 +3,33 @@
 Welcome to the official repository of Xhale Vapor N Smoke, an innovative e-commerce platform offering a curated selection of vaporizers and smoking accessories.
 
 ## Project Preview
-
 ### Home Page
-![Home Page](https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/136e07e2-fcd4-4abf-95b2-b8ae827b46f9
+<img src="https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/136e07e2-fcd4-4abf-95b2-b8ae827b46f9" alt="Home Page">
 
 ### Shop Button Dropdown (on hover)
-![Shop Dropdown](https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/40a3465e-f610-4ea7-a724-c48dedf397cb
+<img src="https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/40a3465e-f610-4ea7-a724-c48dedf397cb" alt="Shop Dropdown">
 
 ### Cart
-![Cart](https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/a2e2efaf-39b7-49d8-8cab-fad6219c8d0c
+<img src="https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/a2e2efaf-39b7-49d8-8cab-fad6219c8d0c" alt="Cart">
 
 ### Shop Page
-![Shop Page](https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/0b8cd012-117e-4941-9ac0-4e1ab7a992c0
+<img src="https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/0b8cd012-117e-4941-9ac0-4e1ab7a992c0" alt="Shop Page">
 
 ### Item Quickview
-![Item Quickview](https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/64036ba1-549a-4f79-80e7-76898d628b23
+<img src="https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/64036ba1-549a-4f79-80e7-76898d628b23" alt="Item Quickview">
 
 ### Admin Dashboard Sales Overview
-![Admin Dashboard Sales Overview](https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/26a6309a-3b7c-4e21-82b3-0c2d01fe6599
+<img src="https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/26a6309a-3b7c-4e21-82b3-0c2d01fe6599" alt="Admin Dashboard Sales Overview">
 
 ### Admin Dashboard Product List (with full CRUD)
-![Admin Dashboard Product List](https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/952a4080-c0c9-40c7-92e5-cd4f61d8f56c
+<img src="https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/952a4080-c0c9-40c7-92e5-cd4f61d8f56c" alt="Admin Dashboard Product List">
 
 ### Google Places API Address AutoCorrect (In Progress)
 <img src="https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/f6a39eee-22db-4ad6-810f-0129f3314bd8" width="500" alt="Google Places API Address AutoCorrect">
 
 ### Shippo API Calculate Shipping Costs (In Progress)
 <img src="https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/672ba6b6-9410-42c5-9dbe-1741a22183ef" width="500" alt="Shippo API Calculate Shipping Costs">
+
 
 ## Prerequisites
 
