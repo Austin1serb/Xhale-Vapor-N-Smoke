@@ -1,6 +1,6 @@
 # Xhale Vapor N Smoke
 
-Welcome to the official repository of Xhale Vapor N Smoke, an innovative e-commerce platform offering a curated selection of vaporizers and smoking accessories.
+Welcome to the official repository of Xhale Vapor N Smoke, an innovative e-commerce platform offering a curated selection of CBD products for a local small business.
 
 ## Project Preview
 ### Home Page
