@@ -11,11 +11,13 @@ const CheckoutPage = () => {
     const [shippingDetails, setShippingDetails] = useState({});
     const steps = ['Cart', 'Information', 'Shipping', 'Payment'];
     const { cart, removeFromCart, adjustQuantity } = useCart();
-
+    const [shippingCost, setShippingCost] = useState('Shipping Cost Calculated at Next Step');
     const total = cart.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
-    const shippingCost = "Calculated at next step";
     const tax = "Calculated at checkout";
 
+    const handleShippingCostChange = (cost) => {
+        setShippingCost(cost);
+    };
 
     const handleShippingDetailsSubmit = (details) => {
         setShippingDetails(details);
@@ -67,7 +69,7 @@ const CheckoutPage = () => {
                                 </Stepper>
                                 {/*{activeStep === 0 && <CartComponent />}*/}
                                 {activeStep === 1 && <InformationPage next={handleNext} onShippingDetailsSubmit={handleShippingDetailsSubmit} />}
-                                {activeStep === 2 && <ShippingComponent shippingDetails={shippingDetails} />}
+                                {activeStep === 2 && <ShippingComponent shippingDetails={shippingDetails} onShippingCostChange={handleShippingCostChange} />}
                                 {/*{activeStep === 3 && <PaymentComponent />}*/}
                             </div>
                             <div>

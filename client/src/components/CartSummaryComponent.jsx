@@ -3,11 +3,14 @@ import { Typography, List, ListItem, ListItemText, Divider, Paper, Box, IconButt
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
 
-const CartSummaryComponent = ({ cartItems, shippingCost, tax, total, removeFromCart, adjustQuantity }) => {
+const CartSummaryComponent = ({ cartItems, shippingCost, total, removeFromCart, adjustQuantity }) => {
     // Helper function to format cost display
     const formatCost = (cost) => {
         return (typeof cost === 'number') ? `$${cost.toFixed(2)}` : cost;
     };
+    const tax = total * 0.11;
+    const validShippingCost = isNaN(shippingCost) ? 0 : Number(shippingCost);
+    const grandTotal = total + validShippingCost + tax;
 
     return (
         <Paper elevation={3} style={{ paddingTop: '20px', paddingBottom: '20px', paddingLeft: '20px' }}>
@@ -16,7 +19,7 @@ const CartSummaryComponent = ({ cartItems, shippingCost, tax, total, removeFromC
             </Typography>*/}
 
             <List disablePadding sx={{}}>
-                <Box sx={{ maxHeight: '60vh', overflow: 'auto' }}>
+                <Box sx={{ maxHeight: '60vh', overflow: 'auto', mt: -2.5, mb: -1.25 }}>
                     {cartItems.map((item, index) => (
                         <Box key={'product:' + index} sx={{ display: 'flex', m: { md: 5 }, }}>
                             <img className='cart-img' style={{ border: '.1px solid black', borderRadius: '5px' }} src={item.img} alt={item.name} width={80} height={80} loading='lazy' />
@@ -66,7 +69,12 @@ const CartSummaryComponent = ({ cartItems, shippingCost, tax, total, removeFromC
                     ))}
                 </Box>
                 <Divider style={{ margin: '10px 0' }} />
-
+                <ListItem style={{ padding: '10px 0' }}>
+                    <ListItemText primary="Subtotal" />
+                    <Typography variant="subtitle1" style={{ fontWeight: 500 }}>
+                        {formatCost(total)}
+                    </Typography>
+                </ListItem>
                 <ListItem style={{ padding: '10px 0' }}>
                     <ListItemText primary="Shipping" />
                     <Typography variant="body2">{formatCost(shippingCost)}</Typography>
@@ -74,13 +82,14 @@ const CartSummaryComponent = ({ cartItems, shippingCost, tax, total, removeFromC
 
                 <ListItem style={{ padding: '10px 0' }}>
                     <ListItemText primary="Estimated Taxes" />
-                    <Typography variant="body2">{formatCost(total * 0.11)}</Typography>
+                    <Typography variant="body2">{formatCost(tax)}</Typography>
                 </ListItem>
 
                 <ListItem style={{ padding: '10px 0' }}>
                     <ListItemText primary="Total" />
                     <Typography variant="subtitle1" style={{ fontWeight: 700 }}>
-                        {formatCost(total)}
+                        {grandTotal}
+
                     </Typography>
                 </ListItem>
 
