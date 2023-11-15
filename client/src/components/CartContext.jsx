@@ -9,9 +9,11 @@ export const CartProvider = ({ children }) => {
     const [cart, setCart] = useState([]);
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [name, setName] = useState('')
-
-
     const [runConfetti, setRunConfetti] = useState(false);
+    const [notes, setNotes] = useState('');
+    const updateNotes = (newNotes) => {
+        setNotes(newNotes);
+    };
 
     const addToCart = (product, quantity = 1) => {
         const existingProduct = cart.find(item => item.product._id === product._id);
@@ -35,16 +37,13 @@ export const CartProvider = ({ children }) => {
     };
 
     const adjustQuantity = (productId, quantity) => {
-        if (quantity <= 0) {
-            removeFromCart(productId);
-        } else {
-            setCart(prevCart => prevCart.map(item =>
-                item.product._id === productId
-                    ? { ...item, quantity }
-                    : item
-            ));
-        }
+        setCart(prevCart => prevCart.map(item =>
+            item.product._id === productId
+                ? { ...item, quantity: Math.max(quantity, 1) } // Ensures quantity is never less than 1
+                : item
+        ));
     };
+
 
 
 
@@ -52,7 +51,7 @@ export const CartProvider = ({ children }) => {
     //confetti
 
     return (
-        <CartContext.Provider value={{ cart, addToCart, removeFromCart, adjustQuantity }}>
+        <CartContext.Provider value={{ cart, addToCart, removeFromCart, adjustQuantity, notes, updateNotes }}>
             {children}
 
             {/* Confetti */}
@@ -67,7 +66,7 @@ export const CartProvider = ({ children }) => {
                     }
                 }}
                 open={openSnackbar}
-                autoHideDuration={4000} // Snackbar will close after 6 seconds
+                autoHideDuration={2000} // Snackbar will close after 6 seconds
                 onClose={() => setOpenSnackbar(false)}
                 message={`${name} has been successfully added to the cart.`}
                 action={<React.Fragment> <FcCheckmark style={{ fontSize: 26 }} /></React.Fragment>}

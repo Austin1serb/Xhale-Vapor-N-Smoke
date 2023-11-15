@@ -7,7 +7,7 @@ exports.createAddress = (req, res) => {
     const shipment = {
         address_from: addressFrom,
         address_to: addressTo,
-        parcels: [parcel], // Note that parcels is an array
+        parcels: [parcel],
     };
 
     shippo.shipment.create(shipment)

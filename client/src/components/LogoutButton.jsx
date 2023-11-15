@@ -9,37 +9,37 @@ const LogoutButton = () => {
     const refreshToken = localStorage.getItem('refreshToken'); // Retrieve the refreshToken
 
     const handleLogout = async () => {
-        // Retrieve the refreshToken
-
-
-        console.log('user logged out')
         try {
-            // Make a request to log the user out using the refreshToken
             const response = await fetch('http://localhost:8000/api/customer/logout', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ refreshToken }),
+                body: JSON.stringify({ refreshToken: localStorage.getItem('refreshToken') }),
             });
 
             if (response.ok) {
-                // If the logout is successful on the server, clear tokens in the frontend
-                localStorage.removeItem('token'); // Clear access token
-                localStorage.removeItem('refreshToken'); // Clear refresh token
-                sessionStorage.clear(); // Clear tokens from session storage
+                console.log('Logout successful');
 
-                // Redirect to the login page or any other appropriate action
-                navigate('/');
+                // Clear tokens and user data from local storage
+                ['token', 'refreshToken', 'userFirstName', 'userLastName', 'customerId', 'userEmail'].forEach(key => {
+                    localStorage.removeItem(key);
+                });
+
+                sessionStorage.clear(); // Clear session storage
+                navigate('/'); // Redirect to the home page
             } else {
-                // Handle logout failure, display an error message, etc.
+                console.error('Logout failed:', response.status, response.statusText);
+                const data = await response.json();
+                console.error('Error details:', data);
+                // Display an error message to the user or take other appropriate actions
             }
         } catch (error) {
-            // Handle error when making the logout request
-            console.error('Logout failed:', error);
-            // You can display an error message or take appropriate action
+            console.error('Network error during logout:', error.message);
+            // Display an error message or handle network error
         }
     };
+
 
     return (
         isLoggedIn && (

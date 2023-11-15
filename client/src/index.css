@@ -1,0 +1,26 @@
+* {
+    padding: 0px;
+    margin: 0px;
+    scroll-behavior: smooth;
+}
+
+::selection {
+    background-color: #073CA1;
+    color: white;
+}
+
+/*::-webkit-scrollbar {
+    width: 12px !important;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(146, 145, 145, 0.51) !important;
+    border-radius: 0px 10px 10px 0px !important;
+
+}
+
+::-webkit-scrollbar-thumb {
+    background: #e0e0e0 !important;
+    border-radius: 0px 10px 10px 0px !important;
+
+}*/

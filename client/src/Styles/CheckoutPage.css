@@ -1,4 +1,94 @@
-.checkout-shipping {}
+/* CHECKOUTPAGE COMPONENT */
+
+.checkoutPage-container {
+    padding-top: 20px;
+}
+
+/* CART SUMMARY COMPONENT */
+.cartSummary-container {
+    background-color: rgba(15, 117, 224, 0.1);
+    border-left: 1px solid black;
+
+
+}
+
+
+.cart-img {
+    border: 0.1px solid black;
+    border-radius: 5px;
+    background-color: white;
+}
+
+.cartSummary-cost {
+    border-top: 0.1px solid black;
+    background-color: white;
+    padding: 0px 20px 0px 20px;
+    margin-top: 10px;
+
+}
+
+
+.cartSummary-checkout-button {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: white;
+}
+
+.cartSummary-checkout-text {
+
+    margin-right: 0.4em;
+}
+
+@media (max-width: 600px) {
+    .cartSummary-checkout-button {
+        flex-direction: column;
+    }
+
+    .cartSummary-checkout-text {
+        display: none;
+        margin-right: 0.5em;
+    }
+}
+
+/* SHIPPING COMPONENT */
+
+.checkout-shipping-container {
+    padding: 20px;
+}
+
+
+.checkout-shipping {
+    margin-bottom: 20px;
+}
+
+.checkout-shipping-contact {
+    padding: 13px;
+    border: 1px solid gray;
+    border-radius: 5px 5px 0px 0px;
+    border-bottom: none;
+}
+
+.checkout-shipping-address {
+    border: 1px solid gray;
+    padding: 13px;
+    border-radius: 0px 0px 5px 5px;
+
+}
+
+.checkout-shipping-change {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+}
+
+.checkout-shipping-item-container {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
 .checkout-shipping-item-0 {
     border-top: 1px solid gray;
@@ -33,8 +123,7 @@
 .checkout-shipping-item-2:hover,
 .checkout-shipping-item-3:hover {
     background-color: rgba(15, 117, 224, 0.1);
-    /* 50% transparency */
-    border-width: 1px;
+
     border-color: #0F75E0;
 
 }
@@ -45,4 +134,34 @@
     min-width: 80px;
     max-width: 80px;
     font-size: 12px;
+}
+
+
+
+.checkout-shipping-item-price-container {
+
+    display: flex;
+    margin-left: 5px;
+}
+
+
+
+
+
+/* INFORMATION COMPONENT */
+.information-form-container {
+    /*border: 1px solid black;*/
+    padding: 0 5% 0 5%;
+}
+
+.information-titles {
+    font-variant: small-caps;
+
+    margin: 0px 5px 0px 5px;
+}
+
+.information-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }

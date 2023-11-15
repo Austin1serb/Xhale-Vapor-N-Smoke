@@ -1,20 +1,40 @@
 import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
+
 import {
     Box,
     Paper,
     Typography,
     TextField,
     Button,
-    Link,
+
     InputAdornment,
     IconButton,
+    CircularProgress,
 } from '@mui/material';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import ReCAPTCHA from 'react-google-recaptcha';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
+import jwtDecode from 'jwt-decode';
+
+
 
 const RegistrationPage = () => {
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [openSnackbar, setOpenSnackbar] = React.useState(false);
+    const location = useLocation();
+
+    const [errorMessage, setErrorMessage] = useState('')
+    const siteKey = '6LdWVw4pAAAAADqgqwejq2_Os3NGofQXke0q3JsV'
     const navigate = useNavigate();
+    const [recaptchaValue, setRecaptchaValue] = useState(null);
+
+    const onRecaptchaChange = (value) => {
+        setRecaptchaValue(value);
+    };
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -37,10 +57,29 @@ const RegistrationPage = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-
         // Check for empty fields and set errors
-        if (name === 'password' && value.trim() === '') {
-            setErrors({ ...errors, password: 'Password is required' });
+        setFormData({
+            ...formData,
+            [name]: value,
+        });
+
+        // Password validation
+        if (name === 'password') {
+            if (value.trim() === '') {
+                setErrors({ ...errors, password: 'Password is required' });
+            } else if (value.length < 8) {
+                setErrors({ ...errors, password: 'Password must be at least 8 characters long' });
+            } else if (!/[A-Z]/.test(value) || !/[0-9]/.test(value)) {
+                setErrors({
+                    ...errors, password: 'Password must contain at least one uppercase letter, one number'
+                });
+            } else {
+                // Clear the password error if it's valid
+                const { password, ...rest } = errors;
+                setErrors(rest);
+            }
+
+
         } else if (name === 'confirmPassword' && value.trim() === '') {
             setErrors({ ...errors, confirmPassword: 'Confirm Password is required' });
         } else {
@@ -65,88 +104,150 @@ const RegistrationPage = () => {
     };
 
 
-
-
-
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        let newErrors = {};
+        // Reset errors
         setErrors({});
-
-        // Perform all validation checks
-        let hasErrors = false;
-
-        if (formData.firstName.trim() === '') {
-            setErrors({ ...errors, firstName: 'First Name is required' });
-            hasErrors = true;
-        }
-
-        if (formData.lastName.trim() === '') {
-            setErrors({ ...errors, lastName: 'Last Name is required' });
-            hasErrors = true;
-        }
-
+        // Frontend validations
+        // Email format validation
+        // Email empty check
         if (formData.email.trim() === '') {
-            setErrors({ ...errors, email: 'Email is required' });
-            hasErrors = true;
+            newErrors.email = 'Email is required';
         }
-
-        if (formData.password.trim() === '') {
-            setErrors({ ...errors, password: 'Password is required' });
-            hasErrors = true;
-        } else if (formData.password.length < 8) {
-            setErrors({ ...errors, password: 'Password must be at least 8 characters long' });
-            hasErrors = true;
-        }
-
-        if (formData.confirmPassword !== formData.password) {
-            setErrors({ ...errors, confirmPassword: 'Passwords do not match' });
-            hasErrors = true;
-        }
-
-        if (!hasErrors) {
-            try {
-                const response = await fetch('http://localhost:8000/api/customer/register', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(formData),
-                });
-
-                if (response.ok) {
-                    // Registration successful
-                    const responseData = await response.json();
-                    const token = responseData.accessToken;
-                    const refreshToken = responseData.refreshToken;
-                    // Store the token securely
-                    localStorage.setItem('token', token);
-                    localStorage.setItem('refreshToken', refreshToken);
-                    setFormData({
-                        firstName: '',
-                        lastName: '',
-                        email: '',
-                        password: '',
-                        confirmPassword: '',
-                    });
-                    setErrors({});
-
-                    // Redirect to the '/' page
-                    navigate('/'); // Redirect to the '/' page
-                } else {
-                    // Registration failed, handle error response
-                    const errorData = await response.json();
-                    if (errorData.errors) {
-                        setErrors(errorData.errors);
-                    } else {
-                        console.error('Registration error:', errorData.message);
-                        // Handle other error cases as needed
-                    }
-                }
-            } catch (error) {
-                console.error('API request error:', error);
+        // Email format validation
+        else {
+            const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+            if (!emailRegex.test(formData.email.trim())) {
+                newErrors.email = 'Please enter a valid email address';
             }
         }
-    };
+
+        // Password length and strength validation
+        if (formData.password.length < 8) {
+            newErrors.password = 'Password must be at least 8 characters long';
+        } else if (!/[A-Z]/.test(formData.password) || !/[0-9]/.test(formData.password)) {
+            newErrors.password = 'Password must contain at least one uppercase letter, and one number';
+        }
+
+        // Confirm password validation
+        if (formData.password !== formData.confirmPassword) {
+            newErrors.confirmPassword = 'Passwords do not match';
+        }
+
+        // First and last name validations
+        if (formData.firstName.trim() === '') {
+            newErrors.firstName = 'First Name is required';
+        }
+        if (formData.lastName.trim() === '') {
+            newErrors.lastName = 'Last Name is required';
+        }
+
+        if (!recaptchaValue) {
+            alert('Please solve the reCAPTCHA');
+            return;
+        }
+        setErrors(newErrors);
+
+        // If there are validation errors, stop the form submission
+        if (Object.keys(newErrors).length > 0) {
+            return;
+        }
+        setIsSubmitting(true); // Start submitting
+        try {
+            const registrationData = {
+                ...formData,
+                recaptchaValue,
+            };
+
+            const response = await fetch('http://localhost:8000/api/customer/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(registrationData),
+            });
+
+            if (response.ok) {
+                // Registration successful
+                const responseData = await response.json();
+                const { accessToken, refreshToken } = responseData;
+                // Store the token securely (Consider more secure storage than localStorage)
+                localStorage.setItem('token', accessToken);
+                localStorage.setItem('refreshToken', refreshToken);
+                const decodedToken = jwtDecode(accessToken);
+
+                // Store user details in localStorage (or sessionStorage)
+                localStorage.setItem('userFirstName', decodedToken.firstName);
+                localStorage.setItem('userLastName', decodedToken.lastName);
+                localStorage.setItem('customerId', decodedToken.customerId);
+                localStorage.setItem('userEmail', decodedToken.email);
+                resetFormData();
+
+                // Redirect to the home page or checkout page
+                navigateToReturnUrl();
+                setIsSubmitting(false); // End submitting after form handling
+            } else {
+                // Registration failed, handle error response
+                handleErrorResponse(response);
+                setIsSubmitting(false); // End submitting after form handling
+            }
+        } catch (error) {
+            console.error('API request error:', error);
+        }
+    }
+
+    // Helper functions (to keep handleSubmit clean)
+    function resetFormData() {
+        setFormData({
+            firstName: '',
+            lastName: '',
+            email: '',
+            password: '',
+            confirmPassword: '',
+        });
+        setErrors({});
+    }
+
+    function navigateToReturnUrl() {
+        const params = new URLSearchParams(window.location.search);
+        const returnUrl = params.get('returnUrl') || '/';
+        navigate(returnUrl);
+    }
+
+    async function handleErrorResponse(response) {
+        let errorData;
+        const contentType = response.headers.get('content-type');
+
+        try {
+            if (contentType && contentType.includes('application/json')) {
+                errorData = await response.json();
+                // Assuming errorData.message contains your error message
+                setErrorMessage(errorData.message || 'An error occurred');
+            } else {
+                // Handle non-JSON response
+                errorData = await response.text();
+                setErrorMessage(errorData || 'An error occurred');
+            }
+        } catch (error) {
+            console.error('Error processing response:', error);
+            setErrorMessage('An unexpected error occurred');
+        }
+
+        setOpenSnackbar(true); // Show the Snackbar with the error message
+    }
+
+
+    function getTextFieldStyle(fieldName) {
+        const isFieldValid = formData[fieldName].trim() && !errors[fieldName];
+        return {
+            color: isFieldValid ? 'success' : 'primary',
+            focused: !!isFieldValid,
+        };
+    }
+
+
 
     return (
         <Box
@@ -160,6 +261,11 @@ const RegistrationPage = () => {
                 m: 0,
             }}
         >
+            <Snackbar open={openSnackbar} autoHideDuration={5000} onClose={() => setOpenSnackbar(false)}>
+                <Alert onClose={() => setOpenSnackbar(false)} severity="error" sx={{ width: '100%' }}>
+                    {errorMessage || errors}
+                </Alert>
+            </Snackbar>
             <Paper
                 elevation={3}
                 sx={{
@@ -173,17 +279,22 @@ const RegistrationPage = () => {
                 }}
             >
                 <Typography variant="h4" align="center">
-                    Registration
+                    Quick Register
                 </Typography>
                 <Typography variant="subtitle1" align="center">
                     Welcome! If you already have an account, you can{' '}
-                    <Link component={RouterLink} to="/login" color="primary">
+
+                    <Link to={`/login${location.search}`}>
+
                         Login
                     </Link>
                 </Typography>
+                {<Typography variant="h4" align="center">
 
+                </Typography>}
                 <form onSubmit={handleSubmit}>
                     <TextField
+                        autoComplete="given-name"
                         label="First Name"
                         variant="outlined"
                         fullWidth
@@ -191,10 +302,12 @@ const RegistrationPage = () => {
                         name="firstName"
                         value={formData.firstName}
                         onChange={handleChange}
-                        error={!!errors.firstName} // Apply error style when there's an error
-                        helperText={errors.firstName || ''} // Display the error message
+                        error={!!errors.firstName}
+                        helperText={errors.firstName || ''}
+                        {...getTextFieldStyle('firstName')}
                     />
                     <TextField
+                        autoComplete="family-name"
                         label="Last Name"
                         variant="outlined"
                         fullWidth
@@ -204,10 +317,12 @@ const RegistrationPage = () => {
                         onChange={handleChange}
                         error={!!errors.lastName} // Apply error style when there's an error
                         helperText={errors.lastName || ''} // Display the error message
+                        {...getTextFieldStyle('lastName')}
                     />
 
                     <TextField
                         label="Email"
+                        autoComplete="email"
                         variant="outlined"
                         fullWidth
                         margin="normal"
@@ -217,11 +332,12 @@ const RegistrationPage = () => {
                         onChange={handleChange}
                         error={!!errors.email} // Apply error style when there's an error
                         helperText={errors.email || ''} // Display the error message
+                        {...getTextFieldStyle('email')}
                     />
 
                     {/* PASSWORD FIELD  */}
                     <TextField
-
+                        autoComplete="new-password"
                         label="Password*"
                         variant="outlined"
                         fullWidth
@@ -232,11 +348,12 @@ const RegistrationPage = () => {
                         onChange={handleChange}
                         error={!!errors.password}
                         helperText={errors.password || ''}
+                        {...getTextFieldStyle('password')}
                         InputProps={{
                             endAdornment: (
                                 <InputAdornment position="end">
                                     <IconButton
-                                        aria-label="toggle password visibility"
+                                        aria-label={showPassword ? "Hide password" : "Show password"}
                                         onClick={handleClickShowPassword}
                                         onMouseDown={handleMouseDownPassword}
                                         edge="end"
@@ -250,6 +367,7 @@ const RegistrationPage = () => {
 
                     {/* Confirm Password field */}
                     <TextField
+                        autoComplete="new-password"
                         label="Confirm Password*"
                         variant="outlined"
                         fullWidth
@@ -260,14 +378,16 @@ const RegistrationPage = () => {
                         onChange={handleChange}
                         error={!!errors.confirmPassword}
                         helperText={errors.confirmPassword}
+                        {...getTextFieldStyle('confirmPassword')}
                         InputProps={{
                             endAdornment: (
                                 <InputAdornment position="end">
                                     <IconButton
-                                        aria-label="toggle password visibility"
+                                        aria-label={showPassword ? "Hide password" : "Show password"}
                                         onClick={handleClickShowPassword}
                                         onMouseDown={handleMouseDownPassword}
                                         edge="end"
+
                                     >
                                         {showPassword ? <VisibilityOff /> : <Visibility />}
                                     </IconButton>
@@ -275,13 +395,23 @@ const RegistrationPage = () => {
                             ),
                         }}
                     />
-
-
-                    <Button sx={{
-                        my: 3
-                    }} variant="contained" color="primary" fullWidth type="submit">
-                        Register
+                    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+                        <ReCAPTCHA
+                            sitekey={siteKey}
+                            onChange={onRecaptchaChange}
+                        />
+                    </Box>
+                    <Button
+                        sx={{ my: 3 }}
+                        variant="contained"
+                        color="primary"
+                        fullWidth
+                        type="submit"
+                        disabled={isSubmitting}
+                    >
+                        {isSubmitting ? <CircularProgress size={24} /> : 'Register'}
                     </Button>
+
                 </form>
             </Paper>
         </Box>
