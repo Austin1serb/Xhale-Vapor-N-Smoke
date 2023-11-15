@@ -42,7 +42,7 @@ const Shop = () => {
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
     const [loadingMore, setLoadingMore] = useState(false);
-    const pageSize = 20; // Adjust the number of products per page as needed
+    const pageSize = 40; // Adjust the number of products per page as needed
     const { addToCart } = useCart();
 
 

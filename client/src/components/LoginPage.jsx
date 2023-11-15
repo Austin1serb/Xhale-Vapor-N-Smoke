@@ -16,8 +16,15 @@ import {
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
+
+
 
 const LoginPage = () => {
+    const [openSnackbar, setOpenSnackbar] = React.useState(false);
+    const [errorMessage, setErrorMessage] = useState('')
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -60,16 +67,28 @@ const LoginPage = () => {
                 // Login successful
                 // Store JWT and refresh token
                 const data = await response.json();
-                const token = data.accessToken;
+                const accessToken = data.accessToken;
                 const refreshToken = data.refreshToken;
-                localStorage.setItem('token', token); // Store in localStorage for persistent login
+                localStorage.setItem('token', accessToken); // Store in localStorage for persistent login
                 localStorage.setItem('refreshToken', refreshToken); // Store the refresh token
-                // Redirect to the home page
-                navigate('/');
+                const decodedToken = jwtDecode(accessToken);
+
+
+                console.log(decodedToken);
+
+
+                // Store user details in localStorage (or sessionStorage)
+                localStorage.setItem('userFirstName', decodedToken.firstName);
+                localStorage.setItem('userLastName', decodedToken.lastName);
+                localStorage.setItem('customerId', decodedToken.customerId);
+                localStorage.setItem('userEmail', decodedToken.email);
+                // Redirect to the home page or checkoutpage
+
+                const params = new URLSearchParams(window.location.search);
+                const returnUrl = params.get('returnUrl') || '/';
+                navigate(returnUrl);
             } else {
-                // Login failed, display error message
-                const data = await response.json();
-                setError(data.message);
+                handleErrorResponse(response, setError);
             }
         } catch (error) {
             setError('An error occurred while logging in: ' + error);
@@ -77,6 +96,30 @@ const LoginPage = () => {
             setLoading(false);
         }
     };
+    async function handleErrorResponse(response, setError) {
+        let errorData;
+        const contentType = response.headers.get('content-type');
+
+        try {
+            if (contentType && contentType.includes('application/json')) {
+                errorData = await response.json();
+                if (errorData.message) {
+                    setError(errorData.message);
+                } else {
+                    setError('An unknown error occurred');
+                }
+            } else {
+                // Handle non-JSON response
+                errorData = await response.text();
+                setError(errorData || 'An error occurred');
+            }
+        } catch (error) {
+            console.error('Error processing response:', error);
+            setError('An unexpected error occurred');
+        }
+        setOpenSnackbar(true)
+    }
+
 
     return (
         <Box
@@ -88,6 +131,11 @@ const LoginPage = () => {
                 backgroundColor: '#fff', // Set your desired background color
             }}
         >
+            <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={() => setOpenSnackbar(false)}>
+                <Alert onClose={() => setOpenSnackbar(false)} severity="error" sx={{ width: '100%' }}>
+                    {errorMessage || error}
+                </Alert>
+            </Snackbar>
             <Paper
                 sx={{
                     padding: 3,
@@ -107,6 +155,9 @@ const LoginPage = () => {
                 </Typography>
 
                 <TextField
+                    id="email"
+                    autoComplete='email'
+                    type='email'
                     label="Email"
                     variant="outlined"
                     fullWidth
@@ -117,6 +168,8 @@ const LoginPage = () => {
                     helperText={error}
                 />
                 <TextField
+                    id="password"
+                    autoComplete="current-password"
                     label="Password"
                     type={showPassword ? 'text' : 'password'}
                     variant="outlined"
@@ -129,7 +182,7 @@ const LoginPage = () => {
                         endAdornment: (
                             <InputAdornment position="end">
                                 <IconButton
-                                    aria-label="toggle password visibility"
+                                    aria-label={showPassword ? "Hide password" : "Show password"}
                                     onClick={handleClickShowPassword}
                                     onMouseDown={handleMouseDownPassword}
                                     edge="end"
@@ -156,8 +209,11 @@ const LoginPage = () => {
                         color="primary"
                         fullWidth
                         onClick={handleLogin}
+                        disabled={loading}
                     >
-                        Login
+
+                        {loading ? <CircularProgress size={24} /> : 'Login'}
+
                     </Button>
                 )}
 

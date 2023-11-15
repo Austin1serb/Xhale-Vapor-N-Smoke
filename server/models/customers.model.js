@@ -28,33 +28,15 @@ const CustomerSchema = new mongoose.Schema({
         required: false, // Make this field optional
     },
 
-    mobilePhone: {
+    phone: {
         type: String,
-        match: [
-            /^\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/,
-            'Please use this format: +1 (123) 123-4567',
-        ],
     },
-    homePhone: {
-        type: String,
-        match: [
-            /^\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/,
-            'Please use this format: +1 (123) 123-4567',
-        ],
-    },
-    comment: {
-        type: String,
-        maxlength: [256, 'Please keep your description under 256 characters.'],
-    },
+
     //consent: {
     //    type: Boolean,
     //    required: [true, 'Please acknowledge and consent.'],
     //},
     // Additional Fields
-    address: {
-        type: String,
-        required: false,
-    },
     password: {
         type: String,
         minlength: [8, 'Password Must be at least 8 characters.']
@@ -65,28 +47,33 @@ const CustomerSchema = new mongoose.Schema({
             ref: 'Order',
         },
     ],
-    defaultShippingAddress: {
-        street: {
-            type: String,
-            required: false,
-        },
-        city: {
-            type: String,
-            required: false,
-        },
-        state: {
-            type: String,
-            required: false,
-        },
-        zipCode: {
-            type: String,
-            required: false,
-        },
-        country: {
-            type: String,
-            required: false,
-        },
+
+    address: {
+        type: String,
+        required: false,
     },
+
+    address2: {
+        type: String,
+        required: false,
+    },
+    city: {
+        type: String,
+        required: false,
+    },
+    state: {
+        type: String,
+        required: false,
+    },
+    zip: {
+        type: String,
+        required: false,
+    },
+    country: {
+        type: String,
+        required: false,
+    },
+
     // You can add other fields here as needed.
 },
     { timestamps: true });

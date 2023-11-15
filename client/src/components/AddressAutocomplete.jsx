@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
-import { TextField, InputAdornment } from '@mui/material';
+import { TextField, InputAdornment, Tooltip, IconButton } from '@mui/material';
 import { BiSearchAlt } from 'react-icons/bi';
-const AddressAutocomplete = ({ id, label, fullWidth, variant, onAddressSelected, value, setValue }) => {
+const AddressAutocomplete = ({ id, label, fullWidth, variant, onAddressSelected, value, setValue, error, helperText, color, focused, onBlur, sx }) => {
     const autocompleteInput = useRef(null);
     useEffect(() => {
         // Function to initialize the Autocomplete
@@ -33,14 +33,26 @@ const AddressAutocomplete = ({ id, label, fullWidth, variant, onAddressSelected,
             label={label}
             fullWidth={fullWidth}
             InputProps={{
-                endAdornment: <InputAdornment position="end" >
-                    <BiSearchAlt fontSize={24} />
-                </InputAdornment>,
+                endAdornment:
+                    <InputAdornment position="end" >
+                        <Tooltip title="Google Places will help you validate your address">
+                            <IconButton sx={{ mr: -1, color: '#0F75E0' }}>
+                                <BiSearchAlt fontSize={24} />
+                            </IconButton>
+                        </Tooltip>
+                    </InputAdornment>,
             }}
             variant={variant}
             value={value}
-            onChange={e => setValue(e.target.value)} // Lift up the change to the parent component
-            placeholder="Enter address"
+            onChange={e => setValue(e.target.value)}
+
+            helperText={helperText}
+            error={error}
+            color={color}
+            focused={focused}
+            onBlur={onBlur}
+            autoComplete='address'
+            sx={sx}
         />
     );
 };

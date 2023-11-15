@@ -1,39 +1,77 @@
 import React, { useState, useEffect } from 'react';
-import { Typography, Grid, Paper, List, ListItem, ListItemText, Divider, Button, CircularProgress, Box } from '@mui/material';
+import { Typography, Grid, List, ListItem, ListItemText, Button, CircularProgress, Box, ListItemAvatar } from '@mui/material';
 import '../Styles/CheckoutPage.css'
-const ShippingComponent = ({ shippingDetails, onShippingCostChange }) => {
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import { format, addDays } from 'date-fns';
+const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, setActiveStep, back, next, step, onShippingOptionsChange, handleCheckout }) => {
     const [shippingOptions, setShippingOptions] = useState([]);
     const [loading, setLoading] = useState(false);
     const [shippingCost, setShippingCost] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 4;
     const [buttonDisabled, setButtonDisabled] = useState([]);
+    const [lastAddress, setLastAddress] = useState({});
+    let totalWeight = 0;
+    let maxLength = 0;
+    let maxWidth = 0;
+    let maxHeight = 0;
+
+    const defaultDimensions = {
+        length: 5,
+        width: 5,
+        height: 5,
+        weight: 2
+    };
+
+    cartItems.forEach(item => {
+        // Use item dimensions if available, otherwise use default dimensions
+        const itemLength = item.length || defaultDimensions.length;
+        const itemWidth = item.width || defaultDimensions.width;
+        const itemHeight = item.height || defaultDimensions.height;
+        const itemWeight = item.weight || defaultDimensions.weight;
+
+        totalWeight += itemWeight;
+        maxLength = Math.max(maxLength, itemLength);
+        maxWidth = Math.max(maxWidth, itemWidth);
+        maxHeight = Math.max(maxHeight, itemHeight);
+    });
 
 
+    const calculateShippingDate = (estimatedDays) => {
+        // Check for invalid or missing estimatedDays
+        if (estimatedDays === null || estimatedDays === undefined || estimatedDays === '' || isNaN(estimatedDays)) {
+            return 'Estimated delivery date not available'; // Fallback message
+        }
 
+        const currentDate = new Date();
+        const shippingDate = addDays(currentDate, estimatedDays);
+        return format(shippingDate, 'MMMM do, yyyy'); // Format date as "Month day, year"
+    };
 
     const calculateShipping = async () => {
+
+        if (JSON.stringify(lastAddress) === JSON.stringify(shippingDetails.address)) {
+            // The address hasn't changed, no need to fetch new rates
+            console.log('address has not changed')
+            return;
+        }
         try {
             setLoading(true);
 
-            // This should be the URL of your backend endpoint that calls Shippo
+
             const backendUrl = 'http://localhost:8000/api/shippo';
-
-            // Assuming your backend expects shipping details in this format
-
-            // Assuming your backend expects shipping details in this format
             const shipmentDetails = {
                 addressFrom: {
-                    // You would replace these with your actual 'from' address details
-                    "name": "Shawn Ippotle",
-                    "company": "Shippo",
-                    "street1": "215 Clayton St.",
-                    "city": "San Francisco",
-                    "state": "CA",
-                    "zip": "94117",
+
+                    "name": "SAMI",
+                    "company": "HERBAL ZESTFULNESS",
+                    "street1": "5 lake st",
+                    "city": "Kirkland",
+                    "state": "Wa",
+                    "zip": "98033",
                     "country": "US", // iso2 country code
-                    "phone": "+1 555 341 9393",
-                    "email": "shippotle@shippo.com",
+                    "phone": "+1 425 285 9173",
+                    "email": "genius.baar@gmail.com",
                 },
                 addressTo: {
                     name: `${shippingDetails.firstName} ${shippingDetails.lastName}`,
@@ -45,12 +83,11 @@ const ShippingComponent = ({ shippingDetails, onShippingCostChange }) => {
                 },
 
                 parcel: {
-                    // You would replace these with your actual package details
-                    length: "5",
-                    width: "5",
-                    height: "5",
+                    length: maxLength.toString(),
+                    width: maxWidth.toString(),
+                    height: maxHeight.toString(),
                     distance_unit: "in",
-                    weight: "2",
+                    weight: totalWeight.toString(),
                     mass_unit: "lb"
                 }
             };
@@ -71,11 +108,13 @@ const ShippingComponent = ({ shippingDetails, onShippingCostChange }) => {
             }
 
             const result = await response.json();
+            //console.log(result)
             const sortedRates = result.rates.sort((a, b) => parseFloat(a.amount) - parseFloat(b.amount));
 
             setShippingOptions(sortedRates); // Now sorted by cost
+            setLastAddress(shippingDetails.address);
             setLoading(false);
-            console.log(sortedRates);
+
 
         } catch (error) {
             console.error('There was a problem with the fetch operation:', error);
@@ -90,14 +129,18 @@ const ShippingComponent = ({ shippingDetails, onShippingCostChange }) => {
 
 
     useEffect(() => {
-        // Initialize the buttonDisabled array based on shippingOptions
+
+
+
         setButtonDisabled(new Array(shippingOptions.length).fill(false));
     }, [shippingOptions]);
+
 
     const handleSelectShippingOption = (cost, index) => {
         setShippingCost(cost);
         onShippingCostChange(cost); // Pass the cost to the parent component
-
+        onShippingOptionsChange(shippingOptions[index]);
+        console.log(shippingOptions[index])
         // Create a new array with all false, except the index that needs to be disabled
         const updatedDisabledState = buttonDisabled.map((item, idx) => idx === index);
         setButtonDisabled(updatedDisabledState);
@@ -113,45 +156,77 @@ const ShippingComponent = ({ shippingDetails, onShippingCostChange }) => {
     const goToPreviousPage = () => {
         setCurrentPage(currentPage - 1);
     };
+    const handleChangeContant = () => {
+        setActiveStep(1);
+
+    }
 
     return (
-        <div>
-            <Typography variant="h6" gutterBottom>
-                Shipping Method
-            </Typography>
+        <Box className='checkout-shipping-container'>
+
 
             {/* Contact and Shipping Information */}
-            <Paper elevation={3} style={{ padding: '20px', marginBottom: '20px' }}>
-                <Typography variant="subtitle1">Contact</Typography>
-                <Typography variant="body1">{shippingDetails.email}</Typography>
-                <Divider style={{ margin: '10px 0' }} />
-                <Typography variant="subtitle1">Ship to</Typography>
-                <Typography variant="body1">{`${shippingDetails.address} ${shippingDetails.address2}, ${shippingDetails.city}, ${shippingDetails.state} ${shippingDetails.zip}, ${shippingDetails.country}`}</Typography>
-            </Paper>
-            {loading ? <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}><CircularProgress /> Getting Shipping Rates... </Box> : <Paper elevation={3} style={{ padding: '20px' }}>
+            <Box className='checkout-shipping' >
+                <Box className='checkout-shipping-contact' >
+                    <Typography variant="subtitle1">Contact:</Typography>
+                    <Box className='checkout-shipping-change'>
+                        <Typography variant="body2" fontWeight={100}>{shippingDetails.phone}</Typography>
+                        <Typography variant="body2" fontWeight={100}>{shippingDetails.email}</Typography>
+                        <Button onClick={handleChangeContant} sx={{ fontSize: 12 }}>Change</Button>
+                    </Box>
+                </Box >
+                <Box className='checkout-shipping-address '>
+                    <Typography variant="subtitle1">Ship to:</Typography>
+                    <Box className="checkout-shipping-change">
+                        <Typography fontWeight={100} variant="body2">{shippingDetails.firstName + ' ' + shippingDetails.lastName} </Typography>
+                        <Typography fontWeight={100} variant="body2">{`${shippingDetails.address} ${shippingDetails.address2}, ${shippingDetails.city}, ${shippingDetails.state} ${shippingDetails.zip}, ${shippingDetails.country}`} </Typography>
+                        <Button onClick={handleChangeContant} sx={{ fontSize: 12 }}>Change</Button>
+                    </Box>
+
+                </Box>
+            </Box>
+            {loading ? <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                <CircularProgress />
+                Getting Shipping Rates...
+            </Box> :
                 <List>
 
                     {/* Shipping Options */}
-                    <Paper elevation={3} style={{ padding: '20px' }}>
-                        <List className='checkout-shipping'>
+                    <Typography variant="h6" >
+                        Shipping Method
+                    </Typography>
+                    <Box >
+                        <List>
                             {currentItems.map((option, index) => (
                                 <ListItem
                                     key={index}
                                     sx={{
-                                        backgroundColor: buttonDisabled[index] ? 'rgba(15, 117, 224, 0.1)' : ''
+                                        backgroundColor: buttonDisabled[index] ? 'rgba(15, 117, 224, 0.1)' : '',
+
                                     }}
                                     className={`checkout-shipping-item-${+index}`}
                                 >
-                                    <ListItemText className='checkout-shipping-name' primary={option.servicelevel.name} secondary={`Estimated ${option.duration_terms}`} />
-                                    <Typography className='checkout-shipping-price' variant="body2">${option.amount_local}</Typography>
-                                    <Button disabled={buttonDisabled[index]} className='checkout-shipping-button' sx={{ fontSize: 12, minWidth: '80px', ml: 2 }} variant="outlined" onClick={() => handleSelectShippingOption(option.amount_local, index)}>
-                                        {buttonDisabled[index] ? 'Selected' : 'Select'}
-                                    </Button>
+
+                                    <div className='checkout-shipping-item-container'>
+                                        <div >
+                                            <ListItemText className='checkout-shipping-name' primary={option.servicelevel.name} secondary={`Estimated Delivery: ${calculateShippingDate(option.estimated_days)}`} />
+                                            <ListItemAvatar >
+                                                <img src={option.provider_image_75} alt="index" />
+                                            </ListItemAvatar>
+                                        </div>
+                                        <div className='checkout-shipping-item-price-container'>
+                                            <ListItemText className='checkout-shipping-price' primary={'$' + option.amount_local} />
+
+                                            <Button disabled={buttonDisabled[index]} className='checkout-shipping-button' sx={{ fontSize: 12, minWidth: '80px', ml: 2 }} variant="outlined" onClick={() => handleSelectShippingOption(option.amount_local, index)}>
+                                                {buttonDisabled[index] ? 'Selected' : 'Select'}
+                                            </Button>
+                                        </div>
+                                    </div>
                                 </ListItem>
                             ))}
 
                         </List>
-                    </Paper>
+                    </Box>
                     {/* Shipping Options Selector */}
                     <Grid container style={{ marginTop: '20px', justifyContent: 'space-between' }}>
                         {currentPage > 1 && (
@@ -165,19 +240,23 @@ const ShippingComponent = ({ shippingDetails, onShippingCostChange }) => {
                             </Button>
                         )}
                     </Grid>
-                    {/* ... other shipping options */}
+
                 </List>
-            </Paper>
+
             }
-            {/* Shipping Options */}
+
 
             {/* Proceed to Payment Button */}
-            <Grid container style={{ marginTop: '20px', justifyContent: 'flex-end' }}>
-                <Button variant="contained" color="primary">
-                    Proceed to Payment
-                </Button>
+            <Grid container style={{ marginTop: '20px', justifyContent: 'space-between' }}>
+
+                <Button onClick={back} className='cart-checkout-button' variant="outlined" sx={{ m: 1, letterSpacing: 2, color: 'white', fontSize: 12, borderRadius: 0, backgroundColor: '#283047', height: 56.5, "&:hover": { backgroundColor: '#FE6F49', border: 'none', }, textAlign: 'center' }}>
+                    <ArrowBackIosNewIcon sx={{ fontSize: 18, mr: 1 }} />
+                    Return to information</Button>
+                <Button onClick={handleCheckout} variant="outlined" sx={{ m: 1, letterSpacing: 2, color: '#283047', borderRadius: 0, backgroundColor: 'white', fontSize: 12, borderColor: '#283047', borderWidth: 1.5, height: 55, '&:hover': { backgroundColor: '#0F75E0', color: 'white', } }}><span className='cartSummary-checkout-text'>Proceed to </span> Payment</Button>
+
+
             </Grid>
-        </div>
+        </Box>
     );
 };
 

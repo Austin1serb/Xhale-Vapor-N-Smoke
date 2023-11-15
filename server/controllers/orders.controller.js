@@ -61,12 +61,18 @@ module.exports = {
                 res.json(data)
             }).catch(err => res.json(err))
     },
-    createOne: (req, res) => {
-        Orders.create(req.body)
-            .then(data => {
-                res.json(data)
-            }).catch(err => res.status(400).json(err))
+    createOne: async (req, res) => {
+        try {
+            const newOrder = new Orders(req.body);
+            newOrder.orderNumber = newOrder._id; // Assign the _id to orderNumber
+            const savedOrder = await newOrder.save();
+            res.json(savedOrder);
+        } catch (err) {
+            console.error('Error creating order:', err);
+            res.status(400).json(err);
+        }
     },
+
 
 
     updateOne: (req, res) => {

@@ -6,6 +6,9 @@ const express = require('express');
 const app = express();
 const port = process.env.PORT;
 const secretKey = process.env.JWT_SECRET_KEY; //
+const rateLimit = require('express-rate-limit');
+
+
 
 app.use(cors(), express.json({ limit: "50mb" }), express.urlencoded({ limit: "50mb", extended: true }));
 
@@ -18,7 +21,11 @@ const cartRoutes = require('./routes/carts.routes');
 const paymentRoutes = require('./routes/payments.routes');
 const shippoRoutes = require('./routes/shippo.routes');
 const { uploadToCloudinary } = require('./services/cloudinary');
+const suggestionsRoutes = require('./routes/suggestions.routes');
+const stripeRoutes = require('./routes/stripe.routes');
 
+app.use("/api/", suggestionsRoutes);
+app.use("/api/stripe", stripeRoutes);
 app.use("/api/staff", staffRoutes);
 app.use("/api/product", productRoutes);
 app.use("/api/order", orderRoutes);

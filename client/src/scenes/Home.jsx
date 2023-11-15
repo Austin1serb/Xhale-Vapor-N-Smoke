@@ -11,6 +11,7 @@ import { PiPlant } from 'react-icons/pi'
 import BestSellersSection from '../components/BestSellersSection';
 import ShopByBrand from '../components/ShopByBrand';
 import AgeVerification from './AgeVerification';
+import { Link } from 'react-router-dom';
 
 const Home = () => {
 
@@ -61,7 +62,10 @@ const Home = () => {
                         <div className='colored-square-content'>
                             <div className="colored-square">
                                 <h1>Clean & Premium CBD</h1>
-                                <Button >SHOP CBD</Button>
+                                <Link to='/shop' >
+                                    <button >SHOP CBD</button>
+                                </Link>
+
                             </div>
                         </div>
                     </div>

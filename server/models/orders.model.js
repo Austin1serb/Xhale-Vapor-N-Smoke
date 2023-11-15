@@ -1,23 +1,34 @@
 const mongoose = require('mongoose');
 
 const OrderSchema = new mongoose.Schema({
+
     orderNumber: {
         type: String,
         required: true,
         unique: true, // Ensure the order number is unique
+    },
+    orderNotes: {
+        type: String,
+        required: false,
     },
     customer: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Customer',
         required: true,
     },
+    customerEmail: {
+        type: String,
+        required: true,
+    },
+
     products: [
         {
-            product: {
+            productId: {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: 'Product',
                 required: true,
             },
+
             price: {  // Price at the time of order
                 type: Number,
                 required: true,
@@ -28,36 +39,46 @@ const OrderSchema = new mongoose.Schema({
             },
         },
     ],
+    shippingMethod: {
+        type: Object,
+        required: false,
+    },
     orderDate: {
         type: Date,
         default: Date.now,
     },
     totalAmount: {
-        type: Number,
+        type: Object,
         required: true,
     },
-
+    address: {
+        type: String,
+        required: true
+    },
+    orderStatus: {
+        type: String,
+        enum: ['Pending', 'Shipped', 'Delivered', 'Cancelled'],
+        required: false,
+        default: 'Pending'
+    },
 
     // Payment Information
     paymentStatus: {
         type: String,
-        enum: ['Pending', 'Completed', 'Failed', 'Refunded'],
-        required: true,
+        enum: ['Pending', 'Paid', 'Failed', 'Refunded'],
+        required: false,
         default: 'Pending'
     },
-    paymentMethod: {
-        type: String,
-        required: true
-    },
+
     transactionId: {
         type: String,
-        required: false  // Not all payment methods may provide a transaction ID
+        required: false
     },
 
     // Audit Fields
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        ref: 'Customer',
         required: true
     },
     updatedBy: {
@@ -67,19 +88,6 @@ const OrderSchema = new mongoose.Schema({
     }
 }, { timestamps: true });  // This option adds `createdAt` and `updatedAt` fields
 
-// Pre-save hook for data integrity
-OrderSchema.pre('save', async function (next) {
-    // Example: Ensure the totalAmount is the sum of products' price * quantity
-    if (this.isModified('products')) {
-        let total = 0;
-        for (const item of this.products) {
-            const product = await mongoose.model('Product').findById(item.product);
-            total += item.quantity * product.price;
-        }
-        this.totalAmount = total;
-    }
-    next();
-});
 
 // Indexing
 OrderSchema.index({ orderNumber: 1 });  // Assuming orderNumber should be unique and often queried
