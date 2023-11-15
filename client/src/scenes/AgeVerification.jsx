@@ -2,6 +2,7 @@ import React from 'react';
 import { Box, Typography, Button, Paper } from '@mui/material';
 
 const AgeVerificationOverlay = ({ onVerify }) => {
+
     return (
         <Box
             sx={{
