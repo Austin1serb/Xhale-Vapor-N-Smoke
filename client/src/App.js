@@ -27,7 +27,7 @@ const App = () => {
 
   const handleVerify = (verified) => {
     if (verified) {
-      sessionStorage.setItem('ageVerified', 'true');
+      localStorage.setItem('isVerified', true);
       setIsAgeVerified(true);
     }
   };

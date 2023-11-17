@@ -10,36 +10,13 @@ import { SiAtom } from 'react-icons/si'
 import { PiPlant } from 'react-icons/pi'
 import BestSellersSection from '../components/BestSellersSection';
 import ShopByBrand from '../components/ShopByBrand';
-import AgeVerification from './AgeVerification';
+
 import { Link } from 'react-router-dom';
 
 const Home = () => {
 
-    const [showAgeVerification, setShowAgeVerification] = useState(true);
-    const [isUserOver18, setIsUserOver18] = useState(false);
-    const [shake, setShake] = useState(false);
 
-    useEffect(() => {
-        // Check if the user has already verified their age in session storage
-        const ageVerified = sessionStorage.getItem('ageVerified');
-        if (ageVerified === 'true') {
-            setIsUserOver18(true);
-            setShowAgeVerification(true);
-        }
-    }, []);
 
-    const handleAgeVerification = (isOver18) => {
-        if (isOver18) {
-            setIsUserOver18(true);
-            setShowAgeVerification(false);
-
-            // Save the verification status in session storage
-            sessionStorage.setItem('ageVerified', 'true');
-        } else {
-            setIsUserOver18(false);
-            setShowAgeVerification(false);
-        }
-    };
 
 
     const customFont = "freight-display-pro, serif";
@@ -54,7 +31,7 @@ const Home = () => {
     };
     return (
         <Box  >
-            {showAgeVerification && <AgeVerification onVerify={handleAgeVerification} />}
+
 
             <>
                 <Box className="home-container">
@@ -63,7 +40,7 @@ const Home = () => {
                             <div className="colored-square">
                                 <h1>Clean & Premium CBD</h1>
                                 <Link to='/shop' >
-                                    <button >SHOP CBD</button>
+                                    <button className='colored-square-button'>SHOP CBD</button>
                                 </Link>
 
                             </div>
@@ -74,7 +51,7 @@ const Home = () => {
                     </div>
                 </Box>
                 <Box className='' component='div' py={16} sx={{ width: '70%', height: 'auto', alignItems: 'center', justifyContent: 'center', margin: '0 auto', textAlign: 'center' }}>
-                    <Typography variant='h4' style={{ fontFamily: customFont }}>
+                    <Typography style={{ fontFamily: customFont, fontSize: '30px' }}>
                         Our CBD is award-winning and triple-tested for quality. Try for 30 days & love it or send it back—no questions asked.
                     </Typography>
                     <Box className="list-container" >
