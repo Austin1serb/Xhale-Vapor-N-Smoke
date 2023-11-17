@@ -31,12 +31,16 @@ const CustomerSchema = new mongoose.Schema({
     phone: {
         type: String,
     },
-
+    isVerified: {
+        type: Boolean,
+        default: false,
+        required: false,
+    },
     //consent: {
     //    type: Boolean,
     //    required: [true, 'Please acknowledge and consent.'],
     //},
-    // Additional Fields
+
     password: {
         type: String,
         minlength: [8, 'Password Must be at least 8 characters.']
@@ -74,7 +78,7 @@ const CustomerSchema = new mongoose.Schema({
         required: false,
     },
 
-    // You can add other fields here as needed.
+
 },
     { timestamps: true });
 
