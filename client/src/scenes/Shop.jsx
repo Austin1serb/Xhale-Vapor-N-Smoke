@@ -1,6 +1,6 @@
 
 import '../Styles/Shop.css'
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Box, Typography, TextField, Button, Grid, Skeleton } from '@mui/material';
 import axios from 'axios';
 import { useCart } from '../components/CartContext.jsx';
@@ -8,28 +8,28 @@ import QuickView from '../components/QuickView';
 
 
 const ProductSkeleton = ({ count }) => (
-    <Grid container spacing={3}>
-        {Array.from({ length: count }).map((_, index) => (
-            <Grid item xs={12} sm={6} md={4} key={index}>
-                <Box sx={{
-                    border: '.1px solid #ccc',
-                    borderRadius: '1px',
-                    py: '20px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    height: '300px',
-                    justifyContent: 'space-between'
-                }}>
-                    <Skeleton variant="rectangular" width="100%" height={150} />
-                    <Skeleton variant="text" width="80%" height={24} />
-                    <Skeleton variant="text" width="60%" height={20} />
-                    <Skeleton variant="text" width="80%" height={20} />
-                    <Skeleton variant="text" width="30%" height={24} />
-                </Box>
-            </Grid>
-        ))}
-    </Grid>
+
+    Array.from({ length: count }).map((_, index) => (
+        <Grid item xs={12} sm={6} md={4} key={index}>
+            <Box sx={{
+                border: '.1px solid #ccc',
+                borderRadius: '1px',
+                py: '20px',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                height: '300px',
+                justifyContent: 'space-between'
+            }}>
+                <Skeleton variant="rectangular" width="100%" height={150} />
+                <Skeleton variant="text" width="80%" height={24} />
+                <Skeleton variant="text" width="60%" height={20} />
+                <Skeleton variant="text" width="80%" height={20} />
+                <Skeleton variant="text" width="30%" height={24} />
+            </Box>
+        </Grid>
+    ))
+
 );
 
 
@@ -42,8 +42,9 @@ const Shop = () => {
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
     const [loadingMore, setLoadingMore] = useState(false);
-    const pageSize = 40; // Adjust the number of products per page as needed
+    const pageSize = 9; // Adjust the number of products per page as needed
     const { addToCart } = useCart();
+    const [totalProducts, setTotalProducts] = useState(0);
 
 
 
@@ -54,7 +55,9 @@ const Shop = () => {
             .then(response => {
                 setProducts(response.data.products);
                 setPage(2); // since the first page is already loaded
+                setTotalProducts(response.data.totalProducts);
                 setLoading(false);
+
             })
             .catch(error => {
                 console.error("There was an error fetching the products:", error);
@@ -62,23 +65,22 @@ const Shop = () => {
             });
     }, []);
 
-    const handleScroll = () => {
-        if (
-            window.innerHeight + document.documentElement.scrollTop ===
-            document.documentElement.offsetHeight
-        ) {
-            // User has scrolled to the bottom
-            if (!loadingMore) {
-                setLoadingMore(true);
 
+    const handleScroll = useCallback(() => {
+        if (window.innerHeight + document.documentElement.scrollTop === document.documentElement.offsetHeight) {
+            // User has scrolled to the bottom
+            if (products.length < totalProducts && !loadingMore) {
+                setLoadingMore(true);
                 // Fetch the next page of products
                 axios
-                    .get(`http://localhost:8000/api/product/paginate/?page=${page + 1}&pageSize=${pageSize}`)
+                    .get(`http://localhost:8000/api/product/paginate/?page=${page}&pageSize=${pageSize}`)
                     .then(response => {
+
                         // Append the new products to the existing products array
                         setProducts(prevProducts => [...prevProducts, ...response.data.products]);
                         setPage(prevPage => prevPage + 1);
                         setLoadingMore(false);
+                        console.log(products)
                     })
                     .catch(error => {
                         console.error("There was an error fetching more products:", error);
@@ -86,14 +88,15 @@ const Shop = () => {
                     });
             }
         }
-    };
+    }, [loadingMore, page, pageSize, products.length, totalProducts]);
 
     useEffect(() => {
         window.addEventListener("scroll", handleScroll);
         return () => {
             window.removeEventListener("scroll", handleScroll);
         };
-    }, [loadingMore]);
+    }, [handleScroll]); // Only depends on handleScroll
+
 
 
     const getRelatedProducts = (categories) => {
@@ -122,7 +125,9 @@ const Shop = () => {
 
             {/* Products Grid */}
             {loading ? ( // Check if products are loading
-                <ProductSkeleton count={pageSize} />
+                <Grid container spacing={3}>
+                    <ProductSkeleton count={pageSize} />
+                </Grid>
             ) : ( // Render products when not loading
                 <Grid container spacing={3}>
                     {filteredProducts.map(product => (
@@ -155,9 +160,20 @@ const Shop = () => {
                                         setQuickViewOpen(true)
                                     }}>Quick View</Button>
                                 </Box>
+
                             </Box>
+
                         </Grid>
                     ))}
+                    {/* Display skeletons if more products are to be loaded or loading more products */}
+
+                    {(filteredProducts.length < totalProducts || loadingMore) && (
+
+                        <ProductSkeleton count={3} />
+
+                    )}
+
+
                 </Grid>
             )}
 

@@ -159,6 +159,9 @@ const RegistrationPage = () => {
             const registrationData = {
                 ...formData,
                 recaptchaValue,
+                isVerified: localStorage.getItem('isVerified')
+
+
             };
 
             const response = await fetch('http://localhost:8000/api/customer/register', {
@@ -263,7 +266,7 @@ const RegistrationPage = () => {
         >
             <Snackbar open={openSnackbar} autoHideDuration={5000} onClose={() => setOpenSnackbar(false)}>
                 <Alert onClose={() => setOpenSnackbar(false)} severity="error" sx={{ width: '100%' }}>
-                    {errorMessage || errors}
+                    {errorMessage ? errorMessage : 'An error occurred'}
                 </Alert>
             </Snackbar>
             <Paper

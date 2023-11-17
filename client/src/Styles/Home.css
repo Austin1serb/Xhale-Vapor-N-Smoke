@@ -37,9 +37,9 @@
 }
 
 
-.colored-square button {
+.colored-square-button {
     border-radius: 0;
-    background-color: #FE6F49;
+    background-color: #282F48;
     color: #FFFFFF;
     padding: 20px 40px;
     border: none;
@@ -87,8 +87,8 @@
     color: #FFFFFF;
 }
 
-.colored-square button:hover {
-    background-color: #282F48;
+.colored-square-button:hover {
+    background-color: #FE6F49;
 }
 
 .right-content {

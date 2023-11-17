@@ -248,7 +248,9 @@ const InformationComponent = ({ next, back, onShippingDetailsSubmit, formData, o
         },
         '& .MuiInputLabel-root': {
             fontSize: '14px' // Adjust the font size as needed
-        }
+        },
+        border: '0,1px solid black'
+
     }
 
 
@@ -465,8 +467,8 @@ const InformationComponent = ({ next, back, onShippingDetailsSubmit, formData, o
                     </Grid>
                     <Grid item xs={12} className='information-buttons'>
 
-                        <Button className='cart-checkout-button' onClick={back} variant="outlined" sx={{ letterSpacing: 2, color: 'white', borderRadius: 0, backgroundColor: '#283047', "&:hover": { backgroundColor: '#FE6F49', border: '1px solid #FE6F49 ', }, textAlign: 'center' }}>Back to cart</Button>
-                        <Button onClick={handleSubmit} variant="outlined" sx={{ m: 1, letterSpacing: 2, color: '#283047', borderRadius: 0, backgroundColor: 'white', borderColor: '#283047', borderWidth: 1.5, '&:hover': { backgroundColor: '#0F75E0', color: 'white', } }}><span className='cartSummary-checkout-text'>Proceed</span>  to Shipping</Button>
+                        <Button className='cart-checkout-button' onClick={back} variant="outlined" sx={{ letterSpacing: 2, color: 'white', backgroundColor: '#283047', "&:hover": { backgroundColor: '#FE6F49', border: '1px solid #FE6F49 ', }, textAlign: 'center', height: 55 }}>Back to cart</Button>
+                        <Button onClick={handleSubmit} variant="outlined" sx={{ height: 55, m: 1, letterSpacing: 2, color: '#283047', backgroundColor: 'white', borderColor: '#283047', borderWidth: 1.5, '&:hover': { backgroundColor: '#0F75E0', color: 'white', } }}><span className='cartSummary-checkout-text'>Proceed</span>  to Shipping</Button>
                     </Grid>
                 </Grid>
             </FormControl>

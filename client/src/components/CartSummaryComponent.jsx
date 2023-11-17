@@ -7,8 +7,9 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import { AiOutlineShoppingCart } from 'react-icons/ai';
 import { Link } from 'react-router-dom';
+import '../Styles/CheckoutPage.css'
 
-const CartSummaryComponent = ({ cartItems, shippingCost, total, removeFromCart, adjustQuantity, next, step, handleCheckout, setFullCost }) => {
+const CartSummaryComponent = ({ cartItems, shippingCost, total, removeFromCart, adjustQuantity, next, step, setFullCost }) => {
     // Helper function to format cost display
     const formatCost = (cost) => {
         return (typeof cost === 'number') ? `$${cost.toFixed(2)}` : cost;
@@ -44,25 +45,20 @@ const CartSummaryComponent = ({ cartItems, shippingCost, total, removeFromCart, 
         setFullCost({
             subTotal: total,
             grandTotal: grandTotal,
-            tax: tax,
+            tax: Number(tax.toFixed(2)),
             shippingCost: validShippingCost,
         });
     }
         , [grandTotal])
 
-    const handleLocalCheckout = () => {
 
-
-
-        handleCheckout();
-    };
 
     return (
         <div className='cartSummary-container' >
 
 
             <List disablePadding >
-                <Box ref={boxRef} sx={{ maxHeight: '60vh', minHeight: '55vh', overflow: 'auto', mt: -2.5, mb: -1.25, }}>
+                <Box ref={boxRef} sx={{ maxHeight: '60vh', minHeight: '65vh', overflow: 'auto', mt: { xs: 1, sm: -2.5 }, mb: -1.25, }}>
                     <Typography sx={{ borderBottom: .1, my: 2, textAlign: 'center', }} variant="h6" gutterBottom>
                         Order Summary
                     </Typography>
@@ -134,7 +130,7 @@ const CartSummaryComponent = ({ cartItems, shippingCost, total, removeFromCart, 
                     <>
                         {showScrollIcon && (
                             <IconButton onClick={scrollToBottom} sx={{
-                                position: 'absolute', right: '5vw', bottom: step !== 0 ? 220 : { xs: 360, sm: 290 }, backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                                position: 'absolute', right: { xs: '20vw', sm: '8vw' }, bottom: step !== 0 ? 225 : { xs: 360, sm: 290 }, backgroundColor: 'rgba(255, 255, 255, 0.7)',
                                 backdropFilter: 'blur(4px)',
                                 borderRadius: '50%',
                                 border: '1px solid black'
@@ -180,12 +176,13 @@ const CartSummaryComponent = ({ cartItems, shippingCost, total, removeFromCart, 
                         {step === 0 ?
                             <Box className="cartSummary-checkout-button">
                                 <Button className='cart-checkout-button' component={Link} to='/shop' variant="outlined" sx={{ m: 1, width: { xs: '75%', sm: '45%', md: '40%' }, letterSpacing: 2, color: 'white', borderRadius: 0, backgroundColor: '#283047', height: 56.5, "&:hover": { backgroundColor: '#FE6F49', border: 'none', }, textAlign: 'center' }}>Continue Shopping</Button>
-                                <Button onClick={next} variant="outlined" sx={{ m: 1, width: { xs: '75%', sm: '45%', md: '40%' }, letterSpacing: 2, color: '#283047', borderRadius: 0, backgroundColor: 'white', borderColor: '#283047', borderWidth: 1.5, height: 55, '&:hover': { backgroundColor: '#0F75E0', color: 'white', } }}><span className='cartSummary-checkout-text'>Proceed to </span> Checkout</Button>
+                                {/*<button onClick={next} className="cart-proceed-button"><span className="cartSummary-checkout-text">Proceed </span> to Information</button>*/}
+                                <Button onClick={next} variant="outlined" sx={{ m: 1, width: { xs: '75%', sm: '45%', md: '40%' }, letterSpacing: 2, color: '#283047', borderRadius: 0, backgroundColor: 'white', borderColor: '#283047', borderWidth: 1.5, height: 55, '&:hover': { backgroundColor: '#0F75E0', color: 'white', } }}><span className='cartSummary-checkout-text'>Proceed  </span> to Information</Button>
 
                             </Box> : null}
                     </>
                 )}
-                <Button onClick={handleLocalCheckout}>TEST</Button>
+
             </List>
 
         </div>

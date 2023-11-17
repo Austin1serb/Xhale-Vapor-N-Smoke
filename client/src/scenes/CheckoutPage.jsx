@@ -5,21 +5,17 @@ import ShippingComponent from '../components/ShippingComponent';
 import CartSummaryComponent from '../components/CartSummaryComponent';
 import { useCart } from '../components/CartContext';
 import BrandIcon from '../assets/brandIcon.png'
-import PaymentComponent from '../components/PaymentComponent';
-import { loadStripe } from '@stripe/stripe-js';
-import { Elements } from '@stripe/react-stripe-js';
+
 import { useEffect } from 'react';
 import jwtDecode from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
-
-
-
-const stripePromise = loadStripe("pk_test_51OC5gnA3ZnEdtXgWBqwW0Pdm949JREok5NMnGqAbf7sJB8iFlwCtpkqUgqXHuQ86p9WBvQTZmE5VLIiWgAf2qRvc00dlTdOqZx");
-
+import SquarePaymentForm from '../components/SquarePaymentForm';
 
 const CheckoutPage = () => {
+    const [isSquareSdkLoaded, setIsSquareSdkLoaded] = useState(false);
+    const ACCESS_TOKEN = 'EAAAEKEBHSRt-NvJG7owA-Y_SzYZWIXl7-Wx7BZe11r7EaTUvr99xFr-uPfSePGv'
     const navigate = useNavigate();
-    const [activeStep, setActiveStep] = useState(0);
+    const [activeStep, setActiveStep] = useState(3);
     const [shippingDetails, setShippingDetails] = useState({});
     const steps = ['Cart', 'Information', 'Shipping', 'Payment'];
     const { cart, removeFromCart, adjustQuantity, notes } = useCart();
@@ -28,6 +24,7 @@ const CheckoutPage = () => {
     const tax = "Calculated at checkout";
     const [fullCost, setFullCost] = useState({});
     const [shippingOptions, setShippingOptions] = useState({});
+    const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({
         email: '',
         firstName: '',
@@ -39,8 +36,29 @@ const CheckoutPage = () => {
         zip: '',
         country: ''
     });
+    const loadSquareSdk = () => {
+        const script = document.createElement('script');
+        script.src = "https://web.squarecdn.com/v1/square.js";
+        script.async = true;
+        script.onload = () => setIsSquareSdkLoaded(true);
+        document.body.appendChild(script);
+    };
+
     useEffect(() => {
-        console.log(shippingOptions)
+        if (activeStep === 3 && !isSquareSdkLoaded) {
+            loadSquareSdk();
+        }
+    }, [activeStep, isSquareSdkLoaded]);
+
+    const onPaymentProcess = (token) => {
+        console.log("Payment token received:", token);
+        // Here, you can add logic to send this token to your backend server
+        // for further processing (like creating a charge)
+    };
+
+
+    useEffect(() => {
+        //console.log(shippingOptions)
 
         const token = localStorage.getItem('token');
         if (token) {
@@ -63,6 +81,7 @@ const CheckoutPage = () => {
     }, [navigate]);
 
     const handleCheckout = async () => {
+        setIsLoading(true); // Turn on loading state
         try {
             const orderData = {
                 customer: localStorage.getItem('customerId'), // Assuming you have customer ID in formData
@@ -84,7 +103,71 @@ const CheckoutPage = () => {
             }
             console.log(orderData)
 
-            // Step 1: Create the order in the database
+            // Step 1: Create the order in the database and wait for it to complete
+            const createdOrder = await createOrderAsync(orderData);
+
+            if (createdOrder) {
+                const updatedCustomerData = {
+                    orders: createdOrder._id // Use the ID from the created order
+                };
+
+                // Make the PUT request asynchronously
+                updateCustomerDataAsync(localStorage.getItem('customerId'), updatedCustomerData);
+            }
+
+            // Step 2: Call your backend to create a Square checkout session
+            const baseUrl = window.location.origin; // This gets your app's base URL (e.g., http://localhost:3000 or your production URL)
+            const successUrl = `${baseUrl}/success`;
+            const customerId = orderData.customer
+            console.log({ cart, formData, fullCost, baseUrl, successUrl, customerId })
+            const response = await fetch('http://localhost:8000/api/payment/create-checkout-session', {
+                method: 'POST',
+                headers: {
+                    //'Authorization': `Bearer ${ACCESS_TOKEN}`,
+                    'Content-Type': 'application/json',
+
+                },
+                body: JSON.stringify({ cart, formData, fullCost, successUrl, customerId }),
+            });
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+
+            const checkoutData = await response.json();
+            if (checkoutData && checkoutData.payment) {
+                // Redirect the user to the Square Checkout URL
+                window.location.href = checkoutData.paymentLinkUrl;
+
+
+            } else {
+                // Handle error: checkout session creation failed
+                console.error('Error creating checkout session', response.error);
+            }
+        }
+        catch (error) {
+            console.error('Error during checkout:', error);
+
+            // Check if the error object has a 'response' property
+            if (error.response) {
+                try {
+                    const errorDetails = await error.response.json();
+                    console.error('Error details:', errorDetails);
+                } catch (jsonError) {
+                    console.error('Error reading error response:', jsonError);
+                }
+            } else {
+                // If there's no response attached, log the entire error object
+                console.error('Error object:', error);
+            }
+        }
+        finally {
+            setIsLoading(false); // Turn off loading state
+        }
+    }
+
+    const createOrderAsync = async (orderData) => {
+        try {
             const orderResponse = await fetch('http://localhost:8000/api/order/create', {
                 method: 'POST',
                 headers: {
@@ -94,37 +177,37 @@ const CheckoutPage = () => {
             });
 
             const createdOrder = await orderResponse.json();
-
             if (!createdOrder || orderResponse.status !== 200) {
                 console.error('Error creating order:', createdOrder.message);
-                return;
+                setIsLoading(false)
+                return null; // Return null if order creation fails
             }
 
+            return createdOrder; // Return the created order
 
-            const response = await fetch('http://localhost:8000/api/stripe/create-checkout-session', {
-                method: 'POST',
+        } catch (error) {
+            console.error('Error creating order asynchronously:', error);
+            setIsLoading(false)
+            return null; // Return null in case of error
+        }
+    };
+
+
+    const updateCustomerDataAsync = async (customerId, data) => {
+        try {
+            await fetch(`http://localhost:8000/api/customer/${customerId}`, {
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ cart, formData, fullCost }),
+                body: JSON.stringify(data)
             });
-
-            const session = await response.json();
-
-            const stripe = await stripePromise;
-            const result = await stripe.redirectToCheckout({
-                sessionId: session.sessionId,
-            });
-
-            if (result.error) {
-                // Handle any errors that occur during the redirect
-                console.error(result.error.message);
-            }
+            // Optionally handle the response or errors
         } catch (error) {
-            // Handle any errors that occur during the fetch
-            console.error('Error during checkout:', error);
+            console.error('Error updating customer data:', error);
+            // Handle errors or log them, as per your application's needs
         }
-    };
+    }
 
     const handleFormChange = (name, value) => {
         setFormData(prevFormData => ({
@@ -164,6 +247,17 @@ const CheckoutPage = () => {
     const handleReset = () => {
         setActiveStep(0);
     };
+    const stepperStyles = {
+        position: { xs: 'fixed', sm: 'relative' }, // 'fixed' on xs screens, 'relative' otherwise
+        top: { xs: 0, sm: 'auto' }, // Stick to the top on xs screens
+        zIndex: { xs: 10000, sm: 'auto' }, // Ensure it's above other content
+        pt: { xs: 5, sm: 0 },
+        pb: { xs: 1, sm: 0 },
+        width: { xs: '100%' }, // Full width on xs screens
+        bgcolor: { xs: 'background.paper' }, // Add background color for visibility
+        borderBottom: '0.1px solid black',
+
+    };
 
 
 
@@ -185,7 +279,7 @@ const CheckoutPage = () => {
                                     <img src={BrandIcon} alt="Brand Logo" style={{ width: '100px' }} loading='lazy' />
                                 </div>*/}
                                 {/* Stepper */}
-                                <Stepper activeStep={activeStep} alternativeLabel>
+                                <Stepper activeStep={activeStep} alternativeLabel sx={stepperStyles}>
                                     {steps.map((label) => (
                                         <Step key={label}>
                                             <StepLabel>{label}</StepLabel>
@@ -193,7 +287,7 @@ const CheckoutPage = () => {
                                     ))}
                                 </Stepper>
                                 {activeStep === 0 &&
-                                    <Box sx={{ pt: 2.5, borderTop: '0.1px solid black', mt: 1 }}>
+                                    <Box sx={{ pt: { xs: 0, sm: 2.5 }, borderTop: '0.1px solid black', mt: { xs: 0, sm: 1 } }}>
                                         <CartSummaryComponent
                                             cartItems={cart.map(item => ({
                                                 _id: item.product._id,
@@ -230,8 +324,6 @@ const CheckoutPage = () => {
                                         length: item.product.shipping.dimensions.length,
                                         width: item.product.shipping.dimensions.width,
                                         height: item.product.shipping.dimensions.height,
-
-
                                     }))}
                                     shippingDetails={shippingDetails}
                                     onShippingCostChange={handleShippingCostChange}
@@ -240,10 +332,12 @@ const CheckoutPage = () => {
                                     next={handleNext}
                                     onShippingOptionsChange={handleShippingOptions}
                                     handleCheckout={handleCheckout}
+                                    isLoading={isLoading}
                                 />}
-                                {activeStep === 3 &&
-                                    ''//REDIRECT TO STRIP PORTAL
+                                {activeStep === 3 && isSquareSdkLoaded &&
+                                    <SquarePaymentForm onPaymentProcess={onPaymentProcess} />
                                 }
+
                             </div>
                             <div>
                                 <Button disabled={activeStep === 0} onClick={handleBack}>
