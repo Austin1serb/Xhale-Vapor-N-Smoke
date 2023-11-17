@@ -18,14 +18,14 @@ const orderRoutes = require('./routes/orders.routes');
 const orderItemsRoutes = require('./routes/orderItems.routes');
 const customerRoutes = require('./routes/customers.routes');
 const cartRoutes = require('./routes/carts.routes');
-const paymentRoutes = require('./routes/payments.routes');
 const shippoRoutes = require('./routes/shippo.routes');
 const { uploadToCloudinary } = require('./services/cloudinary');
 const suggestionsRoutes = require('./routes/suggestions.routes');
-const stripeRoutes = require('./routes/stripe.routes');
+const paymentRoutes = require('./routes/payment.routes');
+
 
 app.use("/api/", suggestionsRoutes);
-app.use("/api/stripe", stripeRoutes);
+app.use('/api/payment', paymentRoutes);
 app.use("/api/staff", staffRoutes);
 app.use("/api/product", productRoutes);
 app.use("/api/order", orderRoutes);

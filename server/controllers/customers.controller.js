@@ -89,7 +89,7 @@ module.exports = {
 
     createOne: async (req, res) => {
         console.log(req.body);
-        const { firstName, lastName, email, password, recaptchaValue } = req.body;
+        const { firstName, lastName, email, password, recaptchaValue, isVerified } = req.body;
 
         try {
             const recaptchaVerified = await verifyRecaptcha(recaptchaValue);
@@ -112,6 +112,7 @@ module.exports = {
                 firstName,
                 lastName,
                 email,
+                isVerified,
                 password: hashedPassword,
                 refreshToken,
             });

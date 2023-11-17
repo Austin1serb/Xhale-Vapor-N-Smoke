@@ -121,7 +121,9 @@ module.exports = {
                 totalProducts,
                 currentPage: page,
                 totalPages: Math.ceil(totalProducts / pageSize),
+                totalProducts: totalProducts,
             });
+
         } catch (error) {
             res.status(500).json({ message: 'Server error', error: error });
         }
