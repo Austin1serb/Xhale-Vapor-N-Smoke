@@ -7,9 +7,9 @@ const SquarePaymentForm = ({ onPaymentProcess }) => {
 
     const applicationId = process.env.REACT_APP_SQUARE_APPLICATION_ID_SANDBOX;
     const locationId = process.env.REACT_APP_SQUARE_LOCATION_ID_SANDBOX;
-    const handleCardNonceResponseReceived = (token) => {
-        // Call your onPaymentProcess function with the token
-        onPaymentProcess(token);
+    const handleTokenRecieved = (paymentToken) => {
+        // Call your onPaymentProcess function with the paymentToken
+        onPaymentProcess(paymentToken);
     };
 
     const createVerificationDetails = () => {
@@ -25,25 +25,25 @@ const SquarePaymentForm = ({ onPaymentProcess }) => {
     };
     //useeffct to console log applicationId
     // create a use effect to console log applicationId and location id 
-    useEffect(() => {
-        console.log(applicationId);
-        console.log(locationId);
-    }, [])
 
+    const cardStyles = {
+        width: '50%',
+
+    }
     return (
+        <div style={cardStyles}>
+            <PaymentForm
+                applicationId={applicationId}
+                locationId={locationId}
+                cardTokenizeResponseReceived={handleTokenRecieved}
+                createVerificationDetails={createVerificationDetails}
 
-        <PaymentForm
-
-            applicationId={applicationId}
-            locationId={locationId}
-            cardNonceResponseReceived={(token) => onPaymentProcess(token)}
-            createVerificationDetails={createVerificationDetails}
-        >
-            <div>
-                <CreditCard />
-
-            </div>
-        </PaymentForm>
+            >
+                <div>
+                    <CreditCard />
+                </div>
+            </PaymentForm>
+        </div>
     );
 };
 

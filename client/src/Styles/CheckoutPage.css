@@ -87,15 +87,13 @@
 }
 
 @media (max-width: 900px) {
-    .cartSummary-checkout-button {
-        width: 45%
-    }
+    .cartSummary-checkout-button {}
 }
 
 @media (max-width: 600px) {
     .cartSummary-checkout-button {
         flex-direction: column;
-        width: 75%
+
     }
 
     .cartSummary-checkout-text {

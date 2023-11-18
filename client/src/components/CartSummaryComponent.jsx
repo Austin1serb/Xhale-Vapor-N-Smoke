@@ -175,9 +175,9 @@ const CartSummaryComponent = ({ cartItems, shippingCost, total, removeFromCart, 
                         </Box>
                         {step === 0 ?
                             <Box className="cartSummary-checkout-button">
-                                <Button className='cart-checkout-button' component={Link} to='/shop' variant="outlined" sx={{ m: 1, width: { xs: '75%', sm: '45%', md: '40%' }, letterSpacing: 2, color: 'white', borderRadius: 0, backgroundColor: '#283047', height: 56.5, "&:hover": { backgroundColor: '#FE6F49', border: 'none', }, textAlign: 'center' }}>Continue Shopping</Button>
+                                <Button className='cart-checkout-button' component={Link} to='/shop' variant="outlined" sx={{ m: 1, width: { xs: '75%', sm: '45%', md: '40%' }, letterSpacing: 2, color: 'white', backgroundColor: '#283047', height: 56.5, "&:hover": { backgroundColor: '#FE6F49', border: 'none', }, textAlign: 'center' }}><span className='cartSummary-checkout-text'>Proceed  to </span> Checkout</Button>
                                 {/*<button onClick={next} className="cart-proceed-button"><span className="cartSummary-checkout-text">Proceed </span> to Information</button>*/}
-                                <Button onClick={next} variant="outlined" sx={{ m: 1, width: { xs: '75%', sm: '45%', md: '40%' }, letterSpacing: 2, color: '#283047', borderRadius: 0, backgroundColor: 'white', borderColor: '#283047', borderWidth: 1.5, height: 55, '&:hover': { backgroundColor: '#0F75E0', color: 'white', } }}><span className='cartSummary-checkout-text'>Proceed  </span> to Information</Button>
+                                <Button onClick={next} variant="outlined" sx={{ m: 1, width: { xs: '75%', sm: '45%', md: '40%' }, letterSpacing: 2, color: '#283047', backgroundColor: 'white', borderColor: '#283047', borderWidth: 1.5, height: 55, '&:hover': { backgroundColor: '#0F75E0', color: 'white', } }}>Continue Shopping</Button>
 
                             </Box> : null}
                     </>
