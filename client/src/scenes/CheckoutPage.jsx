@@ -10,12 +10,13 @@ import { useEffect } from 'react';
 import jwtDecode from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
 import SquarePaymentForm from '../components/SquarePaymentForm';
+import LoadingModal from '../components/Common/LoadingModal';
 
 const CheckoutPage = () => {
     const [isSquareSdkLoaded, setIsSquareSdkLoaded] = useState(false);
     const ACCESS_TOKEN = 'EAAAEKEBHSRt-NvJG7owA-Y_SzYZWIXl7-Wx7BZe11r7EaTUvr99xFr-uPfSePGv'
     const navigate = useNavigate();
-    const [activeStep, setActiveStep] = useState(3);
+    const [activeStep, setActiveStep] = useState(0);
     const [shippingDetails, setShippingDetails] = useState({});
     const steps = ['Cart', 'Information', 'Shipping', 'Payment'];
     const { cart, removeFromCart, adjustQuantity, notes } = useCart();
@@ -25,6 +26,8 @@ const CheckoutPage = () => {
     const [fullCost, setFullCost] = useState({});
     const [shippingOptions, setShippingOptions] = useState({});
     const [isLoading, setIsLoading] = useState(false);
+    const [orderData, setOrderData] = useState({})
+    const [estimatedShipping, setEstimatedShipping] = useState('')
     const [formData, setFormData] = useState({
         email: '',
         firstName: '',
@@ -38,8 +41,9 @@ const CheckoutPage = () => {
     });
     const loadSquareSdk = () => {
         const script = document.createElement('script');
-        script.src = "https://web.squarecdn.com/v1/square.js";
-        script.async = true;
+        script.src = "https://js.squareupsandbox.com";
+        script.type = "text/javascript";
+        script.async = false;
         script.onload = () => setIsSquareSdkLoaded(true);
         document.body.appendChild(script);
     };
@@ -48,17 +52,78 @@ const CheckoutPage = () => {
         if (activeStep === 3 && !isSquareSdkLoaded) {
             loadSquareSdk();
         }
+
     }, [activeStep, isSquareSdkLoaded]);
 
-    const onPaymentProcess = (token) => {
-        console.log("Payment token received:", token);
-        // Here, you can add logic to send this token to your backend server
-        // for further processing (like creating a charge)
+
+    const onPaymentProcess = (paymentToken) => {
+        console.log("Payment paymentToken received:", paymentToken);
+        finalizeOrderAndProcessPayment(paymentToken)
     };
 
 
+    const finalizeOrderAndProcessPayment = async (paymentToken) => {
+        setIsLoading(true);
+        try {
+            console.log(fullCost);
+
+            // Convert amount to cents 
+            const paymentAmount = Math.round(fullCost.grandTotal * 100);
+
+
+            // First, process the payment with Square
+            if (paymentToken) {
+
+                const paymentResponse = await fetch('http://localhost:8000/api/payment/process-payment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        sourceId: 'cnon:card-nonce-ok', // or sourceId: paymentToken.token,
+                        amount: paymentAmount,
+                        email: formData.email,
+                        cost: fullCost,
+                        notes: notes,
+                        estimatedShipping: estimatedShipping,
+                        orderDetails: orderData,
+                        last4: paymentToken.details.card.last4
+                    }),
+                });
+
+                const paymentResult = await paymentResponse.json();
+                console.log(paymentResult);
+
+                // Check if payment was successful
+                if (paymentResponse.ok && paymentResult.success === true) {
+
+                    orderData.transactionId = paymentResult.response.result.payment.id;
+                    // Now, create the order in the database
+                    const createdOrder = await createOrderAsync(orderData);
+
+                    // Update customer data
+                    const updatedCustomerData = { orders: createdOrder._id };
+                    await updateCustomerDataAsync(localStorage.getItem('customerId'), updatedCustomerData);
+
+                    // Navigate to success page after all processes are complete
+                    navigate('/success', { state: { paymentDetails: paymentResult } });
+                } else {
+                    // Handle payment processing failure
+                    console.error('Payment processing failed:', paymentResult);
+                }
+            } else {
+                console.error('Missing payment token');
+            }
+        } catch (error) {
+            console.error('Error during finalizing order and payment:', error);
+        } finally {
+            setIsLoading(false); // Stop loading state after all processes are complete or an error occurs
+        }
+    };
+
+
+
     useEffect(() => {
-        //console.log(shippingOptions)
 
         const token = localStorage.getItem('token');
         if (token) {
@@ -79,92 +144,39 @@ const CheckoutPage = () => {
             navigate('/registration?returnUrl=/checkout');
         }
     }, [navigate]);
-
+    useEffect(() => {
+        console.log('pp' + estimatedShipping)
+    }, [])
     const handleCheckout = async () => {
+
         setIsLoading(true); // Turn on loading state
-        try {
-            const orderData = {
-                customer: localStorage.getItem('customerId'), // Assuming you have customer ID in formData
-                customerEmail: formData.email || localStorage.getItem('userEmail'), // Assuming you have email in formData
-                products: cart.map(item => ({
-                    productId: item.product._id,
-                    price: item.product.price,
-                    quantity: item.quantity
-                })),
-                shippingMethod: {
-                    provider: shippingOptions.provider,
-                    price: shippingOptions.amount,
-                    type: shippingOptions.servicelevel.name
-                },
-                totalAmount: fullCost,
-                orderNotes: notes,
-                address: `${shippingDetails.firstName} ${shippingDetails.lastName}, ${shippingDetails.address}, ${shippingDetails.city}, ${shippingDetails.state}, ${shippingDetails.zip}, ${shippingDetails.country}`,
-                createdBy: localStorage.getItem('customerId'),
-            }
-            console.log(orderData)
-
-            // Step 1: Create the order in the database and wait for it to complete
-            const createdOrder = await createOrderAsync(orderData);
-
-            if (createdOrder) {
-                const updatedCustomerData = {
-                    orders: createdOrder._id // Use the ID from the created order
-                };
-
-                // Make the PUT request asynchronously
-                updateCustomerDataAsync(localStorage.getItem('customerId'), updatedCustomerData);
-            }
-
-            // Step 2: Call your backend to create a Square checkout session
-            const baseUrl = window.location.origin; // This gets your app's base URL (e.g., http://localhost:3000 or your production URL)
-            const successUrl = `${baseUrl}/success`;
-            const customerId = orderData.customer
-            console.log({ cart, formData, fullCost, baseUrl, successUrl, customerId })
-            const response = await fetch('http://localhost:8000/api/payment/create-checkout-session', {
-                method: 'POST',
-                headers: {
-                    //'Authorization': `Bearer ${ACCESS_TOKEN}`,
-                    'Content-Type': 'application/json',
-
-                },
-                body: JSON.stringify({ cart, formData, fullCost, successUrl, customerId }),
-            });
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-
-            const checkoutData = await response.json();
-            if (checkoutData && checkoutData.payment) {
-                // Redirect the user to the Square Checkout URL
-                window.location.href = checkoutData.paymentLinkUrl;
-
-
-            } else {
-                // Handle error: checkout session creation failed
-                console.error('Error creating checkout session', response.error);
-            }
-        }
-        catch (error) {
-            console.error('Error during checkout:', error);
-
-            // Check if the error object has a 'response' property
-            if (error.response) {
-                try {
-                    const errorDetails = await error.response.json();
-                    console.error('Error details:', errorDetails);
-                } catch (jsonError) {
-                    console.error('Error reading error response:', jsonError);
-                }
-            } else {
-                // If there's no response attached, log the entire error object
-                console.error('Error object:', error);
-            }
-        }
-        finally {
-            setIsLoading(false); // Turn off loading state
-        }
+        const customerId = localStorage.getItem('customerId')
+        const customerEmail = localStorage.getItem('userEmail')
+        setOrderData({
+            customer: customerId,
+            customerEmail: formData.email || customerEmail,
+            products: cart.map(item => ({
+                name: item.product.name,
+                productId: item.product._id,
+                price: item.product.price,
+                quantity: item.quantity,
+                img: item.product.imgSource[0].url
+            })),
+            shippingMethod: {
+                provider: shippingOptions.provider,
+                price: shippingOptions.amount,
+                type: shippingOptions.servicelevel.name
+            },
+            totalAmount: fullCost,
+            orderNotes: notes,
+            address: `${shippingDetails.firstName} ${shippingDetails.lastName}, ${shippingDetails.address}, ${shippingDetails.city}, ${shippingDetails.state}, ${shippingDetails.zip}, ${shippingDetails.country}`,
+            createdBy: localStorage.getItem('customerId'),
+        })
+        console.log(orderData)
+        setIsLoading(false)
+        handleNext();
     }
+
 
     const createOrderAsync = async (orderData) => {
         try {
@@ -202,8 +214,10 @@ const CheckoutPage = () => {
                 },
                 body: JSON.stringify(data)
             });
+            setIsLoading(false);
             // Optionally handle the response or errors
         } catch (error) {
+            setIsLoading(false)
             console.error('Error updating customer data:', error);
             // Handle errors or log them, as per your application's needs
         }
@@ -255,7 +269,7 @@ const CheckoutPage = () => {
         pb: { xs: 1, sm: 0 },
         width: { xs: '100%' }, // Full width on xs screens
         bgcolor: { xs: 'background.paper' }, // Add background color for visibility
-        borderBottom: '0.1px solid black',
+        borderBottom: { xs: '0.1px solid black', sm: 'none' },
 
     };
 
@@ -263,6 +277,7 @@ const CheckoutPage = () => {
 
     return (
         <div className='checkoutPage-container'>
+            <LoadingModal open={isLoading} message="Your payment is being processed" />
             <Box sx={{ display: 'flex', flexDirection: { xs: 'column-reverse', md: 'row' } }}>
                 <div style={{ flex: 1 }}>
                     {activeStep === steps.length ? (
@@ -333,9 +348,10 @@ const CheckoutPage = () => {
                                     onShippingOptionsChange={handleShippingOptions}
                                     handleCheckout={handleCheckout}
                                     isLoading={isLoading}
+                                    setEstimatedShipping={setEstimatedShipping}
                                 />}
                                 {activeStep === 3 && isSquareSdkLoaded &&
-                                    <SquarePaymentForm onPaymentProcess={onPaymentProcess} />
+                                    <SquarePaymentForm onPaymentProcess={onPaymentProcess} paymentForm={window.SqPaymentForm} />
                                 }
 
                             </div>

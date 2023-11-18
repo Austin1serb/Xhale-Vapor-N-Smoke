@@ -3,7 +3,7 @@ import { Typography, Grid, List, ListItem, ListItemText, Button, CircularProgres
 import '../Styles/CheckoutPage.css'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import { format, addDays } from 'date-fns';
-const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, setActiveStep, back, isLoading, onShippingOptionsChange, handleCheckout }) => {
+const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, setActiveStep, back, isLoading, onShippingOptionsChange, handleCheckout, setEstimatedShipping }) => {
     const [shippingOptions, setShippingOptions] = useState([]);
     const [loading, setLoading] = useState(false);
     const [shippingCost, setShippingCost] = useState('');
@@ -136,11 +136,16 @@ const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, s
     }, [shippingOptions]);
 
 
+
     const handleSelectShippingOption = (cost, index) => {
+        const formattedShipping = currentItems.map((option,) => (calculateShippingDate(option.estimated_days)))
+        console.log(formattedShipping[index])
         setShippingCost(cost);
         onShippingCostChange(cost); // Pass the cost to the parent component
         onShippingOptionsChange(shippingOptions[index]);
-        console.log(shippingOptions[index])
+        setEstimatedShipping(formattedShipping[index]);
+
+
         // Create a new array with all false, except the index that needs to be disabled
         const updatedDisabledState = buttonDisabled.map((item, idx) => idx === index);
         setButtonDisabled(updatedDisabledState);
@@ -252,7 +257,7 @@ const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, s
                 <Button onClick={back} className='cart-checkout-button' variant="outlined" sx={{ m: 1, letterSpacing: 2, color: 'white', fontSize: 12, borderRadius: 0, backgroundColor: '#283047', height: 56.5, "&:hover": { backgroundColor: '#FE6F49', border: 'none', }, textAlign: 'center' }}>
                     <ArrowBackIosNewIcon sx={{ fontSize: 18, mr: 1 }} />
                     Return to information</Button>
-                <Button disabled={isLoading} onClick={handleCheckout} variant="outlined" sx={{ m: 1, letterSpacing: 2, color: '#283047', borderRadius: 0, backgroundColor: 'white', fontSize: 12, borderColor: '#283047', borderWidth: 1.5, height: 55, '&:hover': { backgroundColor: '#0F75E0', color: 'white', } }}>
+                <Button disabled={!!isLoading} onClick={handleCheckout} variant="outlined" sx={{ m: 1, letterSpacing: 2, color: '#283047', borderRadius: 0, backgroundColor: 'white', fontSize: 12, borderColor: '#283047', borderWidth: 1.5, height: 55, '&:hover': { backgroundColor: '#0F75E0', color: 'white', } }}>
                     {isLoading ? (
                         <CircularProgress
                             size={24}
