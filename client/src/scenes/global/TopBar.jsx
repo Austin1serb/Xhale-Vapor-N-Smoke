@@ -15,8 +15,6 @@ import { useCart } from '../../components/CartContext.jsx';
 import Cart from '../../components/Cart';
 import { useAuth } from '../../useAuth';
 import DropdownMenu from '../../components/DropDownMenu';
-import { RiArrowDropDownLine } from 'react-icons/ri'
-import CloseIcon from '@mui/icons-material/Close';
 const TopBar = () => {
     const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -183,17 +181,17 @@ const TopBar = () => {
                         aria-label="show more"
                         onClick={handleMobileMenuToggle}
                         ref={closeIconRef}
-                        sx={{ mr: -4, display: { xs: 'flex', md: 'none' }, backgroundColor: 'transparent', transform: 'translateX(-65px)' }}
+                        sx={{ mr: -4, display: { xs: 'flex', md: 'none' }, backgroundColor: 'transparent', transform: 'translate(-65px, 0px)' }}
                     >
-                        <CloseIcon
-                            style={{
-                                ...iconStyles.icon,
-                                transform: mobileDrawerOpen ? 'rotate(0)' : 'rotate(-45deg)',
-                                opacity: mobileDrawerOpen ? 1 : 0
-                            }}
-                            sx={{ fontSize: '32px', color: "#FE6F49" }}
-                        />
 
+                        <svg style={{
+                            ...iconStyles.icon,
+                            transform: mobileDrawerOpen ? 'rotate(0)' : 'rotate(-45deg)',
+                            translate: '-3px -2px',
+                            opacity: mobileDrawerOpen ? 1 : 0,
+                            color: "#FE6F49",
+
+                        }} xmlns="http://www.w3.org/2000/svg" fill='currentColor' height="35" width="35"><path d="m10.458 31.458-1.916-1.916 9.5-9.542-9.5-9.542 1.916-1.916 9.542 9.5 9.542-9.5 1.916 1.916-9.5 9.542 9.5 9.542-1.916 1.916-9.542-9.5Z" /></svg>
                     </IconButton>
 
 
@@ -216,7 +214,8 @@ const TopBar = () => {
                                     onMouseEnter={handleHover}
                                 >
                                     Shop
-                                    <RiArrowDropDownLine className='shop-arrow' />
+
+                                    <svg height='27' className='shop-arrow' viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 15.0006L7.75732 10.758L9.17154 9.34375L12 12.1722L14.8284 9.34375L16.2426 10.758L12 15.0006Z" /></svg>
                                 </Box>
                                 <Box className="dropdown-box" sx={{}}>
                                     <Box className='dropdown-separation'></Box>
@@ -235,8 +234,8 @@ const TopBar = () => {
 
                         </Typography>
                     ) : null}
-                    <Box component="a" className="nav-link" onClick={() => setDrawerOpen(true)}>
-                        <IconButton sx={{ mr: -2, ml: { xs: 0, sm: 0 } }} color="inherit">
+                    <Box className="nav-link" onClick={() => setDrawerOpen(true)}>
+                        <IconButton id="cart" aria-label="cart" sx={{ mr: -2, ml: { xs: 0, sm: 0 } }} color="inherit">
                             <Badge badgeContent={totalItems} color="secondary">
                                 <ShoppingCartIcon className={shake ? 'shake-animation' : ''} sx={{ fontSize: { xs: '26px', sm: '32px' }, }}
                                 />

@@ -1,49 +1,129 @@
-import { Box, Button, Grid } from '@mui/material';
-import React from 'react';
-import '../Styles/BestSellersSection.css'
-const BestSellersSection = () => {
-    // Sample data for best-sellers
-    const bestSellersData = [
-        {
-            id: 1,
-            name: 'Full-Spectrum Hemp CBD Oil',
-            price: '$19.99',
-            imageUrl: " require('../assets/cbditem.webp').default"
-        },
-        {
-            id: 2,
-            name: 'Full-Spectrum Hemp CBD Oil',
-            price: '$24.99',
-            imageUrl: "require('../assets/cbditem.webp')"
-        },
-        {
-            id: 3,
-            name: 'Full-Spectrum Hemp CBD Oil',
-            price: '$29.99',
-            imageUrl: '/path-to-image/product3.jpg',
-        },
-    ];
+import { Box, Grid, Typography, Button, Skeleton } from '@mui/material';
+import React, { useEffect, useRef, useState } from 'react';
 
-    return (
-        <Box className="best-seller-container"  >
-            <h2 className='best-seller-header' >Our Customer Favorites</h2>
-            <Grid container spacing={2} className="best-sellers">
-                {bestSellersData.map((item) => (
-                    <Grid item xs={12} sm={6} md={4} key={item.id}>
-                        <div className="best-seller-item" key={item.id}>
-                            <img
-                                src={require('../assets/cbditem.webp')}
-                                alt={item.name}
-                                className="best-seller-image"
-                                loading='lazy'
-                            />
-                            <Button className='best-sellers-button' >SHOP NOW</Button>
-                            <p className="best-seller-name">{item.name}</p>
-                            <p className="best-seller-price">{item.price}</p>
-                        </div>
-                    </Grid>
-                ))}
+import '../Styles/BestSellersSection.css'
+
+const BestSellersSection = () => {
+    const [bestSellers, setBestSellers] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const loaderRef = useRef(null);
+
+
+    const ProductSkeleton = ({ count }) => (
+
+        Array.from({ length: count }).map((_, index) => (
+            <Grid item xs={12} sm={6} md={4} key={index}>
+                <Box sx={{
+                    border: '.1px solid #ccc',
+                    borderRadius: '1px',
+                    py: '20px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    height: '300px',
+                    justifyContent: 'space-between',
+                    mt: '20px',
+                }}>
+                    <Skeleton variant="rectangular" width="100%" height={150} />
+                    <Skeleton variant="text" width="80%" height={24} />
+                    <Skeleton variant="text" width="60%" height={20} />
+                    <Skeleton variant="text" width="80%" height={20} />
+                    <Skeleton variant="text" width="30%" height={24} />
+                </Box>
             </Grid>
+        ))
+
+    );
+
+
+    useEffect(() => {
+        console.log('firing')
+        const observer = new IntersectionObserver((entries) => {
+            const firstEntry = entries[0];
+            if (firstEntry.isIntersecting && bestSellers.length === 0) {
+                fetchBestSellers();
+
+            }
+        }, { threshold: 0.1 });
+
+        const currentLoaderRef = loaderRef.current;
+        if (currentLoaderRef) {
+            observer.observe(currentLoaderRef);
+        }
+
+        return () => {
+            if (currentLoaderRef) {
+                observer.unobserve(currentLoaderRef);
+            }
+        };
+    }, [bestSellers]);
+
+
+    const fetchBestSellers = () => {
+        setIsLoading(true);
+        fetch('http://localhost:8000/api/product/bestsellers?limit=3')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                setIsLoading(false);
+                return response.json(); // Ensure this line is correct
+            })
+            .then(data => {
+                setBestSellers(data)
+            })
+            .catch(error => {
+                console.error('Error fetching best sellers:', error);
+            });
+    }
+
+    const productStyles = {
+        border: '.1px solid #ccc',
+        borderRadius: '5px',
+        paddingTop: '10px',
+        paddingBottom: '10px',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        height: '300px',
+        justifyContent: 'space-between',
+        margin: '20px',
+    }
+    return (
+        <Box className="best-seller-container" ref={loaderRef} >
+            <h1 className='best-seller-header' >Our Customer Favorites</h1 >
+            {isLoading ? ( // Check if products are loading
+                <Grid container spacing={3}>
+                    <ProductSkeleton count={3} />
+                </Grid>
+            ) : (
+                <Grid container spacing={3}>
+                    {bestSellers.map(product => (
+                        <Grid item xs={12} sm={6} md={4} key={product._id}>
+                            <div style={productStyles}>
+
+                                <img className="shop-img" src={product.imgSource[0].url} alt={product.name} height="150px" loading='lazy' />
+                                <Typography sx={{ fontWeight: 100, fontSize: 14 }} className='shop-name' mt={2}>{product.name}</Typography>
+                                <Typography variant="subtitle1" className='shop-brand' sx={{ fontSize: 12, fontWeight: 100, color: 'gray' }}>{product.brand}</Typography>
+                                <Typography variant="subtitle2" sx={{ fontWeight: 100, fontSize: 16 }} className='shop-price'>${product.price.toFixed(2)}</Typography>
+
+
+                                <Box className='shop-button-container'>
+                                    <Button variant="outlined" className='shop-button-cart' sx={{ border: 1, borderRadius: 0, letterSpacing: 2, fontSize: 12, color: 'white', backgroundColor: '#283047', borderColor: '#283047', borderWidth: 1.5, transition: 'all 0.3s', '&:hover': { backgroundColor: '#FE6F49', color: 'white', borderColor: '#FE6F49', transform: 'scale(1.05)' } }} onClick={null}>
+                                        SHOP NOW
+                                    </Button>
+
+                                </Box>
+
+                            </div>
+
+                        </Grid>
+                    ))}
+
+
+
+
+                </Grid>)}
 
         </Box >
     );

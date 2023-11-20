@@ -3,14 +3,17 @@ import { Typography, Grid, List, ListItem, ListItemText, Button, CircularProgres
 import '../Styles/CheckoutPage.css'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import { format, addDays } from 'date-fns';
-const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, setActiveStep, back, isLoading, onShippingOptionsChange, handleCheckout, setEstimatedShipping }) => {
+import ShippingDetailsComponent from './ShippingDetailsComponent';
+const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, setActiveStep, back, isLoading, onShippingOptionsChange, handleCheckout, setEstimatedShipping, lastAddress, setLastAddress, shipmentOptions, setShipmentOptions, }) => {
     const [shippingOptions, setShippingOptions] = useState([]);
     const [loading, setLoading] = useState(false);
     const [shippingCost, setShippingCost] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 4;
     const [buttonDisabled, setButtonDisabled] = useState([]);
-    const [lastAddress, setLastAddress] = useState({});
+    const [isShippingOptionSelected, setIsShippingOptionSelected] = useState(false);
+    const [checkoutError, setCheckoutError] = useState('');
+
     let totalWeight = 0;
     let maxLength = 0;
     let maxWidth = 0;
@@ -48,11 +51,15 @@ const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, s
         return format(shippingDate, 'MMMM do, yyyy'); // Format date as "Month day, year"
     };
 
+
+
+
     const calculateShipping = async () => {
 
-        if (JSON.stringify(lastAddress) === JSON.stringify(shippingDetails.address)) {
+
+        if (JSON.stringify(lastAddress) === JSON.stringify(shippingDetails)) {
             // The address hasn't changed, no need to fetch new rates
-            console.log('address has not changed')
+            setShippingOptions(shipmentOptions);
             return;
         }
         try {
@@ -91,7 +98,7 @@ const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, s
                     mass_unit: "lb"
                 }
             };
-            console.log(shipmentDetails)
+
             // Make a POST request to your backend
             const response = await fetch(backendUrl, {
                 method: 'POST',
@@ -108,16 +115,19 @@ const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, s
             }
 
             const result = await response.json();
-            //console.log(result)
+
             const sortedRates = result.rates.sort((a, b) => parseFloat(a.amount) - parseFloat(b.amount));
 
-            setShippingOptions(sortedRates); // Now sorted by cost
-            setLastAddress(shippingDetails.address);
-            setLoading(false);
+            setShippingOptions(sortedRates); // sorted by cost
+            setLastAddress(shippingDetails);
+            setShipmentOptions(sortedRates);
+
 
 
         } catch (error) {
             console.error('There was a problem with the fetch operation:', error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -139,7 +149,7 @@ const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, s
 
     const handleSelectShippingOption = (cost, index) => {
         const formattedShipping = currentItems.map((option,) => (calculateShippingDate(option.estimated_days)))
-        console.log(formattedShipping[index])
+
         setShippingCost(cost);
         onShippingCostChange(cost); // Pass the cost to the parent component
         onShippingOptionsChange(shippingOptions[index]);
@@ -149,6 +159,8 @@ const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, s
         // Create a new array with all false, except the index that needs to be disabled
         const updatedDisabledState = buttonDisabled.map((item, idx) => idx === index);
         setButtonDisabled(updatedDisabledState);
+        setIsShippingOptionSelected(true);
+
     };
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -161,35 +173,29 @@ const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, s
     const goToPreviousPage = () => {
         setCurrentPage(currentPage - 1);
     };
-    const handleChangeContant = () => {
+    const handleChangeContact = () => {
         setActiveStep(1);
 
     }
+
+
+
+    const handleLocalCheckout = () => {
+        if (!isShippingOptionSelected) {
+            setCheckoutError('Please select a shipping option to proceed.');
+            return;
+        }
+        handleCheckout();
+    };
 
     return (
         <Box className='checkout-shipping-container'>
 
 
-            {/* Contact and Shipping Information */}
-            <Box className='checkout-shipping' >
-                <Box className='checkout-shipping-contact' >
-                    <Typography variant="subtitle1">Contact:</Typography>
-                    <Box className='checkout-shipping-change'>
-                        <Typography variant="body2" fontWeight={100}>{shippingDetails.phone}</Typography>
-                        <Typography variant="body2" fontWeight={100}>{shippingDetails.email}</Typography>
-                        <Button onClick={handleChangeContant} sx={{ fontSize: 12 }}>Change</Button>
-                    </Box>
-                </Box >
-                <Box className='checkout-shipping-address '>
-                    <Typography variant="subtitle1">Ship to:</Typography>
-                    <Box className="checkout-shipping-change">
-                        <Typography fontWeight={100} variant="body2">{shippingDetails.firstName + ' ' + shippingDetails.lastName} </Typography>
-                        <Typography fontWeight={100} variant="body2">{`${shippingDetails.address} ${shippingDetails.address2}, ${shippingDetails.city}, ${shippingDetails.state} ${shippingDetails.zip}, ${shippingDetails.country}`} </Typography>
-                        <Button onClick={handleChangeContant} sx={{ fontSize: 12 }}>Change</Button>
-                    </Box>
+            <ShippingDetailsComponent
+                shippingDetails={shippingDetails}
 
-                </Box>
-            </Box>
+            />
             {loading ? <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
                 <CircularProgress />
                 Getting Shipping Rates...
@@ -200,6 +206,12 @@ const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, s
                     <Typography variant="h6" >
                         Shipping Method
                     </Typography>
+                    {checkoutError && (
+                        <Typography color="error" style={{ margin: '10px 0' }}>
+                            {checkoutError}
+                        </Typography>
+                    )}
+
                     <Box >
                         <List>
                             {currentItems.map((option, index) => (
@@ -207,6 +219,7 @@ const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, s
                                     key={index}
                                     sx={{
                                         backgroundColor: buttonDisabled[index] ? 'rgba(15, 117, 224, 0.1)' : '',
+                                        borderColor: checkoutError ? '#D23030' : ''
 
                                     }}
                                     className={`checkout-shipping-item-${+index}`}
@@ -254,10 +267,10 @@ const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, s
             {/* Proceed to Payment Button */}
             <Grid container style={{ marginTop: '20px', justifyContent: 'space-between' }}>
 
-                <Button onClick={back} className='cart-checkout-button' variant="outlined" sx={{ m: 1, letterSpacing: 2, color: 'white', fontSize: 12, borderRadius: 0, backgroundColor: '#283047', height: 56.5, "&:hover": { backgroundColor: '#FE6F49', border: 'none', }, textAlign: 'center' }}>
+                <Button onClick={back} className='cart-checkout-button' variant="outlined" sx={{ m: 1, width: { xs: '75%', sm: '45%', md: '230px' }, letterSpacing: 2, color: '#283047', backgroundColor: 'white', borderColor: '#283047', borderWidth: 1.5, height: 55, '&:hover': { backgroundColor: '#0F75E0', color: 'white', } }}>
                     <ArrowBackIosNewIcon sx={{ fontSize: 18, mr: 1 }} />
                     Return to information</Button>
-                <Button disabled={!!isLoading} onClick={handleCheckout} variant="outlined" sx={{ m: 1, letterSpacing: 2, color: '#283047', borderRadius: 0, backgroundColor: 'white', fontSize: 12, borderColor: '#283047', borderWidth: 1.5, height: 55, '&:hover': { backgroundColor: '#0F75E0', color: 'white', } }}>
+                <Button disabled={!!isLoading} onClick={handleLocalCheckout} variant="outlined" sx={{ m: 1, width: { xs: '75%', sm: '45%', md: '230px' }, letterSpacing: 2, color: 'white', backgroundColor: '#283047', height: 56.5, "&:hover": { backgroundColor: '#FE6F49', border: 'none', }, textAlign: 'center' }}>
                     {isLoading ? (
                         <CircularProgress
                             size={24}

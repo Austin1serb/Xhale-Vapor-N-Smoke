@@ -113,7 +113,17 @@ const Shop = () => {
     const filteredProducts = products.filter(product =>
         product.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
-
+    const productStyles = {
+        border: '.1px solid #ccc',
+        borderRadius: '5px',
+        paddingTop: '10px',
+        paddingBottom: '10px',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        height: '300px',
+        justifyContent: 'space-between'
+    }
     return (
         <Box className="shop" sx={{ padding: '20px' }}>
             {/* Search Bar */}
@@ -132,19 +142,10 @@ const Shop = () => {
                 <Grid container spacing={3}>
                     {filteredProducts.map(product => (
                         <Grid item xs={12} sm={6} md={4} key={product._id}>
-                            <Box sx={{
-                                border: '.1px solid #ccc',
-                                borderRadius: '1px',
-                                py: '20px',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                height: '300px',
-                                justifyContent: 'space-between'
-                            }}>
+                            <div style={productStyles}>
 
                                 <img className="shop-img" src={product.imgSource[0].url} alt={product.name} height="150px" loading='lazy' />
-                                <Typography variant="h6" sx={{ fontWeight: 100, fontSize: 14 }} className='shop-name' mt={2}>{product.name}</Typography>
+                                <Typography sx={{ fontWeight: 100, fontSize: 14 }} className='shop-name' mt={2}>{product.name}</Typography>
                                 <Typography variant="subtitle1" className='shop-brand' sx={{ fontSize: 12, fontWeight: 100, color: 'gray' }}>{product.brand}</Typography>
                                 <Typography variant="subtitle2" sx={{ fontWeight: 100, fontSize: 16 }} className='shop-price'>${product.price.toFixed(2)}</Typography>
                                 {/*<Typography variant="body2" mt={2} noWrap>
@@ -161,7 +162,7 @@ const Shop = () => {
                                     }}>Quick View</Button>
                                 </Box>
 
-                            </Box>
+                            </div>
 
                         </Grid>
                     ))}

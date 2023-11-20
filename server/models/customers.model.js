@@ -36,6 +36,11 @@ const CustomerSchema = new mongoose.Schema({
         default: false,
         required: false,
     },
+    isAdmin: {
+        type: Boolean,
+        default: false,
+        required: false,
+    },
     //consent: {
     //    type: Boolean,
     //    required: [true, 'Please acknowledge and consent.'],

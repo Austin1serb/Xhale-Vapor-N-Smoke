@@ -11,23 +11,25 @@ import jwtDecode from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
 import SquarePaymentForm from '../components/SquarePaymentForm';
 import LoadingModal from '../components/Common/LoadingModal';
+import { set } from 'date-fns';
 
 const CheckoutPage = () => {
     const [isSquareSdkLoaded, setIsSquareSdkLoaded] = useState(false);
-    const ACCESS_TOKEN = 'EAAAEKEBHSRt-NvJG7owA-Y_SzYZWIXl7-Wx7BZe11r7EaTUvr99xFr-uPfSePGv'
     const navigate = useNavigate();
     const [activeStep, setActiveStep] = useState(0);
     const [shippingDetails, setShippingDetails] = useState({});
     const steps = ['Cart', 'Information', 'Shipping', 'Payment'];
-    const { cart, removeFromCart, adjustQuantity, notes } = useCart();
+    const { cart, removeFromCart, adjustQuantity, notes, clearCart } = useCart();
     const [shippingCost, setShippingCost] = useState('Calculated at Next Step');
     const total = cart.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
     const tax = "Calculated at checkout";
     const [fullCost, setFullCost] = useState({});
     const [shippingOptions, setShippingOptions] = useState({});
+    const [shipmentOptions, setShipmentOptions] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [orderData, setOrderData] = useState({})
     const [estimatedShipping, setEstimatedShipping] = useState('')
+    const [lastAddress, setLastAddress] = useState({});
     const [formData, setFormData] = useState({
         email: '',
         firstName: '',
@@ -39,7 +41,17 @@ const CheckoutPage = () => {
         zip: '',
         country: ''
     });
+
+    const isGuestUser = () => {
+        return localStorage.getItem('isGuest') === 'true';
+    };
+
+
+
     const loadSquareSdk = () => {
+        setIsSquareSdkLoaded(false)
+
+
         const script = document.createElement('script');
         script.src = "https://js.squareupsandbox.com";
         script.type = "text/javascript";
@@ -82,7 +94,7 @@ const CheckoutPage = () => {
                     body: JSON.stringify({
                         sourceId: 'cnon:card-nonce-ok', // or sourceId: paymentToken.token,
                         amount: paymentAmount,
-                        email: formData.email,
+
                         cost: fullCost,
                         notes: notes,
                         estimatedShipping: estimatedShipping,
@@ -96,15 +108,28 @@ const CheckoutPage = () => {
 
                 // Check if payment was successful
                 if (paymentResponse.ok && paymentResult.success === true) {
-
                     orderData.transactionId = paymentResult.response.result.payment.id;
+                    if (isGuestUser()) {
+                        orderData.createdBy = localStorage.getItem('customerId'); // ID of the guest user
+                        orderData.createdByType = 'Guest';
+                    } else {
+                        orderData.createdBy = localStorage.getItem('customerId'); // ID of the registered user
+                        orderData.createdByType = 'Customer';
+                    }
                     // Now, create the order in the database
                     const createdOrder = await createOrderAsync(orderData);
-
-                    // Update customer data
-                    const updatedCustomerData = { orders: createdOrder._id };
-                    await updateCustomerDataAsync(localStorage.getItem('customerId'), updatedCustomerData);
-
+                    if (!isGuestUser()) {
+                        // Update customer data for registered users
+                        const updatedCustomerData = { orders: createdOrder._id };
+                        await updateCustomerDataAsync(localStorage.getItem('customerId'), updatedCustomerData);
+                    } else {
+                        // Update guest data for guest users
+                        const guestData = { orders: createdOrder._id };
+                        await updateGuestDataAsync(localStorage.getItem('customerId'), guestData);
+                        localStorage.removeItem('customerId')
+                        localStorage.removeItem('isGuest')
+                    }
+                    clearCart()
                     // Navigate to success page after all processes are complete
                     navigate('/success', { state: { paymentDetails: paymentResult } });
                 } else {
@@ -124,31 +149,37 @@ const CheckoutPage = () => {
 
 
     useEffect(() => {
-
         const token = localStorage.getItem('token');
+        const customerId = localStorage.getItem('customerId');
+
         if (token) {
             try {
                 const decodedToken = jwtDecode(token);
                 const currentTime = Date.now() / 1000;
                 if (decodedToken.exp < currentTime) {
                     // Token expired
-                    navigate('/registration?returnUrl=/checkout');
+                    navigate('/login?returnUrl=/checkout');
+                } else {
+                    // Token is valid, continue with checkout
                 }
-                // Token is valid, continue with checkout
             } catch (error) {
                 // If error in decoding, token might be invalid
                 navigate('/registration?returnUrl=/checkout');
             }
+        } else if (customerId) {
+            // CustomerId is present, treat as a valid session for checkout
+            // No additional action needed here, continue with checkout
         } else {
-            // No token found, redirect to registration
+            // No token and no customerId found, redirect to registration
             navigate('/registration?returnUrl=/checkout');
         }
     }, [navigate]);
-    useEffect(() => {
-        console.log('pp' + estimatedShipping)
-    }, [])
-    const handleCheckout = async () => {
 
+
+
+
+    const handleCheckout = async () => {
+        console.log('checking out')
         setIsLoading(true); // Turn on loading state
         const customerId = localStorage.getItem('customerId')
         const customerEmail = localStorage.getItem('userEmail')
@@ -222,6 +253,23 @@ const CheckoutPage = () => {
             // Handle errors or log them, as per your application's needs
         }
     }
+    const updateGuestDataAsync = async (customerId, data) => {
+        try {
+            await fetch(`http://localhost:8000/api/guest/${customerId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            });
+            setIsLoading(false);
+            // Optionally handle the response or errors
+        } catch (error) {
+            setIsLoading(false)
+            console.error('Error updating customer data:', error);
+            // Handle errors or log them, as per your application's needs
+        }
+    }
 
     const handleFormChange = (name, value) => {
         setFormData(prevFormData => ({
@@ -280,97 +328,101 @@ const CheckoutPage = () => {
             <LoadingModal open={isLoading} message="Your payment is being processed" />
             <Box sx={{ display: 'flex', flexDirection: { xs: 'column-reverse', md: 'row' } }}>
                 <div style={{ flex: 1 }}>
-                    {activeStep === steps.length ? (
+
+                    <div>
                         <div>
-                            <Typography sx={{ mt: 1, mb: 1 }}>
-                                All steps completed - you&apos;re finished
-                            </Typography>
-                            <Button onClick={handleReset}>Reset</Button>
-                        </div>
-                    ) : (
-                        <div>
-                            <div>
-                                {/*<div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                            {/*<div style={{ textAlign: 'center', marginBottom: '20px' }}>
                                     <img src={BrandIcon} alt="Brand Logo" style={{ width: '100px' }} loading='lazy' />
                                 </div>*/}
-                                {/* Stepper */}
-                                <Stepper activeStep={activeStep} alternativeLabel sx={stepperStyles}>
-                                    {steps.map((label) => (
-                                        <Step key={label}>
-                                            <StepLabel>{label}</StepLabel>
-                                        </Step>
-                                    ))}
-                                </Stepper>
-                                {activeStep === 0 &&
-                                    <Box sx={{ pt: { xs: 0, sm: 2.5 }, borderTop: '0.1px solid black', mt: { xs: 0, sm: 1 } }}>
-                                        <CartSummaryComponent
-                                            cartItems={cart.map(item => ({
-                                                _id: item.product._id,
-                                                img: item.product.imgSource[0].url,
-                                                name: item.product.name,
-                                                quantity: item.quantity,
-                                                price: item.product.price,
-                                                specs: item.product.specs,
-                                            }))}
-                                            shippingCost={shippingCost}
-                                            tax={tax}
-                                            total={total}
-                                            removeFromCart={removeFromCart}
-                                            adjustQuantity={adjustQuantity}
-                                            next={handleNext}
-                                            step={activeStep}
-                                            setFullCost={setFullCost}
+                            {/* Stepper */}
+                            <Stepper activeStep={activeStep} alternativeLabel sx={stepperStyles}>
+                                {steps.map((label) => (
+                                    <Step key={label}>
+                                        <StepLabel>{label}</StepLabel>
+                                    </Step>
+                                ))}
+                            </Stepper>
+                            {activeStep === 0 &&
+                                <Box sx={{ pt: { xs: 0, sm: 2.5 }, borderTop: '0.1px solid black', mt: { xs: 0, sm: 1 } }}>
+                                    <CartSummaryComponent
+                                        cartItems={cart.map(item => ({
+                                            _id: item.product._id,
+                                            img: item.product.imgSource[0].url,
+                                            name: item.product.name,
+                                            quantity: item.quantity,
+                                            price: item.product.price,
+                                            specs: item.product.specs,
+                                        }))}
+                                        shippingCost={shippingCost}
+                                        tax={tax}
+                                        total={total}
+                                        removeFromCart={removeFromCart}
+                                        adjustQuantity={adjustQuantity}
+                                        next={handleNext}
+                                        step={activeStep}
+                                        setFullCost={setFullCost}
 
-                                        />
-                                    </Box>
-                                }
-                                {activeStep === 1 && <InformationPage
-                                    back={handleBack}
-                                    next={handleNext}
-                                    onShippingDetailsSubmit={handleShippingDetailsSubmit}
-                                    formData={formData}
-                                    onFormChange={handleFormChange}
-                                />}
-                                {activeStep === 2 && <ShippingComponent
-                                    setActiveStep={setActiveStep}
-                                    cartItems={cart.map(item => ({
-                                        _id: item.product._id,
-                                        weight: item.product.shipping.weight,
-                                        length: item.product.shipping.dimensions.length,
-                                        width: item.product.shipping.dimensions.width,
-                                        height: item.product.shipping.dimensions.height,
-                                    }))}
+                                    />
+                                </Box>
+                            }
+                            {activeStep === 1 && <InformationPage
+                                back={handleBack}
+                                next={handleNext}
+                                onShippingDetailsSubmit={handleShippingDetailsSubmit}
+                                formData={formData}
+                                onFormChange={handleFormChange}
+                            />}
+                            {activeStep === 2 && <ShippingComponent
+                                setActiveStep={setActiveStep}
+                                cartItems={cart.map(item => ({
+                                    _id: item.product._id,
+                                    weight: item.product.shipping.weight,
+                                    length: item.product.shipping.dimensions.length,
+                                    width: item.product.shipping.dimensions.width,
+                                    height: item.product.shipping.dimensions.height,
+                                }))}
+                                shippingDetails={shippingDetails}
+                                onShippingCostChange={handleShippingCostChange}
+                                formData={formData}
+                                back={handleBack}
+                                next={handleNext}
+                                onShippingOptionsChange={handleShippingOptions}
+                                handleCheckout={handleCheckout}
+                                isLoading={isLoading}
+                                setEstimatedShipping={setEstimatedShipping}
+                                lastAddress={lastAddress}
+                                setLastAddress={setLastAddress}
+                                shipmentOptions={shipmentOptions}
+                                setShipmentOptions={setShipmentOptions}
+                            />}
+                            {activeStep === 3 && isSquareSdkLoaded &&
+                                <SquarePaymentForm
+                                    onPaymentProcess={onPaymentProcess}
+                                    paymentForm={window.SqPaymentForm}
                                     shippingDetails={shippingDetails}
-                                    onShippingCostChange={handleShippingCostChange}
-                                    formData={formData}
                                     back={handleBack}
-                                    next={handleNext}
-                                    onShippingOptionsChange={handleShippingOptions}
-                                    handleCheckout={handleCheckout}
-                                    isLoading={isLoading}
-                                    setEstimatedShipping={setEstimatedShipping}
-                                />}
-                                {activeStep === 3 && isSquareSdkLoaded &&
-                                    <SquarePaymentForm onPaymentProcess={onPaymentProcess} paymentForm={window.SqPaymentForm} />
-                                }
 
-                            </div>
-                            <div>
-                                <Button disabled={activeStep === 0} onClick={handleBack}>
-                                    Back
-                                </Button>
-                                <Button onClick={handleNext}>
-                                    {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
-                                </Button>
-                            </div>
+
+                                />
+                            }
+
                         </div>
-                    )}
+                        <div>
+                            <Button disabled={activeStep === 0} onClick={handleBack}>
+                                Back
+                            </Button>
+                            <Button onClick={handleNext}>
+                                {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+                            </Button>
+                        </div>
+                    </div>
+
                 </div>
                 {/* if cart summary doesnt equal 0 then display it */}
                 {/* else dont display it */}
                 {/* Cart Summary Component */}
                 {activeStep !== 0 && cart.length !== 0 ?
-                    <div style={{ flex: 1, }}>
+                    <div style={{ flex: 0.9, }}>
                         {/* Cart Summary Component */}
                         <CartSummaryComponent
                             cartItems={cart.map(item => ({

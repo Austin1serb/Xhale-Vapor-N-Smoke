@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import jwtDecode from 'jwt-decode'; // Import jwt-decode
+import Cookies from 'universal-cookie';
 import {
     Box,
     Paper,
@@ -13,36 +14,36 @@ import {
     IconButton,
 
 } from '@mui/material';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
+import GuestCheckoutPage from './GuestCheckout';
 
 
 
 const LoginPage = () => {
     const [openSnackbar, setOpenSnackbar] = React.useState(false);
-    const [errorMessage, setErrorMessage] = useState('')
+
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [rememberMe, setRememberMe] = useState(false); // Changed to 'false' by default
+    const [rememberMe, setRememberMe] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
+    const params = new URLSearchParams(location.search);
+    const returnUrl = params.get('returnUrl') || '/';
 
-    // Check if the user is logged in by verifying the presence of the access token
+    const shouldShowGuestCheckout = () => {
+        return returnUrl && returnUrl.includes('/checkout');
+    };
 
-    // If the user is already logged in, you can redirect them to another page
-    //const isUserLoggedIn = Boolean(localStorage.getItem('token'));
 
-    //if (isUserLoggedIn) {
-    //    // Redirect to a different route, e.g., the home page
-    //    navigate('/');
 
-    //}
     const handleClickShowPassword = () => {
         setShowPassword((show) => !show);
     };
@@ -61,16 +62,18 @@ const LoginPage = () => {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ email, password }),
+                credentials: 'include',
             });
 
             if (response.ok) {
                 // Login successful
                 // Store JWT and refresh token
                 const data = await response.json();
+                console.log(data)
                 const accessToken = data.accessToken;
-                const refreshToken = data.refreshToken;
+                //const refreshToken = data.newRefreshToken;
                 localStorage.setItem('token', accessToken); // Store in localStorage for persistent login
-                localStorage.setItem('refreshToken', refreshToken); // Store the refresh token
+                //localStorage.setItem('refreshToken', refreshToken); // Store the refresh token
                 const decodedToken = jwtDecode(accessToken);
 
 
@@ -84,8 +87,7 @@ const LoginPage = () => {
                 localStorage.setItem('userEmail', decodedToken.email);
                 // Redirect to the home page or checkoutpage
 
-                const params = new URLSearchParams(window.location.search);
-                const returnUrl = params.get('returnUrl') || '/';
+
                 navigate(returnUrl);
             } else {
                 handleErrorResponse(response, setError);
@@ -120,20 +122,22 @@ const LoginPage = () => {
         setOpenSnackbar(true)
     }
 
-
+    const containerStyles = {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        height: '70vh',
+        backgroundColor: '#fff', // Set your desired background color
+        padding: '40px'
+    }
     return (
-        <Box
-            sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: '70vh',
-                backgroundColor: '#fff', // Set your desired background color
-            }}
+        <div
+            style={containerStyles}
         >
             <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={() => setOpenSnackbar(false)}>
                 <Alert onClose={() => setOpenSnackbar(false)} severity="error" sx={{ width: '100%' }}>
-                    {errorMessage || error}
+                    {error}
                 </Alert>
             </Snackbar>
             <Paper
@@ -227,7 +231,10 @@ const LoginPage = () => {
                     </Link>
                 </Typography>
             </Paper>
-        </Box>
+            {shouldShowGuestCheckout() && (
+                <GuestCheckoutPage />
+            )}
+        </div>
     );
 };
 

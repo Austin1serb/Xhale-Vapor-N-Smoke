@@ -1,6 +1,5 @@
-import { Box, Button, CircularProgress, IconButton, List, ListItem, Paper, Tooltip, } from '@mui/material';
+import { Box, Button, CircularProgress, IconButton, List, ListItem, Paper, } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { RiArrowDropDownLine } from 'react-icons/ri';
 import '../Styles/DropDownMenu.css';
 import throttle from 'lodash/throttle';
 import { Link } from 'react-router-dom';
@@ -111,11 +110,8 @@ const DropdownMenu = ({ isVisible }) => {
                         <div className='list-header' onClick={() => handleToggleSection('SHOP_ALL_CBD')}>
                             <span className="list-content">SHOP ALL CBD</span>
                             <IconButton className='icon-button-dropdown' sx={{ display: { md: 'none' } }}>
-                                <RiArrowDropDownLine
 
-                                    className={`arrow-icon ${openedSection === 'SHOP_ALL_CBD' && 'rotate'}`}
-                                    size={38}
-                                />
+                                <svg height='40' className={`arrow-icon ${openedSection === 'SHOP_ALL_CBD' && 'rotate'}`} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 15.0006L7.75732 10.758L9.17154 9.34375L12 12.1722L14.8284 9.34375L16.2426 10.758L12 15.0006Z" /></svg>
                             </IconButton>
 
                         </div>
@@ -145,7 +141,8 @@ const DropdownMenu = ({ isVisible }) => {
                         <div className='list-header' onClick={() => handleToggleSection('SHOP_BY_CATEGORY')}>
                             <span className="list-content">SHOP BY CATEGORY</span>
                             <IconButton className='icon-button-dropdown' sx={{ display: { md: 'none' } }}>
-                                <RiArrowDropDownLine className={`arrow-icon ${openedSection === 'SHOP_BY_CATEGORY' && 'rotate'}`} size={38} />
+
+                                <svg height='40' className={`arrow-icon ${openedSection === 'SHOP_BY_CATEGORY' && 'rotate'}`} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 15.0006L7.75732 10.758L9.17154 9.34375L12 12.1722L14.8284 9.34375L16.2426 10.758L12 15.0006Z" /></svg>
                             </IconButton>
                         </div>
                         {(openedSection === 'SHOP_BY_CATEGORY' || window.innerWidth > 900) && (
@@ -186,7 +183,9 @@ const DropdownMenu = ({ isVisible }) => {
                         <div className='list-header' onClick={() => handleToggleSection('MORE_CANNABINOIDS')}>
                             <span className="list-content"> MORE CANNABINOIDS</span>
                             <IconButton className='icon-button-dropdown' sx={{ display: { md: 'none' } }}>
-                                <RiArrowDropDownLine className={`arrow-icon ${openedSection === 'MORE_CANNABINOIDS' && 'rotate'}`} size={38} />
+
+
+                                <svg height='40' className={`arrow-icon ${openedSection === 'MORE_CANNABINOIDS' && 'rotate'}`} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 15.0006L7.75732 10.758L9.17154 9.34375L12 12.1722L14.8284 9.34375L16.2426 10.758L12 15.0006Z" /></svg>
                             </IconButton>
                         </div>
                         {(openedSection === 'MORE_CANNABINOIDS' || window.innerWidth > 900) && (
@@ -212,7 +211,9 @@ const DropdownMenu = ({ isVisible }) => {
                         <div className='list-header' onClick={() => handleToggleSection('OTHER_PRODUCTS')}>
                             <span className="list-content">OTHER PRODUCTS</span>
                             <IconButton className='icon-button-dropdown' sx={{ display: { md: 'none' } }}>
-                                <RiArrowDropDownLine className={`arrow-icon ${openedSection === 'OTHER_PRODUCTS' && 'rotate'}`} size={38} />
+
+
+                                <svg height='40' className={`arrow-icon ${openedSection === 'OTHER_PRODUCTS' && 'rotate'}`} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 15.0006L7.75732 10.758L9.17154 9.34375L12 12.1722L14.8284 9.34375L16.2426 10.758L12 15.0006Z" /></svg>
                             </IconButton>
                         </div>
                         {(openedSection === 'OTHER_PRODUCTS' || window.innerWidth > 900) && (
@@ -232,7 +233,9 @@ const DropdownMenu = ({ isVisible }) => {
                         <div className='list-header' onClick={() => handleToggleSection('JOIN_US')}>
                             <span className="list-content">Join Us</span>
                             <IconButton className='icon-button-dropdown' sx={{ display: { md: 'none' } }}>
-                                <RiArrowDropDownLine className={`arrow-icon ${openedSection === 'JOIN_US' && 'rotate'}`} size={38} />
+
+
+                                <svg height='40' className={`arrow-icon ${openedSection === 'JOIN_US' && 'rotate'}`} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 15.0006L7.75732 10.758L9.17154 9.34375L12 12.1722L14.8284 9.34375L16.2426 10.758L12 15.0006Z" /></svg>
                             </IconButton>
                         </div>
                         {(openedSection === 'JOIN_US' || window.innerWidth > 900) && (
@@ -250,7 +253,9 @@ const DropdownMenu = ({ isVisible }) => {
                         <div className='list-header' onClick={() => handleToggleSection('ABOUT_US')}>
                             <span className="list-content">About Us</span>
                             <IconButton className='icon-button-dropdown' sx={{ display: { md: 'none' } }}>
-                                <RiArrowDropDownLine className={`arrow-icon ${openedSection === 'ABOUT_US' && 'rotate'}`} size={38} />
+
+
+                                <svg height='40' className={`arrow-icon ${openedSection === 'ABOUT_US' && 'rotate'}`} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 15.0006L7.75732 10.758L9.17154 9.34375L12 12.1722L14.8284 9.34375L16.2426 10.758L12 15.0006Z" /></svg>
                             </IconButton>
                         </div>
                         {(openedSection === 'ABOUT_US' || window.innerWidth > 900) && (
@@ -268,7 +273,9 @@ const DropdownMenu = ({ isVisible }) => {
                         <div className='list-header' onClick={() => handleToggleSection('SUPPORT')}>
                             <span className="list-content">Support</span>
                             <IconButton className='icon-button-dropdown' sx={{ display: { md: 'none' } }}>
-                                <RiArrowDropDownLine className={`arrow-icon ${openedSection === 'SUPPORT' && 'rotate'}`} size={38} />
+
+
+                                <svg height='40' className={`arrow-icon ${openedSection === 'SUPPORT' && 'rotate'}`} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 15.0006L7.75732 10.758L9.17154 9.34375L12 12.1722L14.8284 9.34375L16.2426 10.758L12 15.0006Z" /></svg>
                             </IconButton>
                         </div>
                         {(openedSection === 'SUPPORT' || window.innerWidth > 900) && (
@@ -290,9 +297,9 @@ const DropdownMenu = ({ isVisible }) => {
                             <Box className='drowdown-featured-container' key={product._id}> {/* Use `_id` or appropriate key property */}
                                 <img className='dropdown-featured-img' alt='featured' src={product.imgSource[0].url} loading='lazy' />
                                 <Box>
-                                    <Tooltip title={product.name} arrow>
-                                        <Box className='dropdown-featured-name'>{product.name}</Box>
-                                    </Tooltip>
+
+                                    <Box className='dropdown-featured-name'>{product.name}</Box>
+
                                     <Box className='dropdown-featured-price' >${product.price}
                                         <Button variant='outlined' sx={buttonStyle} className='dropdown-featured-button' onClick={() => {
                                             setQuickViewProduct(product._id);

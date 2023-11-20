@@ -1,5 +1,5 @@
 import { Box, Button, Typography, Popover, Grid } from '@mui/material';
-import React, { useState } from 'react';
+import React, { } from 'react';
 import '../Styles/ShopByBrand.css'
 import wyld from '../assets/Wyld.jpg'
 const BestSellersSection = () => {
@@ -15,18 +15,28 @@ const BestSellersSection = () => {
 
     const open = Boolean(anchorEl);
 
-
+    const productStyles = {
+        border: '.1px solid #ccc',
+        borderRadius: '5px',
+        paddingTop: '10px',
+        paddingBottom: '10px',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        margin: '20px',
+    }
     return (
-        <Box>
-            <h2 className='brand-header' >Brands We Carry</h2>
+        <div>
+            <h1 className='brand-header' >Brands We Carry</h1>
             <Grid container spacing={2} className="brand">
 
                 {/* Brand Item 1 */}
-                <Grid item xs={12} sm={6} md={4}>
-                    <div className="brand-item">
+                <Grid item xs={12} sm={6} md={4} >
+                    <div className="brand-item" style={productStyles}>
                         <h2 className="brand-name">WYLD</h2>
                         <div className="brand-img-container">
-                            <img className="brand-image" src={wyld} alt="" loading='lazy' />
+                            <img className="brand-image" src={wyld} alt="wldLogo" loading='lazy' />
                         </div>
                         <Box>
                             <Typography
@@ -66,13 +76,13 @@ const BestSellersSection = () => {
 
                 {/* Brand Item 2 */}
                 <Grid item xs={12} sm={6} md={4}>
-                    <div className="brand-item">
+                    <div className="brand-item" style={productStyles}>
                         <h2 className="brand-name">BeeZbee</h2>
                         <div className="brand-img-container"
                         >
                             <img
                                 src='https://www.beezbeecbd.com/cdn/shop/files/bzb-fullcolor_150x.png?v=1618001658'
-                                alt=''
+                                alt='beeZbeelogo'
                                 className="brand-image"
                                 loading='lazy'
                             />
@@ -114,13 +124,13 @@ const BestSellersSection = () => {
                 </Grid>
                 {/* Brand Item 3 */}
                 <Grid item xs={12} sm={6} md={4}>
-                    <div className="brand-item">
+                    <div className="brand-item" style={productStyles}>
                         <h2 className="brand-name">beeZbee</h2>
                         <div className="brand-img-container"
                         >
                             <img
                                 src='https://www.beezbeecbd.com/cdn/shop/files/bzb-fullcolor_150x.png?v=1618001658'
-                                alt=''
+                                alt='koiLogo'
                                 className="brand-image"
                                 style={{ backgroundColor: 'black' }}
                                 loading='lazy'
@@ -163,7 +173,7 @@ const BestSellersSection = () => {
                 </Grid>
 
             </Grid>
-        </Box >
+        </div >
     );
 };
 

@@ -1,6 +1,9 @@
 .brand-header {
     font-family: 'Playfair Display', serif;
     margin-left: 10%;
+    border-bottom: 0.1px solid black;
+    padding-left: 15px;
+    margin-right: 50px;
 }
 
 .brand {
@@ -15,12 +18,7 @@
 
 }
 
-.brand-item {
-    display: grid;
-    margin: 20px;
 
-
-}
 
 .brand-image {
     width: 280px;
@@ -42,6 +40,7 @@
     border: none;
     cursor: pointer;
     transition: background-color 0.3s ease-in-out;
+    margin-left: 30px;
 }
 
 .brand-item button:hover {
@@ -69,7 +68,7 @@
     width: 140px;
     background-color: #282F48;
     color: #FFFFFF;
-    transform: translate(50%, -40px);
+    transform: translate(0, -40px);
     justify-content: center;
 }
 

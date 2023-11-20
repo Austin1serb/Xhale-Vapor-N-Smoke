@@ -149,6 +149,21 @@ module.exports = {
             }).catch(err => res.json(err))
     },
 
+    getBestSellers: async (req, res) => {
+
+        const limit = parseInt(req.query.limit) || 3; // Default to 3 if limit is not provided or invalid
+
+        try {
+            const bestSellers = await Products.find({}).sort({ totalSold: -1 }).limit(limit);
+
+            res.json(bestSellers);
+        } catch (err) {
+            console.error('Error fetching best sellers:', err);
+            res.status(500).json({ message: 'Internal Server Error' });
+        }
+    },
+
+
     getFeatured: async (req, res) => {
         try {
             const limit = parseInt(req.query.limit) || 5; // Set a default limit or take from query string
