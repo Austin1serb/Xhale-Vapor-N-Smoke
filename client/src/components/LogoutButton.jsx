@@ -5,22 +5,16 @@ import { useNavigate } from 'react-router-dom';
 const LogoutButton = () => {
     const navigate = useNavigate();
     const isLoggedIn = Boolean(localStorage.getItem('token')) || Boolean(sessionStorage.getItem('token')); // Check if the user is logged in
-
-    const refreshToken = localStorage.getItem('refreshToken'); // Retrieve the refreshToken
-
     const handleLogout = async () => {
         try {
+
             const response = await fetch('http://localhost:8000/api/customer/logout', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ refreshToken: localStorage.getItem('refreshToken') }),
+                credentials: 'include',
             });
 
             if (response.ok) {
                 console.log('Logout successful');
-
                 // Clear tokens and user data from local storage
                 ['token', 'refreshToken', 'userFirstName', 'userLastName', 'customerId', 'userEmail'].forEach(key => {
                     localStorage.removeItem(key);
@@ -34,6 +28,7 @@ const LogoutButton = () => {
                 console.error('Error details:', data);
                 // Display an error message to the user or take other appropriate actions
             }
+
         } catch (error) {
             console.error('Network error during logout:', error.message);
             // Display an error message or handle network error

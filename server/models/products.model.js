@@ -7,6 +7,10 @@ const ProductSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please add a Brand'],
     },
+    totalSold: {
+        type: Number,
+        default: 0,
+    },
     name: {
         type: String,
         minlength: [2, 'Name must be at least 2 characters long.'],

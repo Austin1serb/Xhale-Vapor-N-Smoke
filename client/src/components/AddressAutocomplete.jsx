@@ -24,13 +24,15 @@ const AddressAutocomplete = ({ id, label, fullWidth, variant, onAddressSelected,
 
         // Function to load the Google Maps API script
         const loadScript = () => {
-            const script = document.createElement('script');
-            script.src = `https://maps.googleapis.com/maps/api/js?key=${API_KEY}&libraries=places`;
-            script.async = true;
-            script.defer = true;
-            script.onload = initAutocomplete;
-            document.head.appendChild(script);
+            if (!document.querySelector('script[src*="googleapis"]')) {
+                const script = document.createElement('script');
+                script.src = `https://maps.googleapis.com/maps/api/js?key=${API_KEY}&libraries=places&callback=initAutocomplete`;
+                script.async = true;
+                script.defer = true;
+                document.head.appendChild(script);
+            }
         };
+
 
         // Load script if Google Maps API is not already loaded
         if (!window.google) {

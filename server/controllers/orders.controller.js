@@ -1,4 +1,5 @@
 const Orders = require('../models/orders.model')
+const Product = require('../models/products.model')
 module.exports = {
 
 
@@ -64,8 +65,22 @@ module.exports = {
     createOne: async (req, res) => {
         try {
             const newOrder = new Orders(req.body);
+
             newOrder.orderNumber = newOrder._id; // Assign the _id to orderNumber
             const savedOrder = await newOrder.save();
+
+            // Update totalSold for each product in the order
+            for (const product of savedOrder.products) {
+                const soldProduct = await Product.findById(product.productId);
+                if (soldProduct) {
+                    soldProduct.totalSold += product.quantity; // Increment totalSold
+                    await soldProduct.save();
+                } else {
+                    console.error('Product not found:', product.productId);
+                    // Handle the case where product is not found, if necessary
+                }
+            }
+
             res.json(savedOrder);
         } catch (err) {
             console.error('Error creating order:', err);

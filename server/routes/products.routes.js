@@ -4,7 +4,7 @@ const router = express.Router();
 
 
 router.route('/featured').get(ProductsController.getFeatured);
-
+router.route('/bestsellers').get(ProductsController.getBestSellers);
 
 
 router.route("/test").get(ProductsController.test);

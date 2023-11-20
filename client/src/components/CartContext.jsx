@@ -44,14 +44,16 @@ export const CartProvider = ({ children }) => {
         ));
     };
 
-
+    const clearCart = () => {
+        setCart([]); // This sets the cart to an empty array, effectively clearing it
+    };
 
 
 
     //confetti
 
     return (
-        <CartContext.Provider value={{ cart, addToCart, removeFromCart, adjustQuantity, notes, updateNotes }}>
+        <CartContext.Provider value={{ cart, addToCart, removeFromCart, adjustQuantity, notes, updateNotes, clearCart }}>
             {children}
 
             {/* Confetti */}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, CircularProgress, Fade, Modal, Typography } from '@mui/material';
+import { CircularProgress, Fade, Modal } from '@mui/material';
 const modalStyle = { display: 'flex', alignItems: 'center', justifyContent: 'center' }
 const fadeStyle = { transitionDuration: '500ms' }
 const divStyle = { display: 'flex', flexDirection: 'column', alignItems: 'center', backgroundColor: 'rgba(255, 255, 255, 0.8)', padding: '20px', borderRadius: '10px' }

@@ -19,6 +19,7 @@ import ReCAPTCHA from 'react-google-recaptcha';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import jwtDecode from 'jwt-decode';
+import GuestCheckoutPage from './GuestCheckout';
 
 
 
@@ -31,6 +32,13 @@ const RegistrationPage = () => {
     const siteKey = '6LdWVw4pAAAAADqgqwejq2_Os3NGofQXke0q3JsV'
     const navigate = useNavigate();
     const [recaptchaValue, setRecaptchaValue] = useState(null);
+    const params = new URLSearchParams(window.location.search);
+    const returnUrl = params.get('returnUrl') || '/';
+
+
+    const shouldShowGuestCheckout = () => {
+        return returnUrl && returnUrl.includes('/checkout');
+    };
 
     const onRecaptchaChange = (value) => {
         setRecaptchaValue(value);
@@ -171,14 +179,15 @@ const RegistrationPage = () => {
                 },
                 body: JSON.stringify(registrationData),
             });
+            const responseData = await response.json();
 
             if (response.ok) {
                 // Registration successful
-                const responseData = await response.json();
-                const { accessToken, refreshToken } = responseData;
+
+                const { accessToken } = responseData;
                 // Store the token securely (Consider more secure storage than localStorage)
                 localStorage.setItem('token', accessToken);
-                localStorage.setItem('refreshToken', refreshToken);
+
                 const decodedToken = jwtDecode(accessToken);
 
                 // Store user details in localStorage (or sessionStorage)
@@ -192,56 +201,65 @@ const RegistrationPage = () => {
                 navigateToReturnUrl();
                 setIsSubmitting(false); // End submitting after form handling
             } else {
-                // Registration failed, handle error response
-                handleErrorResponse(response);
-                setIsSubmitting(false); // End submitting after form handling
+                // Check if the error is a validation error
+                if (responseData.errors) {
+                    // Set field-specific errors
+                    setErrors(responseData.errors);
+                } else {
+                    // Set general error message
+                    setErrorMessage(responseData.message || 'An error occurred');
+                    setOpenSnackbar(true);
+                }
             }
         } catch (error) {
             console.error('API request error:', error);
-        }
-    }
-
-    // Helper functions (to keep handleSubmit clean)
-    function resetFormData() {
-        setFormData({
-            firstName: '',
-            lastName: '',
-            email: '',
-            password: '',
-            confirmPassword: '',
-        });
-        setErrors({});
-    }
-
-    function navigateToReturnUrl() {
-        const params = new URLSearchParams(window.location.search);
-        const returnUrl = params.get('returnUrl') || '/';
-        navigate(returnUrl);
-    }
-
-    async function handleErrorResponse(response) {
-        let errorData;
-        const contentType = response.headers.get('content-type');
-
-        try {
-            if (contentType && contentType.includes('application/json')) {
-                errorData = await response.json();
-                // Assuming errorData.message contains your error message
-                setErrorMessage(errorData.message || 'An error occurred');
-            } else {
-                // Handle non-JSON response
-                errorData = await response.text();
-                setErrorMessage(errorData || 'An error occurred');
-            }
-        } catch (error) {
-            console.error('Error processing response:', error);
             setErrorMessage('An unexpected error occurred');
+            setOpenSnackbar(true);
+        } finally {
+            setIsSubmitting(false);
         }
 
-        setOpenSnackbar(true); // Show the Snackbar with the error message
+
+        // Helper functions (to keep handleSubmit clean)
+        function resetFormData() {
+            setFormData({
+                firstName: '',
+                lastName: '',
+                email: '',
+                password: '',
+                confirmPassword: '',
+            });
+            setErrors({});
+        }
+
+        function navigateToReturnUrl() {
+
+            navigate(returnUrl);
+        }
+
+        async function handleErrorResponse(response) {
+            let errorData;
+            const contentType = response.headers.get('content-type');
+
+            try {
+                if (contentType && contentType.includes('application/json')) {
+                    errorData = await response.json();
+                    // Assuming errorData.message contains your error message
+                    setErrorMessage(errorData.message || 'An error occurred');
+                } else {
+                    // Handle non-JSON response
+                    errorData = await response.text();
+                    setErrorMessage(errorData || 'An error occurred');
+                }
+            } catch (error) {
+                console.error('Error processing response:', error);
+                setErrorMessage('An unexpected error occurred');
+            }
+
+            setOpenSnackbar(true); // Show the Snackbar with the error message
+        }
+
     }
-
-
     function getTextFieldStyle(fieldName) {
         const isFieldValid = formData[fieldName].trim() && !errors[fieldName];
         return {
@@ -250,19 +268,17 @@ const RegistrationPage = () => {
         };
     }
 
+    const containerStyles = {
+        display: 'flex',
+        justifyContent: 'center',
 
+        height: '90%',
+
+    }
 
     return (
-        <Box
-            sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '100vh',
-
-                p: 0,
-                m: 0,
-            }}
+        <div
+            style={containerStyles}
         >
             <Snackbar open={openSnackbar} autoHideDuration={5000} onClose={() => setOpenSnackbar(false)}>
                 <Alert onClose={() => setOpenSnackbar(false)} severity="error" sx={{ width: '100%' }}>
@@ -273,12 +289,13 @@ const RegistrationPage = () => {
                 elevation={3}
                 sx={{
 
-                    width: '60%',
+                    width: '40%',
                     minWidth: '260px',
                     padding: 3,
                     border: 0.1,
                     boxShadow: 0,
-                    height: 'auto',
+                    marginTop: '60px'
+
                 }}
             >
                 <Typography variant="h4" align="center">
@@ -417,7 +434,11 @@ const RegistrationPage = () => {
 
                 </form>
             </Paper>
-        </Box>
+            {shouldShowGuestCheckout() && (
+
+                <GuestCheckoutPage />
+            )}
+        </div>
     );
 };
 

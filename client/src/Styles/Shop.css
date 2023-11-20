@@ -2,10 +2,11 @@
     transition: transform 0.3s ease-in-out;
     object-fit: cover;
     height: 150px;
+    z-index: 0;
 }
 
 .shop-img:hover {
-    transform: scale(1.2);
+    transform: scale(1.1);
     cursor: pointer;
 
 }
@@ -13,6 +14,7 @@
 
 .shop-name {
     text-align: center;
+    z-index: 1;
 
 }
 

@@ -26,6 +26,7 @@
 
 .colored-square {
     transform: translate(0px, 70px);
+    height: 200px;
 
 }
 
@@ -63,26 +64,31 @@
     border: none;
     cursor: pointer;
     transition: background-color 0.3s ease-in-out;
+    height: 57px;
 
 }
 
 .bottom-box-button2 button {
+    height: 57px;
     border-radius: 0;
+    border: 2px solid #282F48;
     border-color: #282F48;
     background-color: #ffffff;
     color: #282F48;
     padding: 19px 30px;
     cursor: pointer;
-    transition: background-color color 0.3s ease-in-out;
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
 }
 
 
 
 .bottom-box-button1 button:hover {
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
     background-color: #FE6F49;
 }
 
 .bottom-box-button2 button:hover {
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
     background-color: #282F48;
     color: #FFFFFF;
 }
@@ -123,8 +129,8 @@
     }
 
     .left-content {
-        margin-top: -50px;
-        width: 60%;
+        transform: translateY(-500px);
+        width: 80%;
     }
 
     .bottom-box {
@@ -139,8 +145,8 @@
 
 
     .colored-square {
-        margin-top: -50px;
-        padding: 10px 0px 10px 0px;
+
+        padding: 50px 0px 10px 0px;
         transform: none;
         display: inherit;
     }
@@ -150,10 +156,18 @@
     }
 }
 
+@media (max-width: 660px) {
+    .left-content {
+        transform: translateY(-50%);
+        width: 70%;
+    }
+}
+
 @media (max-width: 360px) {
     .right-content {
         margin-left: 5px;
     }
+
 
     .bottom-box button {
         margin-left: -5px;
@@ -169,6 +183,7 @@
 .li-icon2 {
     color: #FE6F49;
     font-size: x-large;
+    transition: color 0.3s ease;
 }
 
 .li-icon1,
@@ -177,6 +192,7 @@
 .li-icon6 {
     color: #FE6F49;
     font-size: xx-large;
+    transition: color 0.3s ease;
 }
 
 
@@ -202,10 +218,12 @@
 }
 
 .icon5 path {
+    transition: stroke 0.3s ease;
     stroke: #FE6F49;
 }
 
 .li-icon4 path {
+    transition: stroke 0.3s ease;
     stroke: #df4e26;
     stroke-width: 0.4px;
 }

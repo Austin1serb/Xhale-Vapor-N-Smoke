@@ -7,7 +7,7 @@ const { Client, Environment, ApiError } = require("square");
 const client = new Client({
     accessToken: process.env.SQUARE_ACCESS_TOKEN,
     environment: Environment.Sandbox,
-    customUrl: 'http://localhost:3000'
+
 });
 const paymentsApi = client.paymentsApi;
 const { locationsApi } = client;
@@ -59,16 +59,20 @@ function convertBigIntToString(obj) {
 const processPayment = async (req, res) => {
 
 
-    const { sourceId, amount, email, cost, notes, estimatedShipping, orderDetails, last4 } = req.body; // sourceId is the payment source, e.g., card nonce
+    const { sourceId, amount, cost, notes, estimatedShipping, orderDetails, last4, } = req.body; // sourceId is the payment source, e.g., card nonce
 
 
     try {
+
         const response = await paymentsApi.createPayment({
             sourceId: sourceId,
             idempotencyKey: uuidv4(),
+            customerId: orderDetails.customer,
+            buyerEmailAddress: orderDetails.customerEmail,
             amountMoney: {
                 amount: amount, // amount in cents
                 currency: 'USD'
+
             }
 
         });
@@ -88,9 +92,9 @@ const processPayment = async (req, res) => {
         if (response && responseBody.payment.status === 'COMPLETED') {
             const emailRecieptUrl = responseBody.receiptUrl;
 
-            console.log("orderDetails OUTSIDE sendReceiptEmail:", orderDetails);
+            //console.log("orderDetails OUTSIDE sendReceiptEmail:", orderDetails);
             // Attempt to send the receipt email
-            await sendReceiptEmail(email, cost, notes, estimatedShipping, orderDetails, last4, emailRecieptUrl);
+            await sendReceiptEmail(cost, notes, estimatedShipping, orderDetails, last4, emailRecieptUrl);
 
 
             // If email sending is successful, send a success response
@@ -116,12 +120,12 @@ const processPayment = async (req, res) => {
 
 
 
-async function sendReceiptEmail(email, cost, notes, estimatedShipping, orderDetails, last4, emailRecieptUrl) {
+async function sendReceiptEmail(cost, notes, estimatedShipping, orderDetails, last4, emailRecieptUrl) {
 
-    console.log("orderDetails inside sendReceiptEmail:", orderDetails);
-    if (orderDetails) {
-        console.log("orderDetails.products inside sendReceiptEmail:", orderDetails.products);
-    }
+    //console.log("orderDetails inside sendReceiptEmail:", orderDetails);
+    //if (orderDetails) {
+    //    console.log("orderDetails.products inside sendReceiptEmail:", orderDetails.products);
+    //}
 
 
     let transporter = nodemailer.createTransport({
@@ -143,12 +147,15 @@ async function sendReceiptEmail(email, cost, notes, estimatedShipping, orderDeta
             const price = product.price || 0;
             const img = product.img || ''; // URL of the product image
             return `
-                <div style="margin-bottom: 20px;">
-                    <img src="${img}" alt="${name}" style="width: 100px; height: auto; margin-right: 10px; float: left;">
+                <div style="margin-bottom: 20px; margin-left:20px">
+                  
                      <div style='display: flex; justify-content: center; align-items: center;'>
+                       <img src="${img}" alt="${name}" style="width: 100px; height: auto; margin-left: 10px; float: left;">
+                       <div>
                         <strong>${name}</strong><br>
                         Quantity: ${quantity}<br>
                         Price: $${price}
+                        </div>
                     </div>
                     <div style="clear: both;"></div>
                 </div>
@@ -161,7 +168,7 @@ async function sendReceiptEmail(email, cost, notes, estimatedShipping, orderDeta
 
     let mailOptions = {
         from: 'serbaustin@gmail.com', // Your email address
-        to: 'austin.serb@icloud.com', // Customer's email address
+        to: `${orderDetails.customerEmail}`, // Customer's email address
         subject: 'Thank You for Your Purchase!',
         html: `
             <div style="font-family: Arial, sans-serif; color: #444;">
@@ -173,10 +180,10 @@ async function sendReceiptEmail(email, cost, notes, estimatedShipping, orderDeta
                 <ul>
                     ${productsHtml}
                 </ul>
-                <p>Subtotal: $${cost.subTotal}</p>
-                <p>Shipping Cost: $${cost.shippingCost}</p>
-                <p>Tax: $${cost.tax}</p>
-                <p><strong>Total: $${cost.grandTotal}</strong></p>
+                <p>Subtotal: $${cost.subTotal.toFixed(2)}</p>
+                <p>Shipping Cost: $${cost.shippingCost.toFixed(2)}</p>
+                <p>Tax: $${cost.tax.toFixed(2)}</p>
+                <p><strong>Total: $${cost.grandTotal.toFixed(2)}</strong></p>
                 <p>Card Charged: **** **** **** ${last4}</p>
                 <p>Shipping To: ${orderDetails.address}</p>
                 <p>Estimated Shipping Date: ${estimatedShipping ? estimatedShipping : 'Unavailable'}</p>

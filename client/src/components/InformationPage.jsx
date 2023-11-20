@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { TextField, Button, Grid, Typography, FormControl, InputAdornment, Tooltip, IconButton } from '@mui/material';
-import { RiInformationLine } from 'react-icons/ri';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import AddressAutocomplete from './AddressAutocomplete';
 
@@ -16,9 +15,17 @@ const InformationComponent = ({ next, back, onShippingDetailsSubmit, formData, o
     const [zip, setZip] = useState('');
     const [country, setCountry] = useState('');
     const [formSubmitted, setFormSubmitted] = useState(false);
+
     const storedFirstName = localStorage.getItem('userFirstName');
     const storedLastName = localStorage.getItem('userLastName');
     const storedEmail = localStorage.getItem('userEmail');
+
+
+    const isGuestUser = () => {
+        const customerId = localStorage.getItem('customerId');
+        return customerId && customerId.startsWith('guest-');
+    };
+
 
     useEffect(() => {
         console.log(localStorage)
@@ -131,22 +138,40 @@ const InformationComponent = ({ next, back, onShippingDetailsSubmit, formData, o
         onShippingDetailsSubmit(details);
         setFormSubmitted(true)
         submitFormData(details);
-        console.log(details);
-        console.log("SDSDSDSDSDSDSDSDSDSD");
-        console.log(formData);
+
         next(); // Proceed to the next step
     };
     const submitFormData = async (data) => {
         try {
-            const response = await fetch(`http://localhost:8000/api/customer/${localStorage.getItem('customerId')}`, {
-                method: 'PUT', // Use POST for creating or PUT for updating
-                headers: {
-                    'Content-Type': 'application/json',
-                    // Include authentication token if required
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                },
-                body: JSON.stringify(data)
-            });
+            let response;
+
+            if (isGuestUser()) {
+                // Create a new guest user
+                response = await fetch(`http://localhost:8000/api/guest`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                if (response.ok) {
+                    const guestUserData = await response.json();
+                    // Handle the guest user data, e.g., store the temporary ID
+                    localStorage.setItem('customerId', guestUserData.temporaryId);
+                    localStorage.setItem('isGuest', 'true');
+                }
+            } else {
+                const { email, firstName, lastName, ...dataToSend } = data;
+                response = await fetch(`http://localhost:8000/api/customer/${localStorage.getItem('customerId')}`, {
+                    method: 'PUT', // Use POST for creating or PUT for updating
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // Include authentication token if required
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify(dataToSend)
+                });
+            }
             if (!response.ok) {
                 const errorData = await response.json(); // Assuming the server sends JSON response
                 console.error("Failed to submit form data:", errorData.message);
@@ -370,7 +395,8 @@ const InformationComponent = ({ next, back, onShippingDetailsSubmit, formData, o
 
                         <TextField
                             helperText={<span>
-                                <RiInformationLine fontSize={16} style={{ transform: 'translateY(3px)' }} />
+
+                                <svg height='16' style={{ transform: 'translateY(3px)' }} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22ZM12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20ZM11 7H13V9H11V7ZM11 11H13V17H11V11Z" /></svg>
                                 {' Add a Building /Appartment number if you have one'}
                             </span>}
                             id="address2"

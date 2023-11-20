@@ -4,7 +4,6 @@ const saltRounds = 10; //
 const secretKey = process.env.JWT_SECRET_KEY;
 const jwt = require('jsonwebtoken');
 const RevokedToken = require('../models/revokedToken.model');
-const crypto = require('crypto');
 const reCaptchaSecretKey = process.env.RECAPTCHA_SECRET_KEY;
 
 const verifyRecaptcha = async (token) => {
@@ -59,7 +58,7 @@ module.exports = {
     // Controller for token refresh
     refreshToken: async (req, res) => {
         try {
-            const { refreshToken } = req.body;
+            const refreshToken = req.cookies.refreshToken;
 
             if (!refreshToken) {
                 return res.status(401).json({ message: 'Refresh token is missing' });
@@ -71,14 +70,20 @@ module.exports = {
                 return res.status(401).json({ message: 'Refresh token is revoked' });
             }
 
-            // You should also check if the refresh token is expired and handle expiration.
-
             const user = await Customers.findById(req.user.userId);
 
             if (!user) {
                 return res.status(404).json({ message: 'User not found' });
             }
-
+            if (refreshToken) {
+                const decoded = jwt.verify(refreshToken, secretKey, (err, decoded) => {
+                    if (err) {
+                        // Handle expired token or other verification errors
+                        return res.status(401).json({ message: 'Invalid or expired refresh token' });
+                    }
+                    return decoded;
+                });
+            }
             const accessToken = jwt.sign({ userId: user._id }, secretKey, { expiresIn: '12h' });
 
             return res.json({ message: 'Token refreshed successfully', accessToken });
@@ -90,7 +95,6 @@ module.exports = {
     createOne: async (req, res) => {
         console.log(req.body);
         const { firstName, lastName, email, password, recaptchaValue, isVerified } = req.body;
-
         try {
             const recaptchaVerified = await verifyRecaptcha(recaptchaValue);
             if (!recaptchaVerified) {
@@ -102,11 +106,8 @@ module.exports = {
                 return res.status(400).json({ errors: { email: 'Email already in use.' } });
             }
 
-            // Generate a secure refresh token
-            const refreshToken = crypto.randomBytes(64).toString('hex'); // Create a secure refresh token
             // Hash the password before storing it
             const hashedPassword = await bcrypt.hash(password, saltRounds);
-
 
             const customer = await Customers.create({
                 firstName,
@@ -114,10 +115,17 @@ module.exports = {
                 email,
                 isVerified,
                 password: hashedPassword,
-                refreshToken,
+
             });
 
             // Store the refresh token securely (e.g., in a database)
+            await customer.save();
+            // Generate a secure refresh token
+            const refreshToken = jwt.sign({
+                customerId: customer._id
+            }, secretKey, { expiresIn: '7d' });
+
+            customer.refreshToken = refreshToken;
             await customer.save();
 
             // Generate the initial access token
@@ -127,8 +135,17 @@ module.exports = {
                 lastName: customer.lastName,
                 email: customer.email
             }, secretKey, { expiresIn: '12h' });
-            // Send the initial access token and refresh token to the client
-            res.status(201).json({ customer, accessToken, refreshToken });
+
+            // Set refresh token in HTTP-Only cookie
+            res.cookie('refreshToken', refreshToken, {
+                httpOnly: true,
+                secure: false, // use secure in production
+                maxAge: 43300000/* refresh token expiry in milliseconds */,
+                sameSite: 'lax',
+            });
+
+            // Send the initial access token  to the client
+            res.status(201).json({ customer, accessToken });
         } catch (error) {
             if (error.name === 'ValidationError') {
                 const errors = {};
@@ -154,7 +171,7 @@ module.exports = {
             }
 
             // Compare the hashed password provided in the request with the hashed password in the database
-            const passwordMatch = await bcrypt.compare(password, user.password);
+            const passwordMatch = bcrypt.compare(password, user.password);
 
             if (passwordMatch) {
                 // Passwords match, user is authenticated
@@ -164,17 +181,30 @@ module.exports = {
                     customerId: user._id,
                     firstName: user.firstName,
                     lastName: user.lastName,
-                    email: user.email
+                    email: user.email,
+                    isAdmin: user.isAdmin,
                 }, secretKey, { expiresIn: '12h' });
 
                 // Generate a new refresh token
-                const newRefreshToken = crypto.randomBytes(64).toString('hex');
+                const newRefreshToken = jwt.sign({
+                    customerId: user._id
+                }, secretKey, { expiresIn: '7d' }); // Adjust expiration as needed
                 // Store the hashed refresh token in the user's document
                 user.refreshToken = newRefreshToken
+                user.isVerified = true
                 await user.save();
+                // Set refresh token in HTTP-Only cookie
+                res.cookie('refreshToken', newRefreshToken, {
+
+                    httpOnly: true,
+                    secure: false,
+                    maxAge: 43300000/* refresh token expiry in milliseconds */,
+                    sameSite: 'lax',
+                });
+
 
                 // Send the new access token and refresh token to the client
-                return res.json({ message: 'Login successful', accessToken, refreshToken: newRefreshToken });
+                return res.json({ message: 'Login successful', accessToken, });
             } else {
                 // Passwords don't match, authentication failed
                 return res.status(401).json({ message: 'Incorrect email or password.' });
@@ -184,68 +214,58 @@ module.exports = {
         }
     },
 
+
     revokeToken: async (refreshToken) => {
-        const revokedToken = new RevokedToken({ token: refreshToken });
-        await revokedToken.save();
-    },
-    logoutUser: async (req, res) => {
-
-
         try {
-            const { refreshToken } = req.body;
+            const revokedToken = new RevokedToken({ token: refreshToken });
+            await revokedToken.save();
+            // Optionally, you could return some confirmation or status
+        } catch (error) {
+            // Handle or log the error as per your application's error management strategy
+            console.error("Error in revoking token: ", error);
+            // Depending on how you manage errors, you might also throw an error or return a status
+        }
+    },
+
+
+
+    logoutUser: async (req, res) => {
+        try {
+            const refreshToken = req.cookies.refreshToken; // Get the refresh token from the cookie
 
             if (!refreshToken) {
                 return res.status(401).json({ message: 'Refresh token is missing' });
             }
 
+            // Decode the refresh token to get the user's ID
+            const decoded = jwt.verify(refreshToken, secretKey); // Adjust this as per your JWT settings
+
+            // Check if the token has already been revoked
             const existingRevokedToken = await RevokedToken.findOne({ token: refreshToken });
             if (existingRevokedToken) {
                 return res.status(401).json({ message: 'Refresh token is already revoked' });
             }
 
             // Clear the refresh token from the user's document
-            await Customers.updateOne({ _id: refreshToken.userId }, { $unset: { refreshToken: "" } });
+            await Customers.updateOne({ _id: decoded.customerId }, { $unset: { refreshToken: "" } });
 
             // Revoke the refresh token
             const revokedToken = new RevokedToken({ token: refreshToken });
             await revokedToken.save();
 
+            // Now clear the cookie after all operations are completed
+            res.clearCookie('refreshToken');
+
             return res.status(200).json({ message: 'Logout successful' });
         } catch (err) {
-            if (err.name === 'JsonWebTokenError') {
-                return res.status(401).json({ message: 'Invalid token', error: err.message });
-            }
-            return res.status(500).json({ message: 'Server error', error: err });
+            console.error("Error in logoutUser:", err);
+            return res.status(500).json({
+                message: 'Server error',
+                error: err.message || 'Unknown error'
+            });
         }
     },
 
-    //logoutUser: async (req, res) => {
-    //    try {
-    //        //const refreshToken = req.body.refreshToken;
-
-    //        //// Check if a refreshToken is provided
-    //        //if (!refreshToken) {
-    //        //    return res.status(401).json({ message: 'Refresh token is missing' + res });
-    //        //}
-
-    //        //// Check if the refresh token is revoked
-    //        //const existingRevokedToken = await RevokedToken.findOne({ token: refreshToken });
-
-    //        //if (existingRevokedToken) {
-    //        //    return res.status(401).json({ message: 'Refresh token is revoked' });
-    //        //}
-
-    //        // If the refresh token is valid, you can clear it and handle any other logout actions
-
-    //        // Clear the refresh token (or perform any other required actions)
-    //        // ...
-
-    //        // Send a success response
-    //        return res.status(200).json({ message: 'Logout successful' });
-    //    } catch (err) {
-    //        return res.status(500).json({ message: 'Server error' + err });
-    //    }
-    //},
     updateOne: (req, res) => {
         const updateData = req.body; // Data to update the document with
         const customerId = req.params.id; // ID of the customer to update

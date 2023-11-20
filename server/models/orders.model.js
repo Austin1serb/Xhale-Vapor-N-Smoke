@@ -78,12 +78,18 @@ const OrderSchema = new mongoose.Schema({
     // Audit Fields
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Customer',
-        required: true
+        required: true,
+        refPath: 'createdByType'
+    },
+
+    createdByType: {
+        type: String,
+        required: true,
+        enum: ['Customer', 'Guest']
     },
     updatedBy: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        ref: 'Staff',
         required: false
     }
 }, { timestamps: true });  // This option adds `createdAt` and `updatedAt` fields

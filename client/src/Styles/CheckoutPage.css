@@ -7,11 +7,18 @@
 /* CART SUMMARY COMPONENT */
 .cartSummary-container {
     background-color: rgba(15, 117, 224, 0.1);
-    border-left: 1px solid black;
+    border-left: 1px solid gray;
+    border-bottom: 1px solid gray;
+    border-radius: 5px;
 
 
 }
 
+@media(max-width:900px) {
+    .cartSummary-container {
+        border-bottom: none;
+    }
+}
 
 .cart-img {
     border: 0.1px solid black;
@@ -20,19 +27,23 @@
 }
 
 .cartSummary-cost {
+
     border-top: 0.1px solid black;
     background-color: white;
     padding: 0px 20px 0px 20px;
     margin-top: 10px;
-
+    box-shadow: 0px -4px 6px -1px rgba(0, 0, 0, 0.2);
 }
 
 
 .cartSummary-checkout-button {
+
     display: flex;
+    flex-direction: row-reverse;
     justify-content: space-around;
     align-items: center;
     background-color: white;
+
 }
 
 .cartSummary-checkout-text {
@@ -116,6 +127,9 @@
 }
 
 .checkout-shipping-contact {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     padding: 13px;
     border: 1px solid gray;
     border-radius: 5px 5px 0px 0px;
@@ -187,6 +201,7 @@
     min-width: 80px;
     max-width: 80px;
     font-size: 12px;
+
 }
 
 
@@ -217,4 +232,79 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+
+
+
+
+
+
+/* PAYMENT FORM CSS */
+.checkout-paymentForm-SQUARE {
+    display: flex;
+    align-items: center;
+
+}
+
+.square-text {
+    z-index: 10000;
+}
+
+.checkout-paymentForm-container {
+    width: 93%;
+    padding: 20px;
+
+    border-Radius: 10px;
+    background-Color: #fff;
+}
+
+.checkout-payment-card-form {
+
+    margin-top: 20px;
+}
+
+.checkout-payment-card-form button {
+    letter-spacing: 2px;
+    color: white;
+    background-color: #283047;
+    height: 50px;
+    text-align: center;
+    text-decoration: none;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.checkout-payment-card-form button:hover {
+    transition: background-color 0.3s ease;
+    background-color: #FE6F49;
+    margin-top: 10px;
+}
+
+.checkout-paymentForm-logo {
+    width: 200px;
+    margin-left: -40px;
+}
+
+
+
+
+@media(max-width:400px) {
+    .checkout-paymentForm-SQUARE {
+        text-align: left;
+        flex-direction: column;
+
+    }
+
+    .square-text {
+        transform: translate(0, 20px);
+    }
+
+    .checkout-paymentForm-logo {
+
+        width: 200px;
+        margin-left: 0px;
+
+        transform: translate(-100px, -40px);
+    }
 }

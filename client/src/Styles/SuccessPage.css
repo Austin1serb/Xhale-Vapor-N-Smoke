@@ -1,0 +1,16 @@
+/* SuccessPage.css */
+
+.success-page {
+    text-align: center;
+    padding: 50px;
+    background-color: #f3f3f3;
+    border-radius: 10px;
+    margin: 20px auto;
+    margin-top: 150px;
+    max-width: 600px;
+}
+
+.success-page h1 {
+    color: #4CAF50;
+    /* Green color for success */
+}
