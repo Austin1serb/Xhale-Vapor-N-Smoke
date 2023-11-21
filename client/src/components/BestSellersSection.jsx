@@ -2,6 +2,7 @@ import { Box, Grid, Typography, Button, Skeleton } from '@mui/material';
 import React, { useEffect, useRef, useState } from 'react';
 
 import '../Styles/BestSellersSection.css'
+import { Link } from 'react-router-dom';
 
 const BestSellersSection = () => {
     const [bestSellers, setBestSellers] = useState([]);
@@ -12,7 +13,7 @@ const BestSellersSection = () => {
     const ProductSkeleton = ({ count }) => (
 
         Array.from({ length: count }).map((_, index) => (
-            <Grid item xs={12} sm={6} md={4} key={index}>
+            <Grid item xs={12} sm={6} md={4} key={index} >
                 <Box sx={{
                     border: '.1px solid #ccc',
                     borderRadius: '1px',
@@ -23,6 +24,7 @@ const BestSellersSection = () => {
                     height: '300px',
                     justifyContent: 'space-between',
                     mt: '20px',
+
                 }}>
                     <Skeleton variant="rectangular" width="100%" height={150} />
                     <Skeleton variant="text" width="80%" height={24} />
@@ -98,8 +100,8 @@ const BestSellersSection = () => {
                 </Grid>
             ) : (
                 <Grid container spacing={3}>
-                    {bestSellers.map(product => (
-                        <Grid item xs={12} sm={6} md={4} key={product._id}>
+                    {bestSellers.map((product, index) => (
+                        <Grid item xs={12} sm={6} md={4} key={product._id} style={{ animationDelay: `${index * 0.4}s` }} className="product-slide-in">
                             <div style={productStyles}>
 
                                 <img className="shop-img" src={product.imgSource[0].url} alt={product.name} height="150px" loading='lazy' />
@@ -109,10 +111,11 @@ const BestSellersSection = () => {
 
 
                                 <Box className='shop-button-container'>
-                                    <Button variant="outlined" className='shop-button-cart' sx={{ border: 1, borderRadius: 0, letterSpacing: 2, fontSize: 12, color: 'white', backgroundColor: '#283047', borderColor: '#283047', borderWidth: 1.5, transition: 'all 0.3s', '&:hover': { backgroundColor: '#FE6F49', color: 'white', borderColor: '#FE6F49', transform: 'scale(1.05)' } }} onClick={null}>
-                                        SHOP NOW
-                                    </Button>
-
+                                    <Link to="/shop?showBestSellers=true" className="shop-button-cart" style={{ textDecoration: 'none' }}>
+                                        <Button variant="outlined" className='shop-button-cart' sx={{ border: 1, borderRadius: 0, letterSpacing: 2, fontSize: 12, color: 'white', backgroundColor: '#283047', borderColor: '#283047', borderWidth: 1.5, transition: 'all 0.3s', '&:hover': { backgroundColor: '#FE6F49', color: 'white', borderColor: '#FE6F49', transform: 'scale(1.05)' } }} onClick={null}>
+                                            SHOP NOW
+                                        </Button>
+                                    </Link>
                                 </Box>
 
                             </div>

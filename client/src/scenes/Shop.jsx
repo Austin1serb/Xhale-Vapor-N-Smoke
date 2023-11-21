@@ -5,6 +5,7 @@ import { Box, Typography, TextField, Button, Grid, Skeleton } from '@mui/materia
 import axios from 'axios';
 import { useCart } from '../components/CartContext.jsx';
 import QuickView from '../components/QuickView';
+import { useLocation } from 'react-router-dom';
 
 
 const ProductSkeleton = ({ count }) => (
@@ -45,12 +46,18 @@ const Shop = () => {
     const pageSize = 9; // Adjust the number of products per page as needed
     const { addToCart } = useCart();
     const [totalProducts, setTotalProducts] = useState(0);
-
-
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const showBestSellers = queryParams.get('showBestSellers') === 'true';
+    const [bestSellers, setBestSellers] = useState([]);
 
     // Inside the Shop component
     useEffect(() => {
-        setLoading(true);
+        if (showBestSellers) {
+            fetchBestSellers()
+        }
+        else
+            setLoading(true);
         axios.get(`http://localhost:8000/api/product/paginate/?page=1&pageSize=${pageSize}`)
             .then(response => {
                 setProducts(response.data.products);
@@ -65,6 +72,23 @@ const Shop = () => {
             });
     }, []);
 
+    const fetchBestSellers = () => {
+        setLoading(true);
+        fetch(`http://localhost:8000/api/product/bestsellers?limit=${pageSize}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                setLoading(false);
+                return response.json(); // Ensure this line is correct
+            })
+            .then(data => {
+                setBestSellers(data)
+            })
+            .catch(error => {
+                console.error('Error fetching best sellers:', error);
+            });
+    }
 
     const handleScroll = useCallback(() => {
         if (window.innerHeight + document.documentElement.scrollTop === document.documentElement.offsetHeight) {
@@ -139,9 +163,9 @@ const Shop = () => {
                     <ProductSkeleton count={pageSize} />
                 </Grid>
             ) : ( // Render products when not loading
-                <Grid container spacing={3}>
-                    {filteredProducts.map(product => (
-                        <Grid item xs={12} sm={6} md={4} key={product._id}>
+                <Grid container spacing={3} >
+                    {filteredProducts.map((product, index) => (
+                        <Grid item xs={12} sm={6} md={4} key={product._id} style={{ animationDelay: `${index * 0.2}s` }} className="product-slide-in-shop">
                             <div style={productStyles}>
 
                                 <img className="shop-img" src={product.imgSource[0].url} alt={product.name} height="150px" loading='lazy' />
