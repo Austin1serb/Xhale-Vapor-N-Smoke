@@ -4,6 +4,7 @@
     border-bottom: 0.1px solid black;
     padding-left: 15px;
     margin-right: 50px;
+    margin-bottom: 60px;
 }
 
 .best-sellers {
@@ -77,4 +78,23 @@
     }
 
 
+}
+
+
+.product-slide-in {
+    animation: slideInFromBottom 0.9s ease-out forwards;
+}
+
+
+
+@keyframes slideInFromBottom {
+    0% {
+        opacity: 0;
+        transform: translateY(100px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
