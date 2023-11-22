@@ -6,7 +6,7 @@ import QuickView from './QuickView';
 
 
 
-const DropdownMenu = ({ isVisible }) => {
+const DropdownMenu = ({ isVisible, onLinkClick }) => {
     const [openedSection, setOpenedSection] = useState(false);
     const [featuredProducts, setFeaturedProducts] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -114,6 +114,16 @@ const DropdownMenu = ({ isVisible }) => {
         };
     }, []);
 
+
+
+
+    const handleLinkClick = () => {
+        if (isVisible) {
+            onLinkClick(); // This will call the function in the parent to update isVisible
+        }
+    };
+
+
     const buttonStyle = {
         fontSize: '10px',
         padding: '5px',
@@ -139,16 +149,16 @@ const DropdownMenu = ({ isVisible }) => {
                         </div>
                         {(openedSection === 'SHOP_ALL_CBD' || window.innerWidth > 900) && (
                             <List className='list-container' >
-                                <ListItem className="list-item" component={Link} to="/shop?filter=best-sellers">
+                                <ListItem className="list-item" component={Link} to="/shop?filter=best-sellers" onClick={handleLinkClick}>
                                     <span className="list-content">Best Sellers</span>
                                 </ListItem>
-                                <ListItem className="list-item" component={Link} to="/shop?filter=new-products">
+                                <ListItem className="list-item" component={Link} to="/shop?filter=new-products" onClick={handleLinkClick}>
                                     <span className="list-content">New Products</span>
                                 </ListItem>
-                                <ListItem className="list-item" component={Link} to="/shop?filter=high-potency">
+                                <ListItem className="list-item" component={Link} to="/shop?filter=high-potency" onClick={handleLinkClick}>
                                     <span className="list-content">High Potency</span>
                                 </ListItem>
-                                <ListItem className="list-item" component={Link} to="/shop?filter=featured">
+                                <ListItem className="list-item" component={Link} to="/shop?filter=featured" onClick={handleLinkClick}>
                                     <span className="list-content">Featured Products</span>
                                 </ListItem>
 

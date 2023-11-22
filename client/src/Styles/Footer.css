@@ -1,3 +1,9 @@
+.footer-container {
+
+    width: 100%;
+}
+
+
 .footer-links {
     text-decoration: none;
     color: white;
@@ -8,4 +14,16 @@
     transition: all 0.3s ease;
     text-decoration: underline;
     color: #FE6F49;
+}
+
+.payment-icons-icon {
+    margin: 5px;
+}
+
+
+
+.footer-contact-list {
+    margin-top: 5px;
+    font-size: 10px;
+    list-style: none;
 }

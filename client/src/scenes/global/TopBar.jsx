@@ -135,7 +135,17 @@ const TopBar = () => {
         </Box>
     );
 
+    const toggleDropdown = () => {
+        setIsDropdownVisible(!isDropdownVisible);
+    };
 
+    //create use effect to setisdropdownvisible to false
+    useEffect(() => {
+        return () => {
+            setIsDropdownVisible(true);
+        };
+    }
+        , []);
 
     const handleHover = () => {
         if (window.innerWidth > 768) {
@@ -203,7 +213,7 @@ const TopBar = () => {
 
 
                     <Box className={`dropdown-box-mobile ${mobileDrawerOpen ? 'dropdown-visible' : ''}`} ref={dropdownRef}>
-                        <DropdownMenu />
+                        <DropdownMenu onLinkClick={toggleDropdown} />
                     </Box>
                     <Typography variant="h6" sx={{ flexGrow: 1 }}>
                         <Box component={Link} to="/" className="nav-link">
@@ -225,7 +235,7 @@ const TopBar = () => {
                                 </Box>
                                 <Box className="dropdown-box" sx={{}}>
                                     <Box className='dropdown-separation'></Box>
-                                    {isDropdownVisible && <DropdownMenu isVisible={isDropdownVisible} />}
+                                    {isDropdownVisible && <DropdownMenu onLinkClick={toggleDropdown} isVisible={isDropdownVisible} />}
                                 </Box>
                             </Box>
                             <Box component={Link} to='/registration' className="nav-link" sx={{ marginRight: 2 }}>
