@@ -8,7 +8,7 @@ const port = process.env.PORT;
 const secretKey = process.env.JWT_SECRET_KEY; //
 const rateLimit = require('express-rate-limit');
 const cookieParser = require('cookie-parser');
-
+const helmet = require('helmet');
 
 
 app.use(
@@ -21,6 +21,23 @@ app.use(
     (cookieParser()),
 );
 
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", 'https://maps.googleapis.com', 'https://js.squareup.com'],
+            styleSrc: ["'self'", 'https://fonts.googleapis.com', "'unsafe-inline'"],
+            fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+            imgSrc: ["'self'", 'https://res.cloudinary.com'],
+            connectSrc: ["'self'", 'https://connect.squareup.com'],
+            frameSrc: ["'self'"], // If you use iframes
+            objectSrc: ["'none'"],
+            // Add other directives as needed
+        },
+    },
+}));
+
+
 const staffRoutes = require('./routes/staffers.routes');
 const productRoutes = require('./routes/products.routes');
 const orderRoutes = require('./routes/orders.routes');
@@ -31,8 +48,9 @@ const shippoRoutes = require('./routes/shippo.routes');
 const { uploadToCloudinary } = require('./services/cloudinary');
 const suggestionsRoutes = require('./routes/suggestions.routes');
 const paymentRoutes = require('./routes/payment.routes');
+const passwordResetRoutes = require('./routes/passwordReset.routes')
 
-
+app.use('/api', passwordResetRoutes);
 app.use("/api/", suggestionsRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use("/api/staff", staffRoutes);

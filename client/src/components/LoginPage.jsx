@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import jwtDecode from 'jwt-decode'; // Import jwt-decode
-import Cookies from 'universal-cookie';
 import {
-    Box,
     Paper,
     Typography,
     TextField,
@@ -12,6 +10,7 @@ import {
     Checkbox,
     InputAdornment,
     IconButton,
+    Modal,
 
 } from '@mui/material';
 import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
@@ -20,11 +19,13 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import GuestCheckoutPage from './GuestCheckout';
-
-
+import ForgotPassword from './ForgotPassword';
 
 const LoginPage = () => {
     const [openSnackbar, setOpenSnackbar] = React.useState(false);
+    //FORGOT PASSWORD LOGIC
+    const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
+    //const ForgotPassword = React.lazy(() => import('./ForgotPassword'));
 
 
     const [email, setEmail] = useState('');
@@ -87,8 +88,13 @@ const LoginPage = () => {
                 localStorage.setItem('userEmail', decodedToken.email);
                 // Redirect to the home page or checkoutpage
 
-
-                navigate(returnUrl);
+                if (decodedToken.isAdmin === true) {
+                    // Redirect to admin dashboard
+                    navigate('/api/customer/admin');
+                } else {
+                    // Redirect to the home page or other user-specific page
+                    navigate(returnUrl);
+                }
             } else {
                 handleErrorResponse(response, setError);
             }
@@ -121,6 +127,12 @@ const LoginPage = () => {
         }
         setOpenSnackbar(true)
     }
+
+
+
+
+
+
 
     const containerStyles = {
         display: 'flex',
@@ -222,18 +234,29 @@ const LoginPage = () => {
                 )}
 
                 <Typography variant="body2" align="center" mt={2}>
-                    <Link
-                        component={RouterLink}
-                        to="/forgot-password"
+                    <Button
+                        type='text'
+                        onClick={() => setForgotPasswordOpen(true)}
                         color="primary"
                     >
                         Forgot your password?
-                    </Link>
+                    </Button>
                 </Typography>
             </Paper>
             {shouldShowGuestCheckout() && (
                 <GuestCheckoutPage />
             )}
+            <Modal
+                open={forgotPasswordOpen}
+                onClose={() => setForgotPasswordOpen(false)}
+                aria-labelledby="forgot-password-modal"
+                aria-describedby="forgot-password-form"
+
+            >
+                <div >
+                    <ForgotPassword close={setForgotPasswordOpen} />
+                </div>
+            </Modal>
         </div>
     );
 };

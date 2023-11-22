@@ -4,7 +4,7 @@ import '../Styles/CheckoutPage.css'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import { format, addDays } from 'date-fns';
 import ShippingDetailsComponent from './ShippingDetailsComponent';
-const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, setActiveStep, back, isLoading, onShippingOptionsChange, handleCheckout, setEstimatedShipping, lastAddress, setLastAddress, shipmentOptions, setShipmentOptions, }) => {
+const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, back, isLoading, onShippingOptionsChange, handleCheckout, setEstimatedShipping, lastAddress, setLastAddress, shipmentOptions, setShipmentOptions, }) => {
     const [shippingOptions, setShippingOptions] = useState([]);
     const [loading, setLoading] = useState(false);
     const [shippingCost, setShippingCost] = useState('');
@@ -173,10 +173,7 @@ const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, s
     const goToPreviousPage = () => {
         setCurrentPage(currentPage - 1);
     };
-    const handleChangeContact = () => {
-        setActiveStep(1);
 
-    }
 
 
 
@@ -267,7 +264,7 @@ const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, s
             {/* Proceed to Payment Button */}
             <Grid container style={{ marginTop: '20px', justifyContent: 'space-between' }}>
 
-                <Button onClick={back} className='cart-checkout-button' variant="outlined" sx={{ m: 1, width: { xs: '75%', sm: '45%', md: '230px' }, letterSpacing: 2, color: '#283047', backgroundColor: 'white', borderColor: '#283047', borderWidth: 1.5, height: 55, '&:hover': { backgroundColor: '#0F75E0', color: 'white', } }}>
+                <Button onClick={back} variant="outlined" sx={{ m: 1, width: { xs: '75%', sm: '45%', md: '230px' }, letterSpacing: 2, color: '#283047', backgroundColor: 'white', borderColor: '#283047', borderWidth: 1.5, height: 55, '&:hover': { backgroundColor: '#0F75E0', color: 'white', } }}>
                     <ArrowBackIosNewIcon sx={{ fontSize: 18, mr: 1 }} />
                     Return to information</Button>
                 <Button disabled={!!isLoading} onClick={handleLocalCheckout} variant="outlined" sx={{ m: 1, width: { xs: '75%', sm: '45%', md: '230px' }, letterSpacing: 2, color: 'white', backgroundColor: '#283047', height: 56.5, "&:hover": { backgroundColor: '#FE6F49', border: 'none', }, textAlign: 'center' }}>

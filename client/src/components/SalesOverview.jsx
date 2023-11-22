@@ -52,7 +52,8 @@ const SalesOverview = () => {
                 const sortedOrders = orderData.sort((a, b) => new Date(b.orderDate) - new Date(a.orderDate)).slice(0, 5);
                 setRecentOrders(sortedOrders);
                 setTotalOrders(orderData.length);
-                setTotalSales(orderData.reduce((sum, order) => sum + order.totalAmount, 0));
+
+                setTotalSales(orderData.reduce((sum, order) => sum + order.totalAmount.grandTotal, 0));
                 setPendingOrders(orderData.filter(order => order.orderStatus === 'Pending').length);
 
                 // Fetch staff data
@@ -149,7 +150,7 @@ const SalesOverview = () => {
             {/* Display summary widgets */}
             <Typography variant="h6">Total Products: {totalProducts}</Typography>
             <Typography variant="h6">Total Orders: {totalOrders}</Typography>
-            <Typography variant="h6">Total Sales: ${totalSales.toFixed(2)}</Typography>
+            <Typography variant="h6">Total Sales: ${totalSales}</Typography>
             <Typography variant="h6">Pending Orders: {pendingOrders}</Typography>
             <Typography variant="h6">Total Admins: {totalAdmins}</Typography>
             <Typography variant="h6">Total Customers: {totalCustomers}</Typography>

@@ -97,10 +97,13 @@
 
 
 .product-slide-in {
-    animation: slideInFromBottom 0.9s ease-out forwards;
+    /* Set initial state */
+    opacity: 0;
+    transform: translateY(100px);
+
+    /* Animation */
+    animation: slideInFromBottom 0.9s ease-in forwards;
 }
-
-
 
 @keyframes slideInFromBottom {
     0% {
@@ -112,15 +115,4 @@
         opacity: 1;
         transform: translateY(0);
     }
-}
-
-.brand-item {
-    opacity: 0;
-    transform: translateY(100px);
-    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-}
-
-.brand-item {
-    opacity: 1;
-    transform: translateY(0);
 }

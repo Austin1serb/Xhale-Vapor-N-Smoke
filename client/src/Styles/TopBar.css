@@ -162,23 +162,23 @@
     /* This is necessary to move it below the 'Shop' link */
     top: 54px;
     /* This positions it right below the 'Shop' link */
-    left: -245px;
+    left: -195px;
     width: 100vw;
     /* Full width of the screen */
 }
 
 .dropdown-separation {
-    transform: translate(230px);
+    transform: translate(160px);
     height: 40px;
     margin-top: -41.5px;
-    width: 180px;
+    width: 280px;
     background-color: transparent;
 }
 
 @media (max-width:1000px) {
     .dropdown-box {
 
-        left: -235px;
+        left: -165px;
 
 
     }

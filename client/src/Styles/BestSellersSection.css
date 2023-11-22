@@ -80,12 +80,14 @@
 
 }
 
-
 .product-slide-in {
-    animation: slideInFromBottom 0.9s ease-out forwards;
+    /* Set initial state */
+    opacity: 0;
+    transform: translateY(100px);
+
+    /* Animation */
+    animation: slideInFromBottom 0.9s ease-in forwards;
 }
-
-
 
 @keyframes slideInFromBottom {
     0% {

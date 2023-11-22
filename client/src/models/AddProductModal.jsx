@@ -23,6 +23,7 @@ const initialProductData = {
     name: '',
     price: '',
     specs: '',
+    totalSold: 0,
     imgSource: [],
     category: [],
     description: '',
@@ -183,106 +184,82 @@ const AddProductModal = ({ open, onClose, onAddProduct, selectedProduct, onUpdat
 
 
 
+    const API_URL = 'http://localhost:8000/api/product/';
+    const HEADERS = {
+        'Content-Type': 'application/json',
+    };
+
     const handleAddProduct = async () => {
         try {
             setLoading(true);
 
-            const strength = selectedStrength; // Store the selected strength
-            productData.strength = strength;
+            const productToUpdate = prepareProductData();
 
-            if (selectedProduct) {
-                let productToUpdate = { ...productData };
-                if (selectedImage && selectedImage.length) {
-                    const formattedImages = selectedImageData.map(url => {
-                        const existingImageInfo = selectedProduct ? selectedProduct.imgSource.find(img => img.url === url) : null;
-                        return {
-                            url: url,
-                            publicId: existingImageInfo ? existingImageInfo.publicId : undefined
-                        };
-                    });
+            const endpoint = selectedProduct ? `${API_URL}${selectedProduct._id}` : API_URL;
+            const method = selectedProduct ? 'PUT' : 'POST';
 
-                    productToUpdate.imgSource = formattedImages;
-                }
+            const response = await makeApiCall(endpoint, method, productToUpdate);
 
-                // Editing an existing product
-                const response = await fetch(`http://localhost:8000/api/product/${selectedProduct._id}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(productToUpdate),
-                });
-
-
-                if (response.ok) {
-                    const updatedProduct = await response.json();
-                    console.log('Length of description:', updatedProduct.description.length);
-                    onUpdateProduct(updatedProduct);
-                    clearForm();
-                    onClose();
-
-
-                } else {
-                    // Update failed, handle error response
-                    const errorData = await response.json();
-                    if (errorData) {
-                        setError(errorData);
-                        setLoading(false);
-
-                    } else {
-                        console.error('Update error:', errorData.message);
-                        // Handle other error cases as needed
-                    }
-                }
-            } else {
-                // Creating a new product
-                if (productData) {
-                    if (Array.isArray(selectedImageData) && selectedImageData.length) {
-                        productData.imgSource = selectedImageData.map(data => ({
-                            url: data,
-                        }));
-                    } else {
-                        productData.imgSource = [];  // or set to some default value if necessary
-                    }
-                }
-
-
-                const response = await fetch('http://localhost:8000/api/product/', {
-                    method: 'POST', // Use POST to create a new product
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(productData),
-                });
-
-                if (response.ok) {
-                    const newProduct = await response.json();
-                    onAddProduct(newProduct);
-
-                    clearForm();
-                    onClose();
-                } else {
-
-                    // Registration or update failed, handle error response
-                    const errorData = await response.json();
-                    if (errorData) {
-                        setError(errorData);
-                        setLoading(false);
-                        console.error('Update error:', errorData.message || errorData);
-                        console.log(error)
-
-                    } else {
-                        console.error('Registration error:' + errorData);
-                        console.log(errorData)
-                    }
-                }
-            }
+            await handleApiResponse(response);
         } catch (error) {
             console.error('Error adding/updating product:', error);
         } finally {
             setLoading(false);
         }
     };
+
+    const prepareProductData = () => {
+        const productDataCopy = { ...productData, strength: selectedStrength };
+
+        const imageSource = selectedProduct ? formatImagesForUpdate() : formatImagesForNewProduct();
+        productDataCopy.imgSource = imageSource || [];
+
+        return productDataCopy;
+    };
+
+    const formatImagesForUpdate = () => {
+        if (Array.isArray(selectedImageData) && selectedImageData.length) {
+            return selectedImageData.map(url => {
+                const existingImageInfo = selectedProduct.imgSource.find(img => img.url === url);
+                return {
+                    url,
+                    publicId: existingImageInfo ? existingImageInfo.publicId : undefined
+                };
+            });
+        }
+    };
+
+    const formatImagesForNewProduct = () => {
+        if (Array.isArray(selectedImageData) && selectedImageData.length) {
+            return selectedImageData.map(url => ({ url }));
+        }
+    };
+
+    const makeApiCall = async (url, method, data) => {
+        return fetch(url, {
+            method,
+            headers: HEADERS,
+            body: JSON.stringify(data),
+        });
+    };
+
+    const handleApiResponse = async (response) => {
+        if (response.ok) {
+            const product = await response.json();
+            if (selectedProduct) {
+                onUpdateProduct(product);
+            } else {
+                onAddProduct(product);
+            }
+            clearForm();
+            onClose();
+        } else {
+            const errorData = await response.json();
+            setError(errorData);
+            console.error('API error:', errorData.message || errorData);
+        }
+    };
+
 
 
     // receive file from form
@@ -341,7 +318,7 @@ const AddProductModal = ({ open, onClose, onAddProduct, selectedProduct, onUpdat
         },
     };
 
-
+    const buttonOptions = selectedProduct ? 'Save Changes' : 'Add Product'
 
     return (
         <Dialog open={open} onClose={onClose} PaperProps={paperProps}>
@@ -440,6 +417,17 @@ const AddProductModal = ({ open, onClose, onAddProduct, selectedProduct, onUpdat
                     onChange={handleChange}
                     autoComplete='true'
                 />
+                <TextField
+                    sx={{ my: 2 }}
+                    name="totalSold"
+                    label="Units Sold"
+                    multiline
+                    rows={1}
+                    fullWidth
+                    value={productData.totalSold}
+                    onChange={handleChange}
+                    autoComplete='true'
+                />
                 {/* Category Input Component */}
                 <CategoryInput
                     category={productData.category}
@@ -509,7 +497,7 @@ const AddProductModal = ({ open, onClose, onAddProduct, selectedProduct, onUpdat
                     Cancel
                 </Button>
                 <Button onClick={handleAddProduct} variant='outlined' color="primary">
-                    {loading ? <CircularProgress /> : selectedProduct ? 'Save Changes' : 'Add Product'}
+                    {loading ? <CircularProgress /> : buttonOptions}
                 </Button>
             </DialogActions>
 

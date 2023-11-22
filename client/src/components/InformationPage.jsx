@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { TextField, Button, Grid, Typography, FormControl, InputAdornment, Tooltip, IconButton } from '@mui/material';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import AddressAutocomplete from './AddressAutocomplete';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 
 const InformationComponent = ({ next, back, onShippingDetailsSubmit, formData, onFormChange }) => {
     const [firstName, setFirstName] = useState('');
@@ -493,8 +494,13 @@ const InformationComponent = ({ next, back, onShippingDetailsSubmit, formData, o
                     </Grid>
                     <Grid item xs={12} className='information-buttons'>
 
-                        <Button className='cart-checkout-button' onClick={back} variant="outlined" sx={{ letterSpacing: 2, color: 'white', backgroundColor: '#283047', "&:hover": { backgroundColor: '#FE6F49', border: '1px solid #FE6F49 ', }, textAlign: 'center', height: 55 }}>Back to cart</Button>
-                        <Button onClick={handleSubmit} variant="outlined" sx={{ height: 55, m: 1, letterSpacing: 2, color: '#283047', backgroundColor: 'white', borderColor: '#283047', borderWidth: 1.5, '&:hover': { backgroundColor: '#0F75E0', color: 'white', } }}><span className='cartSummary-checkout-text'>Proceed</span>  to Shipping</Button>
+                        <Button onClick={back} variant="outlined" sx={{ height: 55, m: 1, letterSpacing: 2, color: '#283047', backgroundColor: 'white', borderColor: '#283047', borderWidth: 1.5, '&:hover': { backgroundColor: '#0F75E0', color: 'white', } }}>
+                            <ArrowBackIosNewIcon sx={{ fontSize: 18, mr: 1 }} />
+                            Back to cart</Button>
+
+
+
+                        <Button onClick={handleSubmit} variant="outlined" sx={{ letterSpacing: 2, color: 'white', backgroundColor: '#283047', "&:hover": { backgroundColor: '#FE6F49', border: '1px solid #FE6F49 ', }, textAlign: 'center', height: 55 }} ><span className='cartSummary-checkout-text'>Proceed</span>  to Shipping</Button>
                     </Grid>
                 </Grid>
             </FormControl>

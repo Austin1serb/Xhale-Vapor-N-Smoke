@@ -2,21 +2,22 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Modal, Box, Typography, Button, Grid, Tabs, Tab, Select, MenuItem, InputLabel, CircularProgress, FormControl, IconButton, Tooltip } from '@mui/material';
 import { useCart } from './CartContext';
 import '../Styles/QuickView.css'
-import { throttle } from 'lodash';
-// Style object for the modal content
-const modalStyle = {
+import useThrottle from './Utilities/useThrottle';
 
+
+const modalStyle = {
     position: 'absolute',
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: '800px',
-    maxHeight: '600px',
+    width: { xs: '90%', sm: '600px', md: '800px' }, // Responsive width
+    maxHeight: '90vh', // Adjust height for mobile
     overflowY: 'auto',
     bgcolor: 'background.paper',
     boxShadow: 24,
     p: 4,
 };
+
 
 
 
@@ -29,6 +30,8 @@ const QuickView = ({ productId, open, handleClose, products, getRelatedProducts 
     const [loading, setLoading] = useState(false);
     const { addToCart } = useCart();
     const [relatedProducts, setRelatedProducts] = useState([]);
+
+
 
     useEffect(() => {
         // If the modal is closed, clear the product details
@@ -77,12 +80,7 @@ const QuickView = ({ productId, open, handleClose, products, getRelatedProducts 
         }
     }, [productDetails]); // Now it listens for changes in productDetails
 
-    useEffect(() => {
 
-        return () => {
-            handleMouseMoveThrottled.cancel();
-        };
-    }, []);
 
     const handleChangeTab = (event, newValue) => {
         setSelectedTab(newValue);
@@ -99,25 +97,21 @@ const QuickView = ({ productId, open, handleClose, products, getRelatedProducts 
     const [zoomFactor] = useState(2);
 
 
-    const handleMouseMoveThrottled = useCallback(throttle((e) => {
+    const handleMouseMove = (e) => {
+        console.log('throttling')
         const target = e.target;
-        // Obtain the size of the main image
         const targetRect = target.getBoundingClientRect();
-        // Calculate the position of the cursor relative to the top-left corner of the image
         const x = e.pageX - targetRect.left - window.scrollX + 40;
         const y = e.pageY - targetRect.top - window.scrollY + 25;
 
-        // Update the state of the lens position
-        console.log('positioning')
         setLensPosition({
-
             x: x - lensSize.width / 2,
             y: y - lensSize.height / 2,
         });
+    };
 
+    const handleMouseMoveThrottled = useThrottle(handleMouseMove, 50); // 50 ms throttle time
 
-
-    }, 50), [lensSize, zoomFactor, setLensPosition]); // 100 ms throttle time
 
 
     const renderContent = () => {
@@ -132,79 +126,83 @@ const QuickView = ({ productId, open, handleClose, products, getRelatedProducts 
             return (
                 <Grid container spacing={2}>
                     <Grid container spacing={2}>
-                        <Grid item xs={12} sm={5}>
+                        <Grid item xs={12} sm={5} md={6}>
 
-                            <Box className='quickview-img-container'>
+                            <Box className='quickview-img-container' sx={{ display: 'flex', flexDirection: { xs: 'row', sm: 'column' } }}>
                                 {/* Thumbnails */}
-                                <Box sx={{ display: 'flex' }}>
-                                    {productDetails.imgSource.map((image, i) => (
-                                        <Box key={i} className='quickview-thumbnail-container'>
-                                            <img
-                                                className='quickview-thumbnail'
-                                                src={image.url}
-                                                alt={`${productDetails.name} thumbnail ${i}`}
-                                                onClick={() => handleThumbnailClick(image.url)}
-                                                loading='lazy'
-                                            />
-                                        </Box>
-                                    ))}
-                                </Box>
-
-                                {/* Main Image displayed */}
-                                <Box
-                                    className="image-container"
-                                    onMouseEnter={() => setShowLens(true)}
-                                    onMouseMove={handleMouseMoveThrottled}
-                                    onMouseLeave={() => setShowLens(false)}
-                                >
-                                    <img
-                                        src={selectedImage}
-                                        alt={productDetails.name}
-                                        key={productDetails.name}
-                                        style={{ maxWidth: '300px', height: 'auto' }}
-                                        loading='lazy'
-                                    />
-                                </Box>
-                                <Typography className='zoom-box-title'>Zoom Box</Typography>
-                                <Box className='zoom-box'>
-
-                                    {showLens && (
-                                        <Box>
-                                            <Box
-                                                className="zoom-lens"
-                                                style={{
-                                                    position: 'relative',
-
-                                                    width: `${lensSize.width}px`,
-                                                    height: `${lensSize.height}px`,
-                                                    overflow: 'hidden',
-                                                    border: '1px solid black',
-                                                }}
-                                            >
+                                <Box>
+                                    <Box sx={{ display: 'flex', }}>
+                                        {productDetails.imgSource.map((image, i) => (
+                                            <Box key={'thumbnail:' + i} className='quickview-thumbnail-container'>
                                                 <img
-                                                    src={selectedImage}
-                                                    alt={productDetails.name}
-                                                    loading='lazy'
-                                                    style={{
-                                                        position: 'absolute',
 
-                                                        width: `${300 * zoomFactor}px`,
-                                                        height: `${300 * zoomFactor}px`,
-                                                        left: `-${lensPosition.x * zoomFactor}px`, // Update based on mouse move
-                                                        top: `-${lensPosition.y * zoomFactor}px`, // Update based on mouse move
-                                                        pointerEvents: 'none',
-                                                    }}
+                                                    className='quickview-thumbnail'
+                                                    src={image.url}
+                                                    alt={`${productDetails.name} thumbnail ${i}`}
+                                                    onClick={() => handleThumbnailClick(image.url)}
+                                                    loading='lazy'
                                                 />
                                             </Box>
+                                        ))}
+                                    </Box>
+
+                                    {/* Main Image displayed */}
+                                    <Box
+                                        className="image-container"
+                                        onMouseEnter={() => setShowLens(true)}
+                                        onMouseMove={handleMouseMoveThrottled}
+                                        onMouseLeave={() => setShowLens(false)}
+                                    >
+                                        <img
+                                            src={selectedImage}
+                                            alt={productDetails.name}
+                                            key={productDetails.name}
+                                            style={{ maxWidth: '300px', height: 'auto' }}
+                                            loading='lazy'
+                                        />
+                                    </Box>
+                                </Box>
+
+                                <Typography sx={{ display: { xs: "none", sm: 'block' } }} className='zoom-box-title'>Zoom Box</Typography>
+                                <Box className='zoom-box' sx={{ display: { xs: "none", sm: 'block' } }} >
+
+                                    {showLens && (
+
+                                        <Box
+                                            className="zoom-lens"
+                                            style={{
+                                                position: 'relative',
+
+                                                width: `${lensSize.width}px`,
+                                                height: `${lensSize.height}px`,
+                                                overflow: 'hidden',
+                                                border: '1px solid black',
+                                            }}
+                                        >
+                                            <img
+                                                src={selectedImage}
+                                                alt={productDetails.name}
+                                                loading='lazy'
+                                                style={{
+                                                    position: 'absolute',
+
+                                                    width: `${300 * zoomFactor}px`,
+                                                    height: `${300 * zoomFactor}px`,
+                                                    left: `-${lensPosition.x * zoomFactor}px`, // Update based on mouse move
+                                                    top: `-${lensPosition.y * zoomFactor}px`, // Update based on mouse move
+                                                    pointerEvents: 'none',
+                                                }}
+                                            />
                                         </Box>
+
                                     )}
                                 </Box>
 
                             </Box>
                         </Grid>
-                        <Grid item xs={12} sm={7} >
+                        <Grid item xs={12} sm={7} md={6}>
                             <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <Typography sx={{ width: '90%', fontSize: 18 }} variant="h6" className='quickview-title'>{productDetails.name}</Typography>
+                                <Typography sx={{ width: '90%', fontSize: 22, ml: { xs: 5, sm: 3, md: 0 } }} variant="h6" className='quickview-title'>{productDetails.name}</Typography>
 
                                 <IconButton className='quickview-close-button' onClick={handleClose}>
 
@@ -215,9 +213,9 @@ const QuickView = ({ productId, open, handleClose, products, getRelatedProducts 
                                     </svg>
                                 </IconButton>
                             </Box>
-                            <Typography sx={{ fontSize: 14, fontWeight: 100, textTransform: 'capitalize' }} >{productDetails.category.join(', ')}</Typography>
-                            <Box sx={{ borderBottom: 1, borderColor: 'divider', width: 'fit-content' }}>
-                                <Tabs value={selectedTab} onChange={handleChangeTab} aria-label="Product details tabs" >
+
+                            <Box sx={{ borderBottom: 1, borderColor: 'divider', }}>
+                                <Tabs sx={{ ml: { xs: 5, sm: 3, md: 0 } }} value={selectedTab} onChange={handleChangeTab} aria-label="Product details tabs" >
                                     <Tab tabIndex={0} role="button" label="Details" />
                                     <Tab tabIndex={1} role="button" label="Related" />
                                     <Tab tabIndex={3} role="button" label="Specs" />
@@ -229,6 +227,7 @@ const QuickView = ({ productId, open, handleClose, products, getRelatedProducts 
                             }}>
                                 < TabPanel value={selectedTab} index={0} >
                                     <Box sx={{ overflow: 'auto', height: '240px', border: .1, px: 2 }}>
+
                                         <span className='quickview-description'>{productDetails.description}</span>
                                     </Box>
                                 </TabPanel>
@@ -255,14 +254,14 @@ const QuickView = ({ productId, open, handleClose, products, getRelatedProducts 
                                 Price: ${productDetails.price}
                             </Box>
                             {/* Quantity Selector */}
-                            <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between' }}>
-                                <FormControl sx={{ ml: 3 }} >
+                            <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'start', flexDirection: { xs: 'column', sm: 'row' } }}>
+                                <FormControl sx={{ ml: 3, mb: 1 }} >
                                     <InputLabel>Qty</InputLabel>
                                     <Select
                                         sx={{ width: '100px', borderRadius: 0 }}
                                         value={quantity}
                                         onChange={(e) => setQuantity(Number(e.target.value))}
-                                        label="Quantity"
+                                        label="Qty"
                                         defaultValue={1}
                                     >
                                         {[...Array(10).keys()].map((x) => (
@@ -273,7 +272,7 @@ const QuickView = ({ productId, open, handleClose, products, getRelatedProducts 
                                     </Select>
                                 </FormControl>
                                 {/*Flavor Selector */}
-                                <FormControl sx={{ width: '280px', }}>
+                                <FormControl sx={{ width: '280px', ml: { xs: 3, sm: 0 } }}>
                                     <InputLabel>Flavor</InputLabel>
                                     <Select
                                         sx={{ borderRadius: 0 }}
@@ -291,7 +290,7 @@ const QuickView = ({ productId, open, handleClose, products, getRelatedProducts 
                                 </FormControl>
                             </Box>
                             <Box>
-                                <Button variant="outlined" className='shop-button-cart' sx={{ ml: 3, border: 1, borderRadius: 0, letterSpacing: 2, fontSize: 12, color: 'white', backgroundColor: '#283047', borderColor: '#283047', borderWidth: 1.5, transition: 'all 0.3s', '&:hover': { backgroundColor: '#FE6F49', color: 'white', borderColor: '#FE6F49', transform: 'scale(1.05)' } }} o onClick={() => addToCart(productDetails, quantity)}>
+                                <Button variant="outlined" className='shop-button-cart' sx={{ ml: 3, border: 1, borderRadius: 0, letterSpacing: 2, fontSize: 12, color: 'white', backgroundColor: '#283047', borderColor: '#283047', borderWidth: 1.5, transition: 'all 0.3s', '&:hover': { backgroundColor: '#FE6F49', color: 'white', borderColor: '#FE6F49', transform: 'scale(1.05)' } }} onClick={() => addToCart(productDetails, quantity)}>
                                     Add to Cart
                                 </Button>
 
@@ -332,7 +331,7 @@ function TabPanel(props) {
         >
             {value === index && (
                 <Box sx={{ p: 3 }}>
-                    <Typography>{children}</Typography>
+                    <div>{children}</div>
                 </Box>
             )}
         </div>

@@ -46,7 +46,7 @@ const SquarePaymentForm = ({ onPaymentProcess, shippingDetails, back }) => {
                 </PaymentForm>
 
             </div>
-            <Button onClick={back} className='cart-checkout-button' variant="outlined" sx={{ mt: 3, width: '100%', letterSpacing: 2, color: '#283047', backgroundColor: 'white', borderColor: '#283047', borderWidth: 1.5, height: 50, '&:hover': { backgroundColor: '#0F75E0', color: 'white', } }}>
+            <Button onClick={back} variant="outlined" sx={{ mt: 3, width: '100%', letterSpacing: 2, color: '#283047', backgroundColor: 'white', borderColor: '#283047', borderWidth: 1.5, height: 50, '&:hover': { backgroundColor: '#0F75E0', color: 'white', } }}>
                 <ArrowBackIosNewIcon sx={{ fontSize: 18, mr: 1 }} />
                 Return to shipping</Button>
         </div>
