@@ -1,7 +1,7 @@
 import React from 'react';
 import '../Styles/Home.css'; // You can create a CSS file for styling
 import cdbImage from '../assets/cbd.webp'
-import { Box, Typography, List, ListItem, ListItemText, ListItemIcon } from '@mui/material';
+import { Box, Typography, List, ListItem, ListItemText, ListItemIcon, Button } from '@mui/material';
 import ShopByBrand from '../components/ShopByBrand.jsx'
 import BestSellersSection from '../components/BestSellersSection';
 import { Link } from 'react-router-dom';
@@ -23,7 +23,7 @@ const Home = () => {
 
         <div>
             <Box className="home-container">
-                <div className="left-content animated-left slide-in">
+                <div className="left-content">
                     <div className='colored-square-content'>
                         <div className="colored-square">
                             <h1>Clean & Premium CBD</h1>
@@ -113,10 +113,10 @@ const Home = () => {
 
                 <Box className="bottom-box" >
                     <Box className='bottom-box-button1' component={Link} to="/shop?filter=best-sellers">
-                        <button >SHOP CBD BESTSELLERS</button>
+                        <Button >SHOP CBD BESTSELLERS</Button>
                     </Box>
                     <Box className='bottom-box-button2'>
-                        <button onClick={() => window.open('https://projectcbd.org/#CBD-explained')} >LEARN MORE ABOUT CBD</button>
+                        <Button onClick={() => window.open('https://projectcbd.org/#CBD-explained')} >LEARN MORE ABOUT CBD</Button>
                     </Box>
                 </Box>
             </Box>

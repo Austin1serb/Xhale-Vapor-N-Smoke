@@ -10,12 +10,11 @@ const GuestCheckoutPage = () => {
     const handleGuestCheckout = () => {
         setLoading(true);
         const customerId = "guest-" + uuidv4(); // Generate a UUID
-        localStorage.setItem('customerId', customerId); // Store it in localStorage
+        localStorage.setItem('customerId', customerId); // Store  in localStorage
         console.log(customerId);
 
-        // Navigate to the next step in the guest checkout process
-        // Replace '/guest-checkout-next-step' with your actual route
-        navigate('/checkout');
+
+        navigate('/checkout/1');
     };
 
     const containerStyles = {

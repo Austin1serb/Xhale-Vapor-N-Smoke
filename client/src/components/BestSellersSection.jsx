@@ -105,14 +105,14 @@ const BestSellersSection = () => {
                             <div style={productStyles}>
 
                                 <img className="shop-img" src={product.imgSource[0].url} alt={product.name} height="150px" loading='lazy' />
-                                <Typography sx={{ fontWeight: 100, fontSize: 14 }} className='shop-name' mt={2}>{product.name}</Typography>
+                                <Typography sx={{ textAlign: 'center', fontWeight: 100, fontSize: 14, height: '20px', overflow: "clip" }} className='shop-name' mt={2}>{product.name}</Typography>
                                 <Typography variant="subtitle1" className='shop-brand' sx={{ fontSize: 12, fontWeight: 100, color: 'gray' }}>{product.brand}</Typography>
                                 <Typography variant="subtitle2" sx={{ fontWeight: 100, fontSize: 16 }} className='shop-price'>${product.price.toFixed(2)}</Typography>
 
 
                                 <Box className='shop-button-container'>
-                                    <Link to="/shop?filter=best-sellers" className="shop-button-cart" style={{ textDecoration: 'none' }}>
-                                        <Button variant="outlined" className='shop-button-cart' sx={{ border: 1, borderRadius: 0, letterSpacing: 2, fontSize: 12, color: 'white', backgroundColor: '#283047', borderColor: '#283047', borderWidth: 1.5, transition: 'all 0.3s', '&:hover': { backgroundColor: '#FE6F49', color: 'white', borderColor: '#FE6F49', transform: 'scale(1.05)' } }} onClick={null}>
+                                    <Link to="/shop?filter=best-sellers" style={{ textDecoration: 'none' }}>
+                                        <Button variant="outlined" sx={{ border: 1, borderRadius: 0, letterSpacing: 2, fontSize: 12, color: 'white', backgroundColor: '#283047', borderColor: '#283047', borderWidth: 1.5, transition: 'all 0.3s', '&:hover': { backgroundColor: '#FE6F49', color: 'white', borderColor: '#FE6F49', transform: 'scale(1.05)' }, height: '50px', width: '240px' }} onClick={null}>
                                             SHOP NOW
                                         </Button>
                                     </Link>

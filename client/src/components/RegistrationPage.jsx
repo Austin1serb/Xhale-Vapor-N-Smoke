@@ -271,8 +271,8 @@ const RegistrationPage = () => {
     const containerStyles = {
         display: 'flex',
         justifyContent: 'center',
-
         height: '90%',
+        marginBottom: '40px'
 
     }
 
