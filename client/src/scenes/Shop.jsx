@@ -48,47 +48,49 @@ const Shop = () => {
     const [totalProducts, setTotalProducts] = useState(0);
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
-    const showBestSellers = queryParams.get('showBestSellers') === 'true';
-    const [bestSellers, setBestSellers] = useState([]);
+    const [filter, setFilter] = useState('');
 
-    // Inside the Shop component
-    useEffect(() => {
-        if (showBestSellers) {
-            fetchBestSellers()
-        }
-        else
-            setLoading(true);
-        axios.get(`http://localhost:8000/api/product/paginate/?page=1&pageSize=${pageSize}`)
+
+
+
+
+    const fetchProducts = (url) => {
+        console.log(filter)
+        setLoading(true);
+        axios.get(url)
             .then(response => {
-                setProducts(response.data.products);
-                setPage(2); // since the first page is already loaded
+                setProducts(prevProducts => [...prevProducts, ...response.data.products]);
+                setPage(prevPage => prevPage + 1);
                 setTotalProducts(response.data.totalProducts);
                 setLoading(false);
-
+                setLoadingMore(false);
             })
             .catch(error => {
                 console.error("There was an error fetching the products:", error);
                 setLoading(false);
+                setLoadingMore(false);
             });
-    }, []);
+    };
 
-    const fetchBestSellers = () => {
-        setLoading(true);
-        fetch(`http://localhost:8000/api/product/bestsellers?limit=${pageSize}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                setLoading(false);
-                return response.json(); // Ensure this line is correct
-            })
-            .then(data => {
-                setBestSellers(data)
-            })
-            .catch(error => {
-                console.error('Error fetching best sellers:', error);
-            });
-    }
+
+
+
+    useEffect(() => {
+        const newFilter = queryParams.get('filter') || '';
+        setFilter(newFilter);
+        setProducts([]);
+        setPage(1);
+        console.log('newFilter:', newFilter)
+        const url = `http://localhost:8000/api/product/paginate/?page=1&pageSize=${pageSize}&filter=${newFilter}`;
+        fetchProducts(url);
+        console.log("Fetching products with URL:", url);
+
+    }, [location.search]);
+
+
+
+
+
 
     const handleScroll = useCallback(() => {
         if (window.innerHeight + document.documentElement.scrollTop === document.documentElement.offsetHeight) {
@@ -96,6 +98,7 @@ const Shop = () => {
             if (products.length < totalProducts && !loadingMore) {
                 setLoadingMore(true);
                 // Fetch the next page of products
+
                 axios
                     .get(`http://localhost:8000/api/product/paginate/?page=${page}&pageSize=${pageSize}`)
                     .then(response => {
@@ -110,17 +113,10 @@ const Shop = () => {
                         console.error("There was an error fetching more products:", error);
                         setLoadingMore(false);
                     });
+                fetchProducts();
             }
         }
     }, [loadingMore, page, pageSize, products.length, totalProducts]);
-
-    useEffect(() => {
-        window.addEventListener("scroll", handleScroll);
-        return () => {
-            window.removeEventListener("scroll", handleScroll);
-        };
-    }, [handleScroll]); // Only depends on handleScroll
-
 
 
     const getRelatedProducts = (categories) => {
@@ -137,6 +133,20 @@ const Shop = () => {
     const filteredProducts = products.filter(product =>
         product.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+
+
+
+
+
+    useEffect(() => {
+        window.addEventListener("scroll", handleScroll);
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+        };
+    }, [handleScroll, filter]); // Only depends on handleScroll
+
+
     const productStyles = {
         border: '.1px solid #ccc',
         borderRadius: '5px',
@@ -150,8 +160,7 @@ const Shop = () => {
     }
     return (
         <Box className="shop" sx={{ padding: '20px' }}>
-            {/* Search Bar */}
-            {/* Search Bar (optional based on design) */}
+
             <Box mb={4}>
                 <TextField label="Search Products" variant="outlined" value={searchTerm} onChange={handleSearchChange} fullWidth />
             </Box>

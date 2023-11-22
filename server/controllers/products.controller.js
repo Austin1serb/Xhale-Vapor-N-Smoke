@@ -3,118 +3,127 @@ const { uploadToCloudinary, deleteFromCloudinary } = require('../services/cloudi
 
 const createOneProd = async (req, res) => {
     console.log(req.body);
-    const {
-        brand,
-        name,
-        price,
-        specs,
-        imgSource,
-        category,
-        description,
-        strength,
-        reorderPoint,
-        seo,
-        seoKeywords,
-        shipping,
-        isFeatured,
-        flavor,
-    } = req.body;
-
-    const isUpdate = Boolean(req.params.id); // Check if an ID is provided to determine if it's an update
-    let originalImages = [];
-    let originalProduct;
+    const productData = extractProductData(req.body);
+    const isUpdate = Boolean(req.params.id);
 
     try {
-        let imageData = [];
-
         if (isUpdate) {
-            // Fetch the original product first
-            originalProduct = await Products.findById(req.params.id);
-            if (!originalProduct) {
-                return res.status(404).json({ message: 'Product not found' });
-            }
-            originalImages = originalProduct.imgSource.map(img => img.url);
-        }
-
-        if (imgSource && Array.isArray(imgSource) && imgSource.length > 0) {
-            for (let image of imgSource) {
-                if (image.url && image.url.includes('cloudinary.com')) {
-                    imageData.push(image);
-                } else {
-                    const results = await uploadToCloudinary(image.url, "product_images");
-                    imageData.push(results);
-                }
-            }
-        }
-
-        if (isUpdate) {
-            // Identify removed images
-            const removedImages = originalImages.filter(oriUrl => !imageData.some(newImg => newImg.url === oriUrl));
-
-            // Delete them from Cloudinary
-            for (const removedImage of removedImages) {
-                const publicId = originalProduct.imgSource.find(img => img.url === removedImage).publicId;
-                await deleteFromCloudinary(publicId);
-            }
-        }
-
-        const productData = {
-            brand,
-            name,
-            price,
-            specs,
-            imgSource: imageData,
-            category,
-            description,
-            strength,
-            reorderPoint,
-            seo,
-            seoKeywords,
-            shipping,
-            isFeatured,
-            flavor,
-        };
-
-        let product;
-        if (isUpdate) {
-            product = await Products.findOneAndUpdate({ _id: req.params.id }, productData, {
-                new: true,
-                runValidators: true,
-            });
+            await updateProduct(req, res, productData);
         } else {
-            product = await Products.create(productData);
+            await createProduct(res, productData);
         }
-
-        if (product) {
-            res.status(200).json(product);
-        } else {
-            res.status(404).json({ message: 'Product not found or could not be updated' });
-        }
-
     } catch (error) {
-        console.error(error);
-        if (error.name === 'ValidationError') {
-            const errors = {};
-            for (const field in error.errors) {
-                errors[field] = error.errors[field].message;
-            }
-            return res.status(400).json(errors);
-        }
+        handleErrors(error, res);
     }
 };
+
+const extractProductData = (body) => {
+    const { brand, name, price, specs, imgSource, category, description, strength, reorderPoint, seo, seoKeywords, shipping, isFeatured, flavor, totalSold } = body;
+    return { brand, name, price, specs, imgSource, category, description, strength, reorderPoint, seo, seoKeywords, shipping, isFeatured, flavor, totalSold };
+};
+
+const updateProduct = async (req, res, productData) => {
+    const originalProduct = await Products.findById(req.params.id);
+    if (!originalProduct) {
+        return res.status(404).json({ message: 'Product not found' });
+    }
+
+    productData.imgSource = await processImages(productData.imgSource, originalProduct);
+    await removeDeletedImages(productData.imgSource, originalProduct);
+
+    const updatedProduct = await Products.findOneAndUpdate({ _id: req.params.id }, productData, { new: true, runValidators: true });
+
+    if (updatedProduct) {
+        res.status(200).json(updatedProduct);
+    } else {
+        res.status(404).json({ message: 'Product could not be updated' });
+    }
+};
+
+const createProduct = async (res, productData) => {
+    productData.imgSource = await processImages(productData.imgSource);
+    const newProduct = await Products.create(productData);
+
+    if (newProduct) {
+        res.status(200).json(newProduct);
+    } else {
+        res.status(400).json({ message: 'Product could not be created' });
+    }
+};
+
+const processImages = async (images, originalProduct = null) => {
+    let imageData = [];
+    if (images && Array.isArray(images) && images.length > 0) {
+        for (let image of images) {
+            if (image.url && image.url.includes('cloudinary.com')) {
+                imageData.push(image);
+            } else {
+                const results = await uploadToCloudinary(image.url, "product_images");
+                imageData.push(results);
+            }
+        }
+    }
+    return imageData;
+};
+
+const removeDeletedImages = async (newImages, originalProduct) => {
+    const originalUrls = originalProduct.imgSource.map(img => img.url);
+    const removedUrls = originalUrls.filter(url => !newImages.some(img => img.url === url));
+
+    for (const url of removedUrls) {
+        const publicId = originalProduct.imgSource.find(img => img.url === url).publicId;
+        await deleteFromCloudinary(publicId);
+    }
+};
+
+const handleErrors = (error, res) => {
+    console.error(error);
+    if (error.name === 'ValidationError') {
+        const errors = Object.keys(error.errors).reduce((acc, field) => {
+            acc[field] = error.errors[field].message;
+            return acc;
+        }, {});
+        return res.status(400).json(errors);
+    }
+    res.status(500).json({ message: 'An unexpected error occurred' });
+};
+
 
 module.exports = {
     test: (req, res) => {
         res.json({ message: "Test product response!" });
     },
     getAllPaginate: async (req, res) => {
-        const page = parseInt(req.query.page) || 1;
-        const pageSize = parseInt(req.query.pageSize) || 10; // Set a default page size
 
+        const page = parseInt(req.query.page) || 1;
+        const pageSize = parseInt(req.query.pageSize) || 10;
+        const filter = req.query.filter || '';
+        console.log(filter)
         try {
             const skip = (page - 1) * pageSize;
-            const totalProducts = await Products.countDocuments();
-            const products = await Products.find().skip(skip).limit(pageSize);
+            let query = {};
+            let sort = {};
+
+            if (filter === 'best-sellers') {
+                sort = { totalSold: -1 };
+            } else if (filter === 'new-products') {
+                sort = { createdAt: -1 };
+            } else if (filter === 'featured') {
+                query = { isFeatured: true };
+            } else if (filter.includes('brand-')) {
+                // Extract brand name from filter and create a case-insensitive regex query
+                const brand = filter.split('brand-')[1];
+                query = { brand: new RegExp(`^${brand}$`, 'i') };
+            } else if (filter === 'high-potency') {
+                query = { strength: 'high' };
+            } else if (filter) {
+                // Using a case-insensitive regex for category
+                query = { category: new RegExp(filter, 'i') };
+            }
+
+
+            const totalProducts = await Products.countDocuments(query);
+            const products = await Products.find(query).sort(sort).skip(skip).limit(pageSize);
 
             res.status(200).json({
                 products,
@@ -128,6 +137,8 @@ module.exports = {
             res.status(500).json({ message: 'Server error', error: error });
         }
     },
+
+
 
     getAll: (req, res) => {
         Products.find() // Find all products

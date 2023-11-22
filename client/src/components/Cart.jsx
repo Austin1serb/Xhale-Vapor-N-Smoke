@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Typography, Button, List, ListItem, IconButton, Badge, } from '@mui/material';
 import { useCart } from './CartContext';  // Adjust the path based on your file structure
-import RemoveIcon from '@mui/icons-material/Remove';
-import AddIcon from '@mui/icons-material/Add';
 import { Link } from 'react-router-dom';
 const Cart = ({ setDrawerOpen }) => {
     const [note, setNote] = useState('');
@@ -50,13 +48,13 @@ const Cart = ({ setDrawerOpen }) => {
                     <Box sx={{ maxHeight: { xs: '200px', sm: '415px' }, overflowY: 'auto', }}>
                         {cart.length === 0 ? (
                             // This section renders when the cart is empty
-                            <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: "center", height: 300 }}>
-                                <Typography align="center" sx={{ mt: 3, fontVariant: 'all-small-caps', fontSize: { xs: 16, sm: 20, md: 22 }, fontWeight: 100 }}>
+                            <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: "center", height: { xs: 200, sm: 300 } }}>
+                                <Typography align="center" sx={{ mt: { xs: 0, sm: 3 }, fontVariant: 'all-small-caps', fontSize: { xs: 16, sm: 20, md: 22 }, fontWeight: 100 }}>
                                     Your Cart Is Empty!
 
                                 </Typography>
 
-                                <svg height='150' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+                                <svg height='50' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
                                     <path d="M922.9 701.9H327.4l29.9-60.9 496.8-.9c16.8 0 31.2-12 34.2-28.6l68.8-385.1c1.8-10.1-.9-20.5-7.5-28.4a34.99 34.99 0 0 0-26.6-12.5l-632-2.1-5.4-25.4c-3.4-16.2-18-28-34.6-28H96.5a35.3 35.3 0 1 0 0 70.6h125.9L246 312.8l58.1 281.3-74.8 122.1a34.96 34.96 0 0 0-3 36.8c6 11.9 18.1 19.4 31.5 19.4h62.8a102.43 102.43 0 0 0-20.6 61.7c0 56.6 46 102.6 102.6 102.6s102.6-46 102.6-102.6c0-22.3-7.4-44-20.6-61.7h161.1a102.43 102.43 0 0 0-20.6 61.7c0 56.6 46 102.6 102.6 102.6s102.6-46 102.6-102.6c0-22.3-7.4-44-20.6-61.7H923c19.4 0 35.3-15.8 35.3-35.3a35.42 35.42 0 0 0-35.4-35.2zM305.7 253l575.8 1.9-56.4 315.8-452.3.8L305.7 253zm96.9 612.7c-17.4 0-31.6-14.2-31.6-31.6 0-17.4 14.2-31.6 31.6-31.6s31.6 14.2 31.6 31.6a31.6 31.6 0 0 1-31.6 31.6zm325.1 0c-17.4 0-31.6-14.2-31.6-31.6 0-17.4 14.2-31.6 31.6-31.6s31.6 14.2 31.6 31.6a31.6 31.6 0 0 1-31.6 31.6z" />
                                 </svg>
                                 <Button onClick={() => {
@@ -92,20 +90,22 @@ const Cart = ({ setDrawerOpen }) => {
 
                                                     }}
                                                         variant="h6">{item.product.name}</Typography>
-                                                    <Typography sx={{ width: '100px', fontFamily: '"Avenir Next", sans-serif', fontWeight: 400, color: 'gray', fontVariantCaps: 'all-small-caps' }}>{item.product.strength}</Typography>
+                                                    <Typography sx={{ width: '100px', height: '20px', overflow: 'hidden', fontFamily: '"Avenir Next", sans-serif', fontWeight: 400, color: 'gray', fontVariantCaps: 'all-small-caps' }}>{item.product.specs}</Typography>
                                                     <Typography sx={{ fontWeight: 100, color: 'gray', }}>${item.product.price.toFixed(2)}</Typography>
                                                 </Box>
                                                 {/* Quantity Controls */}
                                                 <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, mt: 3, justifyContent: 'space-between', alignItems: "center" }}>
                                                     <Box sx={{ border: 1, width: 100, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                                         <IconButton onClick={() => adjustQuantity(item.product._id, item.quantity - 1)}>
-                                                            <RemoveIcon sx={{ fontSize: 12 }} />
+
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path d="M18 13H6c-.55 0-1-.45-1-1s.45-1 1-1h12c.55 0 1 .45 1 1s-.45 1-1 1z" /></svg>
                                                         </IconButton>
                                                         <Typography sx={{ fontWeight: 200 }}>
                                                             {item.quantity}
                                                         </Typography>
                                                         <IconButton onClick={() => adjustQuantity(item.product._id, item.quantity + 1)}>
-                                                            <AddIcon sx={{ fontSize: 12 }} />
+
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path d="M18 13h-5v5c0 .55-.45 1-1 1s-1-.45-1-1v-5H6c-.55 0-1-.45-1-1s.45-1 1-1h5V6c0-.55.45-1 1-1s1 .45 1 1v5h5c.55 0 1 .45 1 1s-.45 1-1 1z" /></svg>
                                                         </IconButton>
                                                     </Box>
 
@@ -143,7 +143,7 @@ const Cart = ({ setDrawerOpen }) => {
 
                             {cart.length > 0 && (
                                 <>
-                                    <Button className='cart-checkout-button' component={Link} to='/checkout' onClick={handleProceedToCheckout} variant="outlined" sx={{ width: { xs: '75%', sm: '90%', md: '90%' }, letterSpacing: 2, color: 'white', borderRadius: 0, backgroundColor: '#283047', mb: { xs: 5, sm: 3 }, height: 56.5, "&:hover": { backgroundColor: '#FE6F49', border: 'none', }, textAlign: 'center' }}>Place your order</Button>
+                                    <Button component={Link} to='/checkout/1' onClick={handleProceedToCheckout} variant="outlined" sx={{ width: { xs: '75%', sm: '90%', md: '90%' }, letterSpacing: 2, color: 'white', borderRadius: 0, backgroundColor: '#283047', mb: { xs: 5, sm: 3 }, height: 56.5, "&:hover": { backgroundColor: '#FE6F49', border: 'none', }, textAlign: 'center' }}>Place your order</Button>
                                     <Button onClick={() => {
                                         setDrawerOpen(false); // Close the drawer
                                     }} variant="outlined" sx={{ mb: 1, width: { xs: '75%', sm: '90%', md: '90%' }, letterSpacing: 2, color: '#283047', borderRadius: 0, backgroundColor: 'white', borderColor: '#283047', borderWidth: 1.5, height: 55, '&:hover': { backgroundColor: '#0F75E0', color: 'white' } }}>Continue Shopping</Button>

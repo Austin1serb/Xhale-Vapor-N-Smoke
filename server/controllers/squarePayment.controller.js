@@ -131,10 +131,9 @@ async function sendReceiptEmail(cost, notes, estimatedShipping, orderDetails, la
     let transporter = nodemailer.createTransport({
         service: 'gmail', // or your email service provider
         auth: {
-            user: 'serbaustin@gmail.com',
-            pass: 'xmyk masr ogng ledh',
-            //user: process.env.EMAIL_USERNAME, // Email username
-            //pass: process.env.EMAIL_PASSWORD  // Email password
+            user: process.env.EMAIL_USERNAME,
+            pass: process.env.EMAIL_PASSWORD
+
         }
     });
 

@@ -177,6 +177,7 @@ const ProductList = () => {
                         { field: 'description', headerName: 'Description', flex: 1 },
                         { field: 'category', headerName: 'Category', flex: 1 },
                         { field: 'specs', headerName: 'Specs', flex: 1 },
+                        { field: 'totalSold', headerName: 'Sold', flex: 1 },
                         //{ field: 'strength', headerName: 'Strength', flex: 1 },
                         //{ field: 'isFeatured', headerName: 'Featured', flex: 1 },
                         //{ field: 'seoKeywords', headerName: 'SEO', flex: 1 },

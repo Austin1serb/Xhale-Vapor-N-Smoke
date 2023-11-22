@@ -1,7 +1,9 @@
 const jwt = require('jsonwebtoken');
 const secretKey = process.env.JWT_SECRET_KEY;
+
+
 function verifyToken(req, res, next) {
-    const token = req.headers.authorization;
+    const token = req.headers.authorization?.split(' ')[1];
 
     if (!token) {
         return res.status(401).json({ message: 'Authorization token is missing' });
@@ -15,5 +17,12 @@ function verifyToken(req, res, next) {
         next();
     });
 }
+const isAdmin = (req, res, next) => {
+    if (req.user && req.user.isAdmin) {
+        return next(); // User is admin, proceed to the next middleware
+    }
+    return res.status(403).json({ message: 'Access denied. Admins only.' });
+};
 
-module.exports = verifyToken;
+
+module.exports = { verifyToken, isAdmin };

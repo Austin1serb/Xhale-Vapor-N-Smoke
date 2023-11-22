@@ -1,7 +1,6 @@
 import { Box, Button, CircularProgress, IconButton, List, ListItem, Paper, } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import '../Styles/DropDownMenu.css';
-import throttle from 'lodash/throttle';
 import { Link } from 'react-router-dom';
 import QuickView from './QuickView';
 
@@ -13,6 +12,29 @@ const DropdownMenu = ({ isVisible }) => {
     const [loading, setLoading] = useState(false);
     const [quickViewOpen, setQuickViewOpen] = useState(false);
     const [quickViewProduct, setQuickViewProduct] = useState(null);
+
+    const throttle = (func, limit) => {
+        let lastFunc;
+        let lastRan;
+        return function () {
+            const context = this;
+            const args = arguments;
+            if (!lastRan) {
+                func.apply(context, args);
+                lastRan = Date.now();
+            } else {
+                clearTimeout(lastFunc);
+                lastFunc = setTimeout(function () {
+                    if ((Date.now() - lastRan) >= limit) {
+                        func.apply(context, args);
+                        lastRan = Date.now();
+                    }
+                }, limit - (Date.now() - lastRan));
+            }
+        }
+    };
+
+
 
     const fetchFeaturedProducts = async () => {
 
@@ -51,7 +73,7 @@ const DropdownMenu = ({ isVisible }) => {
         // Cleanup the event listener when the component is unmounted
         return () => {
             window.removeEventListener('resize', checkSize);
-            checkSize.cancel(); // If using lodash's throttle, cancel any trailing invocations
+
         };
     }, []);
 
@@ -117,21 +139,21 @@ const DropdownMenu = ({ isVisible }) => {
                         </div>
                         {(openedSection === 'SHOP_ALL_CBD' || window.innerWidth > 900) && (
                             <List className='list-container' >
-
-                                <ListItem className="list-item" component={Link} to="/">
+                                <ListItem className="list-item" component={Link} to="/shop?filter=best-sellers">
                                     <span className="list-content">Best Sellers</span>
-
                                 </ListItem>
-                                <ListItem className="list-item" component={Link} to="/">
+                                <ListItem className="list-item" component={Link} to="/shop?filter=new-products">
                                     <span className="list-content">New Products</span>
                                 </ListItem>
-                                <ListItem className="list-item" component={Link} to="/">
+                                <ListItem className="list-item" component={Link} to="/shop?filter=high-potency">
                                     <span className="list-content">High Potency</span>
                                 </ListItem>
-                                <ListItem className="list-item" component={Link} to="/">
-                                    <span className="list-content">Bundle & Save</span>
+                                <ListItem className="list-item" component={Link} to="/shop?filter=featured">
+                                    <span className="list-content">Featured Products</span>
                                 </ListItem>
+
                             </List>
+
 
                         )}
                     </div>
@@ -147,33 +169,29 @@ const DropdownMenu = ({ isVisible }) => {
                         </div>
                         {(openedSection === 'SHOP_BY_CATEGORY' || window.innerWidth > 900) && (
                             <List className='list-container'>
-                                <ListItem className="list-item" component={Link} to="/">
+                                <ListItem className="list-item" component={Link} to="/shop?filter=gummies">
                                     <span className="list-content">CBD Gummies</span>
                                 </ListItem>
-                                <ListItem className="list-item" component={Link} to="/">
+                                <ListItem className="list-item" component={Link} to="/shop?filter=oils">
                                     <span className="list-content">CBD Oils</span>
                                 </ListItem>
-                                <ListItem className="list-item" component={Link} to="/">
+                                <ListItem className="list-item" component={Link} to="/shop?filter=pills">
                                     <span className="list-content">CBD Pills</span>
                                 </ListItem>
-                                <ListItem className="list-item" component={Link} to="/">
+                                <ListItem className="list-item" component={Link} to="/shop?filter=topicals">
                                     <span className="list-content">CBD Topicals</span>
                                 </ListItem>
-                                <ListItem className="list-item" component={Link} to="/">
+                                <ListItem className="list-item" component={Link} to="/shop?filter=smokables">
                                     <span className="list-content">CBD Smokables</span>
                                 </ListItem>
-                                <ListItem className="list-item" component={Link} to="/">
+                                <ListItem className="list-item" component={Link} to="/shop?filter=edibles">
                                     <span className="list-content">CBD Edibles</span>
                                 </ListItem>
-                                <ListItem className="list-item" component={Link} to="/">
+                                <ListItem className="list-item" component={Link} to="/shop?filter=cbd">
                                     <span className="list-content">THC-Free CBD</span>
                                 </ListItem>
-                                <ListItem className="list-item" component={Link} to="/">
-                                    <span className="list-content">RSO Oil Products</span>
-                                </ListItem>
-                                <ListItem className="list-item" component={Link} to="/">
-                                    <span className="list-content">THC Gummies</span>
-                                </ListItem>
+
+
                             </List>
 
                         )}
@@ -218,10 +236,10 @@ const DropdownMenu = ({ isVisible }) => {
                         </div>
                         {(openedSection === 'OTHER_PRODUCTS' || window.innerWidth > 900) && (
                             <List className='list-container'>
-                                <ListItem className="list-item" component={Link} to="/">
+                                <ListItem className="list-item" component={Link} to="/shop?filter=pet">
                                     <span className="list-content">CBD for Pets</span>
                                 </ListItem>
-                                <ListItem className="list-item" component={Link} to="/">
+                                <ListItem className="list-item" component={Link} to="/shop?filter=pet">
                                     <span className="list-content">CBD for Horses</span>
                                 </ListItem>
                             </List>

@@ -1,22 +1,20 @@
 import React, { useState } from 'react';
-import { Stepper, Step, StepLabel, Button, Typography, Box } from '@mui/material';
+import { Stepper, Step, StepLabel, Button, Box } from '@mui/material';
 import InformationPage from '../components/InformationPage';
 import ShippingComponent from '../components/ShippingComponent';
 import CartSummaryComponent from '../components/CartSummaryComponent';
 import { useCart } from '../components/CartContext';
-import BrandIcon from '../assets/brandIcon.png'
-
 import { useEffect } from 'react';
 import jwtDecode from 'jwt-decode';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import SquarePaymentForm from '../components/SquarePaymentForm';
 import LoadingModal from '../components/Common/LoadingModal';
-import { set } from 'date-fns';
 
 const CheckoutPage = () => {
     const [isSquareSdkLoaded, setIsSquareSdkLoaded] = useState(false);
     const navigate = useNavigate();
-    const [activeStep, setActiveStep] = useState(0);
+    const { step } = useParams();
+    const activeStep = parseInt(step) - 1;
     const [shippingDetails, setShippingDetails] = useState({});
     const steps = ['Cart', 'Information', 'Shipping', 'Payment'];
     const { cart, removeFromCart, adjustQuantity, notes, clearCart } = useCart();
@@ -45,6 +43,8 @@ const CheckoutPage = () => {
     const isGuestUser = () => {
         return localStorage.getItem('isGuest') === 'true';
     };
+
+
 
 
 
@@ -296,19 +296,28 @@ const CheckoutPage = () => {
 
     };
 
+    useEffect(() => {
+        // If the URL step is not valid, redirect to the first step
+        if (isNaN(activeStep) || activeStep < 0 || activeStep >= steps.length) {
+            navigate('/checkout/1');
+        }
+    }, [activeStep, steps.length, navigate]);
+
+
 
     const handleNext = () => {
-
-        setActiveStep((prevActiveStep) => Math.min(prevActiveStep + 1, steps.length - 1));
+        navigate(`/checkout/${activeStep + 2}`); // Navigate to the next step
     };
 
     const handleBack = () => {
-        setActiveStep((prevActiveStep) => Math.max(prevActiveStep - 1, 0));
+        navigate(`/checkout/${activeStep}`); // Navigate to the previous step
     };
 
-    const handleReset = () => {
-        setActiveStep(0);
-    };
+
+
+
+
+
     const stepperStyles = {
         position: { xs: 'fixed', sm: 'relative' }, // 'fixed' on xs screens, 'relative' otherwise
         top: { xs: 0, sm: 'auto' }, // Stick to the top on xs screens
@@ -373,7 +382,8 @@ const CheckoutPage = () => {
                                 onFormChange={handleFormChange}
                             />}
                             {activeStep === 2 && <ShippingComponent
-                                setActiveStep={setActiveStep}
+
+                                handleBack
                                 cartItems={cart.map(item => ({
                                     _id: item.product._id,
                                     weight: item.product.shipping.weight,
@@ -407,14 +417,7 @@ const CheckoutPage = () => {
                             }
 
                         </div>
-                        <div>
-                            <Button disabled={activeStep === 0} onClick={handleBack}>
-                                Back
-                            </Button>
-                            <Button onClick={handleNext}>
-                                {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
-                            </Button>
-                        </div>
+
                     </div>
 
                 </div>

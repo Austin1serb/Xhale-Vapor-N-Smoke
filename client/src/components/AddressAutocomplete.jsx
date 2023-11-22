@@ -20,7 +20,7 @@ const AddressAutocomplete = ({ id, label, fullWidth, variant, onAddressSelected,
 
             setIsApiLoaded(true);
         };
-
+        window.initAutocomplete = initAutocomplete
         // Function to load the Google Maps API script
         const loadScript = () => {
             if (!document.querySelector('script[src*="googleapis"]')) {

@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { Box, Typography, Button, Paper, Slide, Zoom } from '@mui/material';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import { Link } from 'react-router-dom';
 const AgeVerificationOverlay = ({ onVerify }) => {
     const [showOverlayMessage, setShowOverlayMessage] = useState(false);
     const [showWelcomeMessage, setShowWelcomeMessage] = useState(false);
 
     const handleOldEnough = () => {
         setShowWelcomeMessage(true); // Triggers the zoom-in effect
-        setTimeout(() => onVerify(true), 1600); // Wait for 2 seconds before closing the overlay
+        setTimeout(() => onVerify(true), 1000); // Wait for 2 seconds before closing the overlay
     };
     const handleNotOldEnough = () => {
         setShowOverlayMessage(true);
@@ -85,7 +86,7 @@ const AgeVerificationOverlay = ({ onVerify }) => {
                             Are You of Legal Age?
                         </Typography>
                         <Typography variant="body2" sx={{ margin: '10px 0', fontWeight: 100 }}>
-                            By entering this website, you certify that you are of legal age to comsume CBD in the state in which you reside.
+                            By entering this website, you certify that you are of legal age to comsume CBD in the state in which you reside, that you agree to our <Link to='/terms'>Terms and Conditions</Link>, and to our <Link to="/privacy-policy">Privacy Policy</Link>
                         </Typography>
                         <Box sx={{ display: 'flex', justifyContent: 'space-evenly', alignItems: 'center', flexDirection: { xs: 'column', sm: 'row' } }}>
                             <Button

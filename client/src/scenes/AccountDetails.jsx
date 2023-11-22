@@ -8,6 +8,7 @@ import {
     Button,
     TextField,
     Grid,
+    CircularProgress,
 } from '@mui/material';
 
 function AccountDetails() {
@@ -42,6 +43,10 @@ function AccountDetails() {
                 console.error('Error fetching customer data:', error);
             });
     };
+    const handleChange = (e) => {
+        setCustomer({ ...customer, [e.target.name]: e.target.value });
+    };
+
 
     const handleFormSubmit = (event) => {
         event.preventDefault();
@@ -53,6 +58,7 @@ function AccountDetails() {
             <Paper sx={{ p: 2, maxWidth: 800, margin: '0 auto', marginTop: 4 }}>
                 <Typography variant="h5" sx={{ marginBottom: 2 }}>
                     Loading Account Details...
+                    <CircularProgress />
                 </Typography>
                 {/* You can add Skeleton loaders here */}
             </Paper>
@@ -66,15 +72,111 @@ function AccountDetails() {
             </Typography>
             <form onSubmit={handleFormSubmit}>
                 <Grid container spacing={2}>
+                    {/* Add more fields here */}
                     <Grid item xs={12} sm={6}>
                         <TextField
                             label="First Name"
                             fullWidth
+                            name="firstName"
                             value={customer?.firstName || ''}
-                            onChange={(e) => setCustomer({ ...customer, firstName: e.target.value })}
+                            onChange={handleChange}
                         />
                     </Grid>
-                    {/* Add more TextField components for other fields */}
+                    <Grid item xs={12} sm={6}>
+                        <TextField
+                            label="Last Name"
+                            fullWidth
+                            name="lastName"
+                            value={customer?.lastName || ''}
+                            onChange={handleChange}
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <TextField
+                            label="Email"
+                            fullWidth
+                            name="email"
+                            value={customer?.email || ''}
+                            onChange={handleChange}
+                        />
+                    </Grid>
+                    {/* Address Line 1 */}
+                    <Grid item xs={12}>
+                        <TextField
+                            label="Address"
+                            fullWidth
+                            name="address"
+                            value={customer?.address || ''}
+                            onChange={handleChange}
+                        />
+                    </Grid>
+
+                    {/* Address Line 2 */}
+                    <Grid item xs={12}>
+                        <TextField
+                            label="Address 2"
+                            fullWidth
+                            name="address2"
+                            value={customer?.address2 || ''}
+                            onChange={handleChange}
+                        />
+                    </Grid>
+
+                    {/* City */}
+                    <Grid item xs={12} sm={6}>
+                        <TextField
+                            label="City"
+                            fullWidth
+                            name="city"
+                            value={customer?.city || ''}
+                            onChange={handleChange}
+                        />
+                    </Grid>
+
+                    {/* State */}
+                    <Grid item xs={12} sm={6}>
+                        <TextField
+                            label="State"
+                            fullWidth
+                            name="state"
+                            value={customer?.state || ''}
+                            onChange={handleChange}
+                        />
+                    </Grid>
+
+                    {/* Zip Code */}
+                    <Grid item xs={12} sm={6}>
+                        <TextField
+                            label="Zip"
+                            fullWidth
+                            name="zip"
+                            value={customer?.zip || ''}
+                            onChange={handleChange}
+                        />
+                    </Grid>
+
+                    {/* Phone Number */}
+                    <Grid item xs={12} sm={6}>
+                        <TextField
+                            label="Phone"
+                            fullWidth
+                            name="phone"
+                            value={customer?.phone || ''}
+                            onChange={handleChange}
+                        />
+                    </Grid>
+
+                    {/* Country */}
+                    <Grid item xs={12}>
+                        <TextField
+                            label="Country"
+                            fullWidth
+                            name="country"
+                            value={customer?.country || ''}
+                            onChange={handleChange}
+                        />
+                    </Grid>
+                    {/* Remember to exclude sensitive fields like password */}
                 </Grid>
                 <Box sx={{ marginTop: 2 }}>
                     <Button variant="contained" color="primary" type="submit">

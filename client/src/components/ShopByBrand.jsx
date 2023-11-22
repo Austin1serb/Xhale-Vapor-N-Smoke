@@ -1,8 +1,10 @@
 import { Box, Button, Typography, Popover, Grid } from '@mui/material';
 import React, { } from 'react';
 import '../Styles/ShopByBrand.css'
-import wyld from '../assets/Wyld.jpg'
-import koi from '../assets/koi-logo.jpg'
+import wyld from '../assets/Wyld.webp'
+import koi from '../assets/koi-logo.webp'
+import beezbee from '../assets/beezbee.webp'
+import { Link } from 'react-router-dom';
 const BestSellersSection = () => {
     const [anchorElWyld, setAnchorElWyld] = React.useState(null);
     const [anchorElBeeZbee, setAnchorElBeeZbee] = React.useState(null);
@@ -43,7 +45,7 @@ const BestSellersSection = () => {
                     }
                 });
             },
-            { threshold: 0.1 }
+            { threshold: 0.01 }
         );
 
         [brandRefWyld, brandRefBeeZbee, brandRefKoi].forEach(ref => {
@@ -73,6 +75,7 @@ const BestSellersSection = () => {
         justifyContent: 'center',
         alignItems: 'center',
         margin: '20px',
+
     }
     return (
         <div>
@@ -83,7 +86,7 @@ const BestSellersSection = () => {
                 <Grid item xs={12} sm={6} md={4} ref={brandRefWyld} >
                     <div className="brand-item" style={productStyles}>
                         <Box>
-                            <Typography
+                            <div
                                 className='brand-popover-button'
                                 onMouseEnter={handlePopoverOpenWyld}
                                 onMouseLeave={handlePopoverCloseWyld}
@@ -91,7 +94,7 @@ const BestSellersSection = () => {
                                 <h2 className="brand-name">WYLD
                                     <svg height='16' style={{ transform: 'translate(2px,-5px)' }} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22ZM12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20ZM11 7H13V9H11V7ZM11 11H13V17H11V11Z" /></svg>
                                 </h2>
-                            </Typography>
+                            </div>
                         </Box>
                         <Popover
                             sx={{
@@ -118,18 +121,20 @@ const BestSellersSection = () => {
                         <div className="brand-img-container">
                             <img className="brand-image" src={wyld} alt="wldLogo" loading='lazy' />
                         </div>
+                        <Box component={Link} to="/shop?filter=brand-wyld">
+                            <Button className='brand-button' >SHOP NOW</Button>
+                        </Box>
 
-                        <Button className='brand-button' >SHOP NOW</Button>
                     </div>
                 </Grid>
 
 
 
                 {/* Brand Item 2 */}
-                <Grid item xs={12} sm={6} md={4} ref={brandRefBeeZbee} >
+                <Grid item xs={12} sm={6} md={4} ref={brandRefBeeZbee} style={{ animationDelay: '0.5s' }} >
                     <div className="brand-item" style={productStyles}>
                         <Box>
-                            <Typography
+                            <div
                                 className='brand-popover-button'
                                 onMouseEnter={handlePopoverOpenBeeZbee}
                                 onMouseLeave={handlePopoverCloseBeeZbee}
@@ -137,7 +142,7 @@ const BestSellersSection = () => {
                                 <h2 className="brand-name">beeZbee
                                     <svg height='16' style={{ transform: 'translate(2px,-5px)' }} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22ZM12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20ZM11 7H13V9H11V7ZM11 11H13V17H11V11Z" /></svg>
                                 </h2>
-                            </Typography>
+                            </div>
                         </Box>
                         <Popover
                             sx={{
@@ -163,22 +168,23 @@ const BestSellersSection = () => {
                         <div className="brand-img-container"
                         >
                             <img
-                                src='https://www.beezbeecbd.com/cdn/shop/files/bzb-fullcolor_150x.png?v=1618001658'
+                                src={beezbee}
                                 alt='beeZbeelogo'
                                 className="brand-image"
                                 loading='lazy'
                             />
 
                         </div>
-
-                        <Button >SHOP NOW</Button>
+                        <Box component={Link} to="/shop?filter=brand-beeZbee">
+                            <Button className='brand-button' >SHOP NOW</Button>
+                        </Box>
                     </div>
                 </Grid>
                 {/* Brand Item 3 */}
-                <Grid item xs={12} sm={6} md={4} ref={brandRefKoi} className='product-slide-in' >
-                    <div className="brand-item" style={productStyles}>
+                <Grid item xs={12} sm={6} md={4} ref={brandRefKoi} style={{ animationDelay: '1s' }} >
+                    <div className="brand-item" style={productStyles} >
                         <Box>
-                            <Typography
+                            <div
                                 className='brand-popover-button'
                                 onMouseEnter={handlePopoverOpenKoi}
                                 onMouseLeave={handlePopoverCloseKoi}
@@ -186,7 +192,7 @@ const BestSellersSection = () => {
                                 <h2 className="brand-name">Koi
                                     <svg height='16' style={{ transform: 'translate(2px,-5px)' }} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22ZM12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20ZM11 7H13V9H11V7ZM11 11H13V17H11V11Z" /></svg>
                                 </h2>
-                            </Typography>
+                            </div>
                         </Box>
                         <Popover
                             sx={{ pointerEvents: 'none' }}
@@ -219,7 +225,9 @@ const BestSellersSection = () => {
 
                         </div>
 
-                        <Button >SHOP NOW</Button>
+                        <Box component={Link} to="/shop?filter=brand-koi">
+                            <Button className='brand-button' >SHOP NOW</Button>
+                        </Box>
                     </div>
                 </Grid>
 
