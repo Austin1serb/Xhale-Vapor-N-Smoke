@@ -29,6 +29,19 @@
     cursor: zoom-in;
 }
 
+
+
+.quickview-main-image {
+    max-width: 300px;
+    height: auto;
+}
+
+@media(max-width:400px) {
+    .quickview-main-image {
+        height: 200px;
+    }
+}
+
 .zoom-box-title {
     background-color: white;
     padding-left: 5px;
@@ -47,6 +60,7 @@
 
 .quickview-title {
     margin-top: 10px;
+
 }
 
 .quickview-description {
@@ -65,12 +79,19 @@
 }
 
 .quickview-close-button {
-    font-size: 30px;
 
-
+    color: #282F48;
     transform: translate(15px);
 }
 
+@media(max-width:400px) {
+    .quickview-close-button {
+
+
+        transform: translate(13px, -305px);
+
+    }
+}
 
 
 
@@ -87,6 +108,7 @@
     display: flex;
     justify-content: start;
     align-items: center;
+    min-width: 280px;
 }
 
 
@@ -115,8 +137,8 @@
     overflow: hidden;
     /* Hide text that goes beyond the width */
     text-overflow: ellipsis;
+    width: 280px;
 
-    width: 350px;
     /* Add ellipsis at the end of the truncated text */
     /* Set a max-width for the text */
     display: inline-block;
@@ -144,11 +166,25 @@
         display: none;
     }
 
+    .quickview-related-name {
+
+        width: 240px;
+    }
 }
 
 @media(min-width:1080px) {
     .quickview-related {
         margin-right: 0;
     }
+
+
+}
+
+@media(max-width:500px) {
+    .quickview-related-name {
+
+        width: 200px;
+    }
+
 
 }

@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { BarChart } from '@mui/x-charts/BarChart';
-import { Box, CircularProgress, Typography } from '@mui/material';
-import DataChart from './DataChart';
-
+import { Box, Card, CardContent, CircularProgress, Grid, Typography } from '@mui/material';
+import { axisClasses } from '@mui/x-charts';
 
 
 
 const SalesOverview = () => {
-    const [salesData, setSalesData] = useState([{}]);
+    const [salesData, setSalesData] = useState([]);
     const [products, setProducts] = useState(['']); // State to store the products
     const [totalProducts, setTotalProducts] = useState(0);
     const [totalOrders, setTotalOrders] = useState(0);
@@ -19,32 +18,93 @@ const SalesOverview = () => {
     const [recentAdmins, setRecentAdmins] = useState([]);
     const [recentCustomers, setRecentCustomers] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [orders, setOrders] = useState([]);
+
+
+
+
+    const aggregateSalesData = (data) => {
+        const aggregatedData = {};
+
+        data.forEach(item => {
+            const monthKey = `month_${item.month}`;
+            if (!aggregatedData[monthKey]) {
+                aggregatedData[monthKey] = {};
+            }
+            if (!aggregatedData[monthKey][item.productId]) {
+                aggregatedData[monthKey][item.productId] = { ...item, totalQuantity: 0, totalAmount: 0 };
+            }
+            aggregatedData[monthKey][item.productId].totalQuantity += item.totalQuantity;
+            aggregatedData[monthKey][item.productId].totalAmount += item.totalAmount;
+        });
+
+        return aggregatedData;
+    };
+    //faster than importing
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+
+    // Function to transform and sort data for the chart
+    const transformAndSortDataForChart = (aggregatedData) => {
+        const transformedData = {};
+        Object.keys(aggregatedData).forEach(monthKey => {
+            const monthNumber = parseInt(monthKey.split('_')[1], 10);
+            const monthName = monthNames[monthNumber - 1]; // Convert month number to month name
+            const products = Object.values(aggregatedData[monthKey]);
+            products.sort((a, b) => b.totalAmount - a.totalAmount); // Sort by totalAmount
+
+            const topProducts = products.slice(0, 4); // Select top 4 products
+            transformedData[monthKey] = { month: monthName };
+
+            topProducts.forEach((product, index) => {
+                // Use the first 10 characters of the product's name as the key
+                const productNameKey = `${product.name}`;
+                transformedData[monthKey][productNameKey] = product.totalAmount; // Or totalQuantity
+            });
+        });
+
+        return Object.values(transformedData);
+    };
 
 
 
 
     const fetchData = async (url, signal) => {
-        const response = await fetch(url, { signal });
+        const response = await fetch(url, {
+            method: 'GET',
+            signal: signal,
+            credentials: 'include', // Include credentials in the request
+            headers: {
+                'Content-Type': 'application/json',
+
+            },
+        });
+
         if (!response.ok) {
             throw new Error(`Failed to fetch data from ${url}`);
         }
+
         return response.json();
     };
 
 
 
+
     useEffect(() => {
+
         const controller = new AbortController();
         const { signal } = controller;
 
         // Fetch all necessary data on component mount
         const fetchAllData = async () => {
             try {
+                console.log('fetching')
                 setLoading(true);
 
                 // Fetch products
                 const productData = await fetchData('http://localhost:8000/api/product', signal);
                 setProducts(productData);
+
                 setTotalProducts(productData.length);
 
                 // Fetch orders
@@ -52,23 +112,33 @@ const SalesOverview = () => {
                 const sortedOrders = orderData.sort((a, b) => new Date(b.orderDate) - new Date(a.orderDate)).slice(0, 5);
                 setRecentOrders(sortedOrders);
                 setTotalOrders(orderData.length);
+                setOrders(orderData);
 
                 setTotalSales(orderData.reduce((sum, order) => sum + order.totalAmount.grandTotal, 0));
                 setPendingOrders(orderData.filter(order => order.orderStatus === 'Pending').length);
 
-                // Fetch staff data
-                const staffData = await fetchData('http://localhost:8000/api/staff', signal);
-                setTotalAdmins(staffData.length);
-                setRecentAdmins(staffData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 5));
 
                 // Fetch customer data
                 const customerData = await fetchData('http://localhost:8000/api/customer', signal);
-                setTotalCustomers(customerData.length);
-                setRecentCustomers(customerData.sort((a, b) => new Date(b.registrationDate) - new Date(a.registrationDate)).slice(0, 5));
 
-                // Calculate sales data
-                const salesData = calculateSalesData(productData, orderData);
-                setSalesData(salesData);
+                // Separate out admins from customers
+                const admins = customerData.filter(customer => customer.isAdmin);
+                const customers = customerData.filter(customer => !customer.isAdmin);
+
+                // Set total and recent customers
+                setTotalCustomers(customers.length);
+                setRecentCustomers(customers.sort((a, b) => new Date(b.registrationDate) - new Date(a.registrationDate)).slice(0, 5));
+
+                // Set total and recent admins
+                setTotalAdmins(admins.length);
+                setRecentAdmins(admins.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 5));
+
+                // Fetch top selling products
+                const data = await fetchData('http://localhost:8000/api/order/best-sellers-six-months', signal);
+                const aggregatedData = aggregateSalesData(data);
+                const chartData = transformAndSortDataForChart(aggregatedData);
+                setSalesData(chartData);
+
 
             } catch (error) {
                 if (error.name !== 'AbortError') {
@@ -86,95 +156,208 @@ const SalesOverview = () => {
         };
     }, []);
 
-
-
-
-    const productSalesData = {};
-    function calculateSalesData(products, orders) {
-        const currentDate = new Date();
-
-
-        // Initialize the productSalesData object with product names
-        products.forEach(product => {
-            productSalesData[product.name] = Array(6).fill(0);
-        });
-
-        // Calculate sales data for the last six months
-        orders.forEach(order => {
-            const orderDate = new Date(order.orderDate);
-            const monthDifference = (currentDate.getFullYear() - orderDate.getFullYear()) * 12 + currentDate.getMonth() - orderDate.getMonth();
-
-            if (monthDifference < 6) {
-                order.products.forEach(orderProduct => {
-                    const productName = products.find(product => product._id === orderProduct.product)?.name;
-                    if (productName) {
-                        // Assuming order.totalAmount is the total for all products in the order, 
-                        // you may need to adjust based on how the amount for each product is stored.
-                        productSalesData[productName][monthDifference] += orderProduct.amount;
-                    }
-                });
-            }
-        });
-
-        // Transform the data to the expected format for charting or further processing
-        const salesDataArray = Object.keys(productSalesData).map(productName => {
-            return {
-                name: productName,
-                sales: productSalesData[productName].reverse(), // reverse to get the array in chronological order
-            };
-        });
-
-        return salesDataArray;
-    }
-
-
-    useEffect(() => {
-        console.log(productSalesData)
-    }, [])
-
-
     const chartSetting = {
-        width: 500,
-        height: 300,
-        // Customize other chart settings as needed
+        yAxis: [
+            {
+                label: 'Total Sales ($)',
+
+            },
+
+
+        ],
+        width: 1000, // Adjust the width to fit your layout
+        height: 500, // Adjust the height to fit your layout
+        sx: {
+            [`.${axisClasses.left} .${axisClasses.label}`]: {
+                transform: 'translate(40px, -190px) ',
+                fontSize: '18px'
+            },
+            // Styling for Y-axis labels
+            [`.${axisClasses.bottom} .${axisClasses.tickLabel}`]: {
+                fontSize: '16px',
+            },
+        },
+        xAxis: [
+            {
+                scaleType: 'band',
+                dataKey: 'month',
+
+            },
+        ],
     };
 
 
+    const valueFormatter = (value) => `$${value.toFixed(2)}`;
+
+
+    const shuffleArray = (array) => {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]]; // Swap elements
+        }
+        return array;
+    };
+
+
+    const generateChartSeries = (salesData) => {
+        let series = Object.keys(salesData[0] || {}).filter(key => key !== 'month').map((key, index) => ({
+            dataKey: key,
+            label: key,
+            valueFormatter,
+            color: ['#06B2AF', '#2E96FF', '#AA00C6', '#60009B'][index % 4]
+        }));
+
+
+        // Shuffle the series array
+        return shuffleArray(series);
+    };
+
+    const chartSeries = generateChartSeries(salesData);
+
+
+
+    useEffect(() => {
+
+    }, [])
+
+
+
     if (loading) {
-        return <Box><CircularProgress /></Box>; // Or any other loading spinner/animation
+        return <Box><CircularProgress /></Box>;
     }
+    const Legend = ({ series }) => {
+        return (
+            <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'space-between', marginTop: '20px' }}>
+                {series.map((serie, index) => (
+                    <div key={index} style={{ margin: 15, display: 'flex', alignItems: 'center', }}>
+                        <div style={{
+                            width: 20,
+                            height: 20,
+                            backgroundColor: serie.color,
+                            marginRight: 5,
+
+                        }} />
+                        <span>{serie.label}</span>
+
+
+                    </div>
+                ))}
+            </div>
+        );
+    };
 
 
     return (
         <Box sx={{ m: 5 }}>
-            {/* Display summary widgets */}
-            <Typography variant="h6">Total Products: {totalProducts}</Typography>
-            <Typography variant="h6">Total Orders: {totalOrders}</Typography>
-            <Typography variant="h6">Total Sales: ${totalSales}</Typography>
-            <Typography variant="h6">Pending Orders: {pendingOrders}</Typography>
-            <Typography variant="h6">Total Admins: {totalAdmins}</Typography>
-            <Typography variant="h6">Total Customers: {totalCustomers}</Typography>
-            <Typography variant="h6">Recent Admin Registrations:</Typography>
-            <ul>
-                {recentAdmins.map(admin => <li key={admin._id}>{admin.username} - {admin.email}</li>)}
-            </ul>
-            <Typography variant="h6">Recent Customer Registrations:</Typography>
-            <ul>
-                {recentCustomers.map(customer => <li key={customer._id}>{customer.firstName} {customer.lastName} - {customer.email}</li>)}
-            </ul>
+            <Typography p={3} textAlign={'center'} variant='h4'>SALES OVERVIEW</Typography>
+            <Grid container spacing={3}>
+                {/* Display summary widgets */}
+                <Grid item xs={6} md={4} lg={2}>
+                    <Card>
+                        <CardContent>
+                            <Typography variant="body1" gutterBottom>Total Products:</Typography>
+                            <Typography variant="body2">{totalProducts}</Typography>
+                        </CardContent>
+                    </Card>
+                </Grid>
+                <Grid item xs={6} md={4} lg={2}>
+                    <Card>
+                        <CardContent>
+                            <Typography variant="body1" gutterBottom>Total Orders:</Typography>
+                            <Typography variant="body2">{totalOrders}</Typography>
+                        </CardContent>
+                    </Card>
+                </Grid>
+                <Grid item xs={6} md={4} lg={2}>
+                    <Card>
+                        <CardContent>
+                            <Typography variant="body1" gutterBottom>Total Sales:</Typography>
+                            <Typography variant="body2">{totalSales.toFixed(2)}</Typography>
+                        </CardContent>
+                    </Card>
+                </Grid>
+                <Grid item xs={6} md={4} lg={2}>
+                    <Card>
+                        <CardContent>
+                            <Typography variant="body1" gutterBottom>Pending Orders:</Typography>
+                            <Typography variant="body2">{pendingOrders}</Typography>
+                        </CardContent>
+                    </Card>
+                </Grid>
+                <Grid item xs={6} md={4} lg={2}>
+                    <Card>
+                        <CardContent>
+                            <Typography variant="body1" gutterBottom>Total Admins: </Typography>
+                            <Typography variant="body2">{totalAdmins}</Typography>
+                        </CardContent>
+                    </Card>
+                </Grid>
+                <Grid item xs={6} md={4} lg={2}>
+                    <Card>
+                        <CardContent>
+                            <Typography variant="body1" gutterBottom>Total Accounts:  </Typography>
+                            <Typography variant="body2">{totalCustomers}</Typography>
+                        </CardContent>
+                    </Card>
+                </Grid>
+                <Grid item xs={12} md={4} lg={6} >
+                    <Card>
+                        <CardContent >
+                            <Typography variant="body1" gutterBottom>Recent Customer Registrations: </Typography>
+                            <Typography variant="body2"> {recentCustomers.map(customer => <li key={customer._id}>{customer.firstName} {customer.lastName} - {customer.email}</li>)}</Typography>
+                        </CardContent>
+                    </Card>
+                </Grid>
 
-            <Typography variant='h6' sx={{ textAlign: 'center' }}>
-                <Box>Last Six Months Sales Data by Product</Box>
-            </Typography>
-            <Typography variant="h6">Latest Orders</Typography>
-            {/* Display recent orders */}
-            {recentOrders.map(order => (
-                <Box key={order._id}>
-                    <Typography variant="body1">Order ID: {order._id}</Typography>
-                    {/* ... display other details */}
+                <Grid item xs={12} md={8} lg={6}>
+                    <Card>
+                        <CardContent>
+                            <Typography variant="body1">Latest Orders:</Typography>
+                            {/* Display recent orders */}
+                            {recentOrders.map(order => (
+                                <Box key={order._id}>
+                                    <Typography variant="body2">Order ID: {order._id}</Typography>
+
+                                </Box>
+                            ))}
+                        </CardContent>
+                    </Card>
+                </Grid>
+
+
+
+
+
+
+                <Box style={{ marginTop: '40px', }}>
+                    <Typography p={3} textAlign={'center'} variant='h5'>Best Sellers Data</Typography>
+                    <Legend series={chartSeries} />
                 </Box>
-            ))}
-            <DataChart salesData={salesData} />
+                <BarChart
+                    dataset={salesData}
+                    slotProps={{
+                        legend: {
+                            hidden: true,
+
+                        },
+
+                    }}
+
+                    sx={{
+
+                    }}
+                    xAxis={[
+                        {
+                            scaleType: 'band',
+                            dataKey: 'month',
+
+                        },
+
+                    ]}
+                    series={chartSeries}
+                    {...chartSetting}
+                />
+            </Grid>
         </Box>
     );
 }

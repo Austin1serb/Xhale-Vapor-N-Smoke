@@ -66,8 +66,7 @@ const BestSellersSection = () => {
 
 
     const productStyles = {
-        border: '.1px solid #ccc',
-        borderRadius: '5px',
+
         paddingTop: '10px',
         paddingBottom: '10px',
         display: 'flex',

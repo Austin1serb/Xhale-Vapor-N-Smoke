@@ -3,19 +3,19 @@ import { AppBar, Toolbar, Typography, IconButton, Badge, Box, Drawer, } from '@m
 import '../../Styles/TopBar.css';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
-
-
 import useMediaQuery from '@mui/material/useMediaQuery';
-import BrandIcon from '../../assets/brandIcon.webp'
+import BrandIcon from '../../assets/brandText.webp'
 import React, { useState, useEffect, useRef, } from 'react';
 import { Link, } from 'react-router-dom';
 import { useCart } from '../../components/CartContext.jsx';
 import Cart from '../../components/Cart';
 import { useAuth } from '../../components/Utilities/useAuth';
 import DropdownMenu from '../../components/DropDownMenu';
+
+
+
 const TopBar = () => {
     const [anchorEl, setAnchorEl] = React.useState(null);
-
     const [showBorder, setShowBorder] = useState(false);
     const isMobile = useMediaQuery('(max-width:600px)');
     const isMenuOpen = Boolean(anchorEl);
@@ -24,11 +24,14 @@ const TopBar = () => {
     const [shake, setShake] = useState(false);
     const [drawerOpen, setDrawerOpen] = useState(false);
     const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
-    const { isLoggedIn, logout } = useAuth();// Check if the user is logged in
+    const { isLoggedIn, logout, isAdmin } = useAuth();// Check if the user is logged in
     const dropdownRef = useRef(null);
     const menuIconRef = useRef(null);
     const closeIconRef = useRef(null);
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+
+
+
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (
@@ -48,7 +51,12 @@ const TopBar = () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, []);
+
+
+
+
     useEffect(() => {
+
         const handleScroll = () => {
             if (window.scrollY > 0) {
                 // Add border bottom when scrolling down
@@ -65,7 +73,9 @@ const TopBar = () => {
             window.removeEventListener('scroll', handleScroll);
         };
     }, []);
+
     useEffect(() => {
+
         if (cart.length > 0) {
             setShake(true);
 
@@ -77,6 +87,7 @@ const TopBar = () => {
             return () => clearTimeout(timer); // Clean up on component unmount
         }
     }, [cart]);
+
     const handleProfileMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
     };
@@ -117,7 +128,9 @@ const TopBar = () => {
                 sx={{ mt: 4, ml: 3 }}
             >
                 {isLoggedIn ? [
-
+                    !!isAdmin ? (<MenuItem key="admin" onClick={handleMenuClose}>
+                        <Link style={{ textDecoration: 'none', color: 'black' }} to={'/api/customer/admin'}>Admin</Link>
+                    </MenuItem>) : (null),
                     <MenuItem key="account" onClick={handleMenuClose}>
                         <Link style={{ textDecoration: 'none', color: 'black' }} to={'/details'}>Account</Link>
                     </MenuItem>,
@@ -241,10 +254,10 @@ const TopBar = () => {
                             <Box component={Link} to='/registration' className="nav-link" sx={{ marginRight: 2 }}>
                                 Join Us
                             </Box>
-                            <Box component="a" href="#" className="nav-link" sx={{ marginRight: 2 }}>
+                            <Box component={Link} to="/about" className="nav-link" sx={{ marginRight: 2 }}>
                                 About Us
                             </Box>
-                            <Box component="a" href="#" className="nav-link" sx={{ marginRight: 2 }}>
+                            <Box component={Link} to="/support" className="nav-link" sx={{ marginRight: 2 }}>
                                 Support
                             </Box>
 
@@ -254,11 +267,11 @@ const TopBar = () => {
                         <IconButton id="cart" aria-label="cart" sx={{ mr: -2, ml: { xs: 0, sm: 0 } }} color="inherit">
                             <Badge badgeContent={totalItems} color="secondary">
 
-                                <svg xmlns="http://www.w3.org/2000/svg" className={shake ? 'shake-animation' : ''} width="28" height="28" viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 3c0 .55.45 1 1 1h1l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h11c.55 0 1-.45 1-1s-.45-1-1-1H7l1.1-2h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A.996.996 0 0 0 20.01 4H5.21l-.67-1.43a.993.993 0 0 0-.9-.57H2c-.55 0-1 .45-1 1zm16 15c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z" /></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill='currentColor' className={shake ? 'shake-animation' : ''} width="28" height="28" viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 3c0 .55.45 1 1 1h1l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h11c.55 0 1-.45 1-1s-.45-1-1-1H7l1.1-2h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A.996.996 0 0 0 20.01 4H5.21l-.67-1.43a.993.993 0 0 0-.9-.57H2c-.55 0-1 .45-1 1zm16 15c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z" /></svg>
                             </Badge>
                         </IconButton>
                     </Box>
-                    <Box component="a" href="#" className="nav-link">
+                    <Box className="nav-link">
                         <IconButton
                             size="large"
                             edge="end"
@@ -270,7 +283,7 @@ const TopBar = () => {
                             sx={{ mr: { xs: -2, sm: 0 } }}
                         >
 
-                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm0 14c-2.03 0-4.43-.82-6.14-2.88a9.947 9.947 0 0 1 12.28 0C16.43 19.18 14.03 20 12 20z" /></svg>
+                            <svg fill='currentColor' xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm0 14c-2.03 0-4.43-.82-6.14-2.88a9.947 9.947 0 0 1 12.28 0C16.43 19.18 14.03 20 12 20z" /></svg>
 
 
                         </IconButton>

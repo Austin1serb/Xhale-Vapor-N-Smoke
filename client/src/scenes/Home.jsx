@@ -38,13 +38,14 @@ const Home = () => {
                     <img src={cdbImage} alt="cbd" loading='lazy' />
                 </div>
             </Box>
-            <Box className='' component='div' py={16} sx={{ width: '70%', height: 'auto', alignItems: 'center', justifyContent: 'center', margin: '0 auto', textAlign: 'center' }}>
+            <Box component='div' py={{ xs: 5, sm: 16 }} sx={{ width: '70%', height: 'auto', alignItems: 'center', justifyContent: 'center', margin: '0 auto', textAlign: 'center', mt: { xs: -30, sm: -40, md: 0 } }}>
                 <Typography style={{ fontFamily: customFont, fontSize: '30px' }}>
                     Our Carriers CBD is award-winning and tested for quality. We proudly offer products from the best CBD producers.
                 </Typography>
                 <Box className="list-container" >
                     <List
                         sx={{
+
                             mt: 4,
                             display: 'grid',
                             gridTemplateColumns: 'repeat(3, 1fr)', // 3 columns by default

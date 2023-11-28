@@ -25,6 +25,67 @@ const verifyRecaptcha = async (token) => {
 };
 
 
+const verifyRefreshToken = async (req) => {
+    const refreshToken = req.cookies.refreshToken; // Assuming the refresh token is stored in cookies
+
+    if (!refreshToken) {
+        throw new Error('No refresh token provided');
+    }
+
+    const decoded = jwt.verify(refreshToken, secretKey);
+    if (!decoded) {
+        throw new Error('Invalid refresh token');
+    }
+
+    // Check if the token has been revoked
+    const revokedToken = await RevokedToken.findOne({ token: refreshToken });
+    if (revokedToken) {
+        throw new Error('Refresh token has been revoked');
+    }
+
+    // Check if the user exists in the database
+    const user = await Customers.findById(decoded.customerId);
+    if (!user) {
+        throw new Error('User not found');
+    }
+
+    // If the user is an admin, allow them to proceed without matching the customerId
+    if (user.isAdmin) {
+        return user;
+    }
+
+    // For non-admin users, check if the customerId matches the one in the request
+    if (decoded.customerId !== req.params.id) {
+        throw new Error('Unauthorized access: Customer ID mismatch');
+    }
+
+    return user;
+};
+
+
+
+
+const verifyAccessToken = (req) => {
+    const accessToken = req.headers.authorization.split(' ')[1];
+
+    if (!accessToken) {
+        throw new Error('No access token provided');
+    }
+
+    const decoded = jwt.verify(accessToken, secretKey);
+    if (!decoded || decoded.userId !== req.params.id) {
+        throw new Error('Invalid access token');
+    }
+
+
+
+    return decoded;
+};
+
+
+
+
+
 module.exports = {
     test: (req, res) => {
         res.json({ message: "Test customer response!" });
@@ -65,35 +126,37 @@ module.exports = {
             }
 
             const existingRevokedToken = await RevokedToken.findOne({ token: refreshToken });
-
             if (existingRevokedToken) {
                 return res.status(401).json({ message: 'Refresh token is revoked' });
             }
 
-            const user = await Customers.findById(req.user.userId);
+            jwt.verify(refreshToken, secretKey, async (err, decoded) => {
+                if (err) {
+                    return res.status(401).json({ message: 'Invalid or expired refresh token' });
+                }
 
-            if (!user) {
-                return res.status(404).json({ message: 'User not found' });
-            }
-            if (refreshToken) {
-                const decoded = jwt.verify(refreshToken, secretKey, (err, decoded) => {
-                    if (err) {
-                        // Handle expired token or other verification errors
-                        return res.status(401).json({ message: 'Invalid or expired refresh token' });
-                    }
-                    return decoded;
-                });
-            }
-            const accessToken = jwt.sign({ userId: user._id }, secretKey, { expiresIn: '12h' });
-
-            return res.json({ message: 'Token refreshed successfully', accessToken });
+                const user = await Customers.findById(decoded.customerId);
+                if (!user) {
+                    return res.status(404).json({ message: 'User not found' });
+                }
+                const accessToken = jwt.sign({
+                    customerId: user._id,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    email: user.email
+                }, secretKey, { expiresIn: '12h' });
+                console.log('token refreshed')
+                return res.json({ message: 'Token refreshed successfully', accessToken });
+            });
         } catch (err) {
             return res.status(500).json({ message: 'Server error', error: err });
         }
     },
 
+
+
     createOne: async (req, res) => {
-        console.log(req.body);
+
         const { firstName, lastName, email, password, recaptchaValue, isVerified } = req.body;
         try {
             const recaptchaVerified = await verifyRecaptcha(recaptchaValue);
@@ -135,6 +198,7 @@ module.exports = {
                 lastName: customer.lastName,
                 email: customer.email
             }, secretKey, { expiresIn: '12h' });
+
 
             // Set refresh token in HTTP-Only cookie
             res.cookie('refreshToken', refreshToken, {
@@ -184,6 +248,7 @@ module.exports = {
                     email: user.email,
                     isAdmin: user.isAdmin,
                 }, secretKey, { expiresIn: '12h' });
+
 
                 // Generate a new refresh token
                 const newRefreshToken = jwt.sign({
@@ -266,36 +331,103 @@ module.exports = {
         }
     },
 
-    updateOne: (req, res) => {
-        const updateData = req.body; // Data to update the document with
-        const customerId = req.params.id; // ID of the customer to update
+    updateOne: async (req, res) => {
+        try {
+            const user = await verifyRefreshToken(req);
 
-        Customers.findOneAndUpdate(
-            { _id: customerId },
-            updateData,
-            { new: true, runValidators: true }) // 'new: true' to return updated document
-            .then(updatedCustomer => {
-                if (updatedCustomer) {
-                    res.json(updatedCustomer);
-                } else {
-                    res.status(404).json({ message: 'Customer not found' });
-                }
-            })
-            .catch(err => {
-                // If error is due to validation
-                if (err.name === 'ValidationError') {
-                    res.status(400).json({ message: 'Validation error', error: err.errors });
-                } else {
-                    // For other types of errors
-                    res.status(500).json({ message: 'An error occurred', error: err });
-                }
-            });
+
+            if (!user) {
+                return res.status(401).json({ message: 'Unauthorized' });
+            }
+
+            const updateData = req.body;
+            const customerId = user._id
+
+            // Fetch the user who is making the request
+            const requestingUser = await Customers.findById(user._id);
+
+            if (!requestingUser) {
+                return res.status(404).json({ message: 'Requesting user not found' });
+            }
+
+            const isAdmin = requestingUser.isAdmin;
+
+            if (!isAdmin) {
+                // Exclude sensitive fields for non-admin users
+                delete updateData.isAdmin;
+                delete updateData.refreshToken;
+            }
+
+            // Hash password if it is included in the update data
+            if (updateData.password) {
+                updateData.password = await bcrypt.hash(updateData.password, saltRounds);
+            }
+
+            // Proceed with the update operation
+            const updatedCustomer = await Customers.findOneAndUpdate(
+                { _id: customerId },
+                updateData,
+                { new: true, runValidators: true }
+            );
+
+            if (updatedCustomer) {
+                res.json(updatedCustomer);
+            } else {
+                res.status(404).json({ message: 'Customer not found' });
+            }
+        } catch (error) {
+            console.error(error.message);
+
+            if (error.name === 'ValidationError') {
+                res.status(400).json({ message: 'Validation error', error: error });
+            } else {
+                res.status(500).json({ message: 'An error occurred', error: error });
+            }
+        }
     },
 
-    deleteOne: (req, res) => {
-        Customers.deleteOne({ _id: req.params.id })
-            .then(data => {
-                res.json(data)
-            }).catch(err => res.json(err))
-    }
+
+
+    deleteOne: async (req, res) => {
+        try {
+            const user = await verifyRefreshToken(req);
+            if (!user) {
+                return res.status(401).json({ message: 'Unauthorized' });
+            }
+
+            const customerIdToDelete = user._id;
+
+            // Fetch the user who is making the request
+            const requestingUser = await Customers.findById(user._id);
+
+            if (!requestingUser) {
+                return res.status(404).json({ message: 'Requesting user not found' });
+            }
+
+            // Check if the requesting user is the same as the user to delete or if they are an admin
+            const isAuthorized = requestingUser._id.equals(customerIdToDelete) || requestingUser.isAdmin;
+
+            if (!isAuthorized) {
+                return res.status(403).json({ message: 'Forbidden: You do not have permission to delete this user.' });
+            }
+
+            // Proceed with the deletion
+            await Customers.deleteOne({ _id: customerIdToDelete });
+
+            res.status(200).json({ message: 'User successfully deleted' });
+        } catch (error) {
+            console.error(error.message);
+            res.status(500).json({ message: 'An error occurred', error: error });
+        }
+    },
+
+
+
+
+    //deleteOne: (req, res) => {
+    //    Customers.deleteOne({ _id: req.params.id })
+    //        .then(data => {
+    //            res.json(data)
+    //        }).catch(err => res.json(err))
+    //}
 }

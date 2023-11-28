@@ -18,8 +18,7 @@ const ImageUpload = ({
 
     const handleRemoveImage = (indexToRemove) => {
         const newImages = selectedImageData.filter((_, index) => index !== indexToRemove);
-        setSelectedImageData(newImages);  // Assuming this function is passed down as a prop or you can manage state differently.
-        console.log(newImages)
+        setSelectedImageData(newImages);
     };
 
 

@@ -11,7 +11,7 @@ const GuestCheckoutPage = () => {
         setLoading(true);
         const customerId = "guest-" + uuidv4(); // Generate a UUID
         localStorage.setItem('customerId', customerId); // Store  in localStorage
-        console.log(customerId);
+
 
 
         navigate('/checkout/1');
@@ -27,6 +27,7 @@ const GuestCheckoutPage = () => {
         <div
             style={containerStyles}
         >
+
             <Paper
                 sx={{
                     padding: 3,
@@ -55,6 +56,7 @@ const GuestCheckoutPage = () => {
                     </Button>
                 )}
             </Paper>
+            <Typography display={{ xs: 'block', sm: 'none' }} variant='h6' textAlign={'center'}>Or Create an account!</Typography>
         </div>
     );
 };

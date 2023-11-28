@@ -13,6 +13,9 @@ import {
     IconButton,
     Box,
     ListItemIcon,
+    Menu,
+    MenuItem,
+    Button,
 } from '@mui/material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -20,10 +23,25 @@ import ProductList from '../components/ProductList';
 import UserList from '../components/UserList';
 import OrderList from '../components/OrderList';
 import SalesOverview from '../components/SalesOverview';
+import { useAuth } from '../components/Utilities/useAuth';
+import { Link } from 'react-router-dom';
+
 
 const AdminDashboard = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [selectedComponent, setSelectedComponent] = useState('AdminDashboard');
+    const [anchorEl, setAnchorEl] = useState(null);
+    const { isLoggedIn, logout, isAdmin } = useAuth();
+    // Function to handle menu open
+    const handleMenuOpen = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    // Function to handle menu close
+    const handleMenuClose = () => {
+        setAnchorEl(null);
+    };
+
 
     const handleSidebarToggle = () => {
         setSidebarOpen(!sidebarOpen);
@@ -34,6 +52,11 @@ const AdminDashboard = () => {
         setSidebarOpen(false);
     };
 
+
+    const handleLogout = () => {
+        logout();
+
+    };
     // Function to generate sidebar menu items
     const generateSidebarItems = () => {
         const menuItems = [
@@ -106,14 +129,19 @@ const AdminDashboard = () => {
         return menuItems.map((item, index) => (
             <ListItem
                 key={index}
-                button
+
                 onClick={() => handleSidebarItemClick(item.component)}
             >
-                <ListItemIcon>{item.icon}</ListItemIcon>
-                <ListItemText primary={item.text} />
+                <Button variant='text' sx={{}}>
+                    <ListItemIcon>{item.icon}</ListItemIcon>
+                    <ListItemText primary={item.text} />
+                </Button>
             </ListItem>
         ));
     };
+
+    const menuId = 'primary-search-account-menu';
+
 
     return (
         <div>
@@ -128,28 +156,59 @@ const AdminDashboard = () => {
                         <MenuIcon />
                     </IconButton>
                     <Typography variant="h6">Admin Dashboard</Typography>
-                    <Box component="a" href="#" className="nav-link">
+                    <Box onClick={handleMenuOpen}>
                         <IconButton
                             size="large"
                             edge="end"
                             aria-label="account of current user"
-                            color="inherit"
+                            sx={{ color: 'white' }}
                         >
                             <AccountCircle sx={{ fontSize: '32px' }} />
                         </IconButton>
                     </Box>
+                    {/* The menu */}
+                    <Menu
+                        anchorEl={anchorEl}
+                        anchorOrigin={{
+                            vertical: 'top',
+                            horizontal: 'right',
+                        }}
+                        id={menuId}
+                        keepMounted
+                        transformOrigin={{
+                            vertical: 'top',
+                            horizontal: 'right',
+                        }}
+                        open={Boolean(anchorEl)}
+                        onClose={handleMenuClose}
+                        sx={{ mt: 4, ml: 3 }}
+                    >
+                        {/* Menu items */}
+
+
+                        <MenuItem key="home" onClick={handleMenuClose}>
+                            <Link style={{ textDecoration: 'none', color: 'black' }} to={'/'}>Home</Link>
+                        </MenuItem>
+                        <MenuItem key="admin" onClick={handleMenuClose}>
+                            <Link style={{ textDecoration: 'none', color: 'black' }} to={'/api/customer/admin'}>Admin</Link>
+                        </MenuItem>
+
+                        <MenuItem key="account" onClick={handleMenuClose}>
+                            <Link style={{ textDecoration: 'none', color: 'black' }} to={'/details'}>Account</Link>
+                        </MenuItem>
+                        <MenuItem key="logout" onClick={handleLogout}>
+                            <span style={{ textDecoration: 'none', cursor: 'pointer' }}>Logout</span>
+                        </MenuItem>
+
+
+                    </Menu>
                 </Toolbar>
             </AppBar>
             <Container>
                 <Grid container spacing={3}>
                     <Grid item xs={12}>
                         <Paper>
-                            {selectedComponent === 'AdminDashboard' && (
-                                <div>
-                                    <SalesOverview />
-                                    {/* Add summary widgets and charts here */}
-                                </div>
-                            )}
+                            {selectedComponent === 'AdminDashboard' && (<SalesOverview />)}
                             {selectedComponent === 'productList' && <ProductList />}
                             {selectedComponent === 'userList' && <UserList />}
                             {selectedComponent === 'orderList' && <OrderList />}

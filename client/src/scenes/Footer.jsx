@@ -8,8 +8,8 @@ const Footer = () => {
         color: '#FFFFFF',
         padding: '20px', // You can customize the padding here
         height: 'auto',
-        width: '100%',
         margin: '0px',
+        minWidth: '100%'
     };
 
 
@@ -28,7 +28,7 @@ const Footer = () => {
                     <Typography variant="body2">
                         &copy; {new Date().getFullYear()} Herbal Zestfulness
                     </Typography>
-                    <div className='footer-contact-container'>
+                    {/*<div className='footer-contact-container'>
                         <Typography variant="body2" borderBottom='1px solid white'>
                             CONTACT & RETURNS
                         </Typography>
@@ -36,7 +36,7 @@ const Footer = () => {
                             <li>EMAIL</li>
                             <li>ADDRESS</li>
                         </ul>
-                    </div>
+                    </div>*/}
                     <Typography variant="body2">
                         <Link to="/privacy-policy" className='footer-links'>
                             Privacy Policy
@@ -44,6 +44,10 @@ const Footer = () => {
                         {' | '}
                         <Link to="/terms" className='footer-links'>
                             Terms of Service
+                        </Link>
+                        {' | '}
+                        <Link to="/shipping-policy" className='footer-links'>
+                            Shipping Policy
                         </Link>
                         {' | '}
 

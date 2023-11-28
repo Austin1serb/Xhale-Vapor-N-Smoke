@@ -23,6 +23,10 @@ const OrderSchema = new mongoose.Schema({
 
     products: [
         {
+            name: {
+                type: String,
+                required: false,
+            },
             productId: {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: 'Product',
@@ -37,6 +41,10 @@ const OrderSchema = new mongoose.Schema({
                 type: Number,
                 required: true,
             },
+            img: {
+                type: String,
+                required: false,
+            }
         },
     ],
     shippingMethod: {

@@ -24,7 +24,7 @@ const ProductList = () => {
 
             const options = {
                 year: 'numeric',
-                month: 'long',
+                month: 'numeric',
                 day: 'numeric',
             };
 
@@ -42,7 +42,9 @@ const ProductList = () => {
         // Fetch products from your backend API
         setIsLoading(true);
 
-        fetch(API_URL)
+        fetch(API_URL, {
+            credentials: 'include',
+        })
             .then((response) => response.json())
             .then((data) => {
                 setProducts(data);
@@ -89,9 +91,7 @@ const ProductList = () => {
 
 
     const handleUpdateProduct = (updatedProduct) => {
-        console.log("Updating product:", updatedProduct);
         setProducts((prevProducts) => {
-            console.log("Previous products:", prevProducts);
             // Map through the previous products and replace the one with the matching _id
             return prevProducts.map((product) =>
                 product._id === updatedProduct._id ? updatedProduct : product
@@ -108,6 +108,7 @@ const ProductList = () => {
 
         if (confirmDelete) {
             fetch(`http://localhost:8000/api/product/${productId}`, {
+                credentials: 'include',
                 method: 'DELETE',
             })
                 .then((response) => {
@@ -124,10 +125,6 @@ const ProductList = () => {
         }
     };
 
-
-
-    //console.log(products[0].imgSource);
-    //const seoTitle = products[0].seo.title
     return (
         <Box sx={{ p: 2 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', py: 2 }} >
@@ -159,7 +156,7 @@ const ProductList = () => {
                     columns={[
                         //{ field: '_id', headerName: 'ID', flex: 1 },
                         //{ field: 'brand', headerName: 'Brand', flex: 1 },
-                        { field: 'name', headerName: 'Name', flex: 0.5 },
+
                         {
                             field: 'imgSource',
                             headerName: 'Image',
@@ -173,11 +170,11 @@ const ProductList = () => {
                                 />
                             ),
                         },
-
-                        { field: 'description', headerName: 'Description', flex: 1 },
+                        { field: 'name', headerName: 'Name', flex: 1 },
+                        //{ field: 'description', headerName: 'Description', flex: 1 },
                         { field: 'category', headerName: 'Category', flex: 1 },
                         { field: 'specs', headerName: 'Specs', flex: 1 },
-                        { field: 'totalSold', headerName: 'Sold', flex: 1 },
+                        { field: 'totalSold', headerName: 'Sold', flex: 0.25 },
                         //{ field: 'strength', headerName: 'Strength', flex: 1 },
                         //{ field: 'isFeatured', headerName: 'Featured', flex: 1 },
                         //{ field: 'seoKeywords', headerName: 'SEO', flex: 1 },
@@ -185,13 +182,13 @@ const ProductList = () => {
                         //{ field: 'seDescription', headerName: 'SEO Description', flex: 1, valueGetter: (params) => params.row.seo.description, },
                         //{ field: 'shipping', headerName: 'Shipping Info', flex: 1, valueGetter: (params) => params.row.shipping.weight, },
                         { field: 'price', headerName: 'Price', flex: 0.5, valueFormatter: ({ value }) => (typeof value === 'number' ? value.toFixed(2) : 'N/A') },
-                        { field: 'createdAt', headerName: 'Date Added', flex: 1 },
+                        { field: 'createdAt', headerName: 'Date Added', flex: 0.75 },
 
 
                         {
                             field: 'actions',
                             headerName: 'Actions',
-                            flex: 1.5,
+                            flex: 1.75,
 
                             renderCell: (params) => (
                                 <Box sx={{ ml: -1 }} >

@@ -18,7 +18,7 @@ const Cart = ({ setDrawerOpen }) => {
 
 
     return (
-        <Box sx={{}}>
+        <Box >
 
 
             <Box sx={{ display: 'flex', flexDirection: "column", justifyContent: 'space-between', height: '78vh', }}>
@@ -37,12 +37,13 @@ const Cart = ({ setDrawerOpen }) => {
                             mt: -3,
 
 
+
                         }}>
-                        <Typography sx={{ letterSpacing: 2, fontSize: 18, ml: { xs: 10, sm: 13, md: 13 }, }} className="type-subheading type-subheading--1" variant="h6">
+                        <Typography sx={{ letterSpacing: 2, fontSize: 18, ml: { xs: 5, sm: 13, md: 13 }, }} className="type-subheading type-subheading--1" variant="h6">
                             YOUR CART
                         </Typography>
-                        <IconButton sx={{}} className="cart-close-icon" onClick={() => setDrawerOpen(false)}>
-                            <svg xmlns="http://www.w3.org/2000/svg" fill='white' height="40" width="40"><path d="m10.458 31.458-1.916-1.916 9.5-9.542-9.5-9.542 1.916-1.916 9.542 9.5 9.542-9.5 1.916 1.916-9.5 9.542 9.5 9.542-1.916 1.916-9.542-9.5Z" /></svg>
+                        <IconButton sx={{ transform: 'translate(0px, -7px)' }} className="cart-close-icon" onClick={() => setDrawerOpen(false)}>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill='white' height="30" width="30"><path d="m10.458 31.458-1.916-1.916 9.5-9.542-9.5-9.542 1.916-1.916 9.542 9.5 9.542-9.5 1.916 1.916-9.5 9.542 9.5 9.542-1.916 1.916-9.542-9.5Z" /></svg>
                         </IconButton>
                     </Box>
                     <Box sx={{ maxHeight: { xs: '200px', sm: '415px' }, overflowY: 'auto', }}>
@@ -68,8 +69,7 @@ const Cart = ({ setDrawerOpen }) => {
                                         {/* Cart Item Details */}
                                         <Box sx={{
                                             display: 'flex',
-                                            alignItems: 'space-between',
-
+                                            mt: 1
 
                                         }}>
                                             <Badge badgeContent={item.quantity} color="secondary">
@@ -94,23 +94,23 @@ const Cart = ({ setDrawerOpen }) => {
                                                     <Typography sx={{ fontWeight: 100, color: 'gray', }}>${item.product.price.toFixed(2)}</Typography>
                                                 </Box>
                                                 {/* Quantity Controls */}
-                                                <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, mt: 3, justifyContent: 'space-between', alignItems: "center" }}>
-                                                    <Box sx={{ border: 1, width: 100, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                <Box sx={{ ml: -12.7, display: 'flex', flexDirection: 'row', mt: 3, pb: 1, justifyContent: 'space-between', alignItems: "center" }}>
+                                                    <Box sx={{ borderRadius: '5px', border: .1, width: 100, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                                         <IconButton onClick={() => adjustQuantity(item.product._id, item.quantity - 1)}>
-
+                                                            {/* SUBTRACT ICON */}
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path d="M18 13H6c-.55 0-1-.45-1-1s.45-1 1-1h12c.55 0 1 .45 1 1s-.45 1-1 1z" /></svg>
                                                         </IconButton>
                                                         <Typography sx={{ fontWeight: 200 }}>
                                                             {item.quantity}
                                                         </Typography>
                                                         <IconButton onClick={() => adjustQuantity(item.product._id, item.quantity + 1)}>
-
+                                                            {/* ADD ICON */}
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path d="M18 13h-5v5c0 .55-.45 1-1 1s-1-.45-1-1v-5H6c-.55 0-1-.45-1-1s.45-1 1-1h5V6c0-.55.45-1 1-1s1 .45 1 1v5h5c.55 0 1 .45 1 1s-.45 1-1 1z" /></svg>
                                                         </IconButton>
                                                     </Box>
 
                                                     {/* Remove Button */}
-                                                    <Box sx={{ transform: { md: 'translateX(0px)', }, }}>
+                                                    <Box sx={{ transform: { xs: 'translateX(-0px)', md: 'translateX(-25px)', }, }}>
                                                         <Button sx={{ fontSize: 10, color: 'gray', textDecoration: 'underline' }} onClick={() => removeFromCart(item.product._id)}>Remove</Button>
                                                     </Box>
                                                 </Box>
@@ -125,6 +125,8 @@ const Cart = ({ setDrawerOpen }) => {
                 <Box>
                     {/* Notes for the seller */}
                     <Box sx={{
+
+                        boxShadow: ' 1px -4px 6px -1px rgba(0, 0, 0, 0.2)',
                         display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: { xs: '50vh', sm: '30vh' },
 
                     }}>
@@ -139,7 +141,7 @@ const Cart = ({ setDrawerOpen }) => {
                         <Box className="ajax-cart--bottom-wrapper" sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                             <Typography sx={{ fontWeight: 500, letterSpacing: 2 }}>SUBTOTAL </Typography>
                             <Typography sx={{ fontSize: { xs: 22, sm: 32 }, fontWeight: 100, }}>${total.toFixed(2)}</Typography>
-                            <Typography sx={{ fontSize: 14, fontWeight: 100, textAlign: 'center' }} >Taxes and <a href='/' style={{ color: 'inherit' }}>shipping</a> calculated at checkout</Typography>
+                            <Typography sx={{ fontSize: 14, fontWeight: 100, textAlign: 'center' }} >Taxes and <Link to='/shipping-policy' style={{ color: 'inherit' }}>shipping</Link> calculated at checkout</Typography>
 
                             {cart.length > 0 && (
                                 <>

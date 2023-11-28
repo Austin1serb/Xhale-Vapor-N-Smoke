@@ -189,6 +189,7 @@ const AddProductModal = ({ open, onClose, onAddProduct, selectedProduct, onUpdat
         'Content-Type': 'application/json',
     };
 
+
     const handleAddProduct = async () => {
         try {
             setLoading(true);
