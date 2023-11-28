@@ -1,0 +1,34 @@
+/* ShippingPolicy.css */
+.shipping-policy {
+    font-family: Arial, sans-serif;
+    margin-top: -80px;
+    padding: 20px;
+    background-color: #F7F6F1;
+
+}
+
+
+.shipping-policy h1 {
+    font-size: 24px;
+    text-align: center;
+}
+
+.container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 40px;
+
+
+    background-color: #fff;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+}
+
+.shipping-policy h2 {
+    font-size: 20px;
+    margin-top: 20px;
+}
+
+.shipping-policy p {
+    font-size: 16px;
+    line-height: 1.5;
+}

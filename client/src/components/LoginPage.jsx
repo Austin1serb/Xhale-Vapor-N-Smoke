@@ -20,6 +20,7 @@ import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import GuestCheckoutPage from './GuestCheckout';
 import ForgotPassword from './ForgotPassword';
+import { useAuth } from './Utilities/useAuth';
 
 const LoginPage = () => {
     const [openSnackbar, setOpenSnackbar] = React.useState(false);
@@ -27,7 +28,7 @@ const LoginPage = () => {
     const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
     //const ForgotPassword = React.lazy(() => import('./ForgotPassword'));
 
-
+    const { setIsLoggedIn } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -67,27 +68,28 @@ const LoginPage = () => {
             });
 
             if (response.ok) {
+                sessionStorage.clear(); // Clear session storage
+                localStorage.removeItem('isGuest'); // Clear local storage
                 // Login successful
-                // Store JWT and refresh token
+                // Store JWT 
                 const data = await response.json();
-                console.log(data)
                 const accessToken = data.accessToken;
-                //const refreshToken = data.newRefreshToken;
-                localStorage.setItem('token', accessToken); // Store in localStorage for persistent login
-                //localStorage.setItem('refreshToken', refreshToken); // Store the refresh token
+
+                localStorage.setItem('token', accessToken);
+
+
+                // Decode the token, store additional data as needed
                 const decodedToken = jwtDecode(accessToken);
 
+                // Store user details based on storage preference
 
-                console.log(decodedToken);
-
-
-                // Store user details in localStorage (or sessionStorage)
                 localStorage.setItem('userFirstName', decodedToken.firstName);
                 localStorage.setItem('userLastName', decodedToken.lastName);
                 localStorage.setItem('customerId', decodedToken.customerId);
                 localStorage.setItem('userEmail', decodedToken.email);
-                // Redirect to the home page or checkoutpage
 
+                // Redirect logic
+                setIsLoggedIn(true);
                 if (decodedToken.isAdmin === true) {
                     // Redirect to admin dashboard
                     navigate('/api/customer/admin');

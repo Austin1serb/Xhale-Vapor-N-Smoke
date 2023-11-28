@@ -1,14 +1,13 @@
-import React, { useState } from 'react';
-import { Stepper, Step, StepLabel, Button, Box } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Stepper, Step, StepLabel, Box } from '@mui/material';
 import InformationPage from '../components/InformationPage';
 import ShippingComponent from '../components/ShippingComponent';
 import CartSummaryComponent from '../components/CartSummaryComponent';
 import { useCart } from '../components/CartContext';
-import { useEffect } from 'react';
-import jwtDecode from 'jwt-decode';
 import { useNavigate, useParams } from 'react-router-dom';
 import SquarePaymentForm from '../components/SquarePaymentForm';
 import LoadingModal from '../components/Common/LoadingModal';
+import { useAuth } from '../components/Utilities/useAuth';
 
 const CheckoutPage = () => {
     const [isSquareSdkLoaded, setIsSquareSdkLoaded] = useState(false);
@@ -28,6 +27,8 @@ const CheckoutPage = () => {
     const [orderData, setOrderData] = useState({})
     const [estimatedShipping, setEstimatedShipping] = useState('')
     const [lastAddress, setLastAddress] = useState({});
+    const { isLoggedIn, customerId } = useAuth();
+
     const [formData, setFormData] = useState({
         email: '',
         firstName: '',
@@ -49,6 +50,7 @@ const CheckoutPage = () => {
 
 
     const loadSquareSdk = () => {
+        console.log("LOADING SQUARE SDK")
         setIsSquareSdkLoaded(false)
 
 
@@ -77,7 +79,6 @@ const CheckoutPage = () => {
     const finalizeOrderAndProcessPayment = async (paymentToken) => {
         setIsLoading(true);
         try {
-            console.log(fullCost);
 
             // Convert amount to cents 
             const paymentAmount = Math.round(fullCost.grandTotal * 100);
@@ -104,7 +105,6 @@ const CheckoutPage = () => {
                 });
 
                 const paymentResult = await paymentResponse.json();
-                console.log(paymentResult);
 
                 // Check if payment was successful
                 if (paymentResponse.ok && paymentResult.success === true) {
@@ -147,39 +147,23 @@ const CheckoutPage = () => {
     };
 
 
-
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        const customerId = localStorage.getItem('customerId');
-
-        if (token) {
-            try {
-                const decodedToken = jwtDecode(token);
-                const currentTime = Date.now() / 1000;
-                if (decodedToken.exp < currentTime) {
-                    // Token expired
-                    navigate('/login?returnUrl=/checkout');
-                } else {
-                    // Token is valid, continue with checkout
-                }
-            } catch (error) {
-                // If error in decoding, token might be invalid
-                navigate('/registration?returnUrl=/checkout');
-            }
-        } else if (customerId) {
-            // CustomerId is present, treat as a valid session for checkout
-            // No additional action needed here, continue with checkout
+        const customerId = localStorage.getItem('customerId') || sessionStorage.getItem('customerId')
+        if (!isLoggedIn) {
+            navigate('/registration?returnUrl=/checkout/1');
+        } else if (!customerId) {
+            navigate('/login?returnUrl=/checkout/1');
         } else {
-            // No token and no customerId found, redirect to registration
-            navigate('/registration?returnUrl=/checkout');
+            // Proceed with checkout logic
         }
-    }, [navigate]);
+    }, [isLoggedIn, customerId, navigate]);
+
+
 
 
 
 
     const handleCheckout = async () => {
-        console.log('checking out')
         setIsLoading(true); // Turn on loading state
         const customerId = localStorage.getItem('customerId')
         const customerEmail = localStorage.getItem('userEmail')
@@ -203,7 +187,6 @@ const CheckoutPage = () => {
             address: `${shippingDetails.firstName} ${shippingDetails.lastName}, ${shippingDetails.address}, ${shippingDetails.city}, ${shippingDetails.state}, ${shippingDetails.zip}, ${shippingDetails.country}`,
             createdBy: localStorage.getItem('customerId'),
         })
-        console.log(orderData)
         setIsLoading(false)
         handleNext();
     }
@@ -216,6 +199,7 @@ const CheckoutPage = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'include',
                 body: JSON.stringify(orderData),
             });
 
@@ -243,6 +227,7 @@ const CheckoutPage = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'include',
                 body: JSON.stringify(data)
             });
             setIsLoading(false);
@@ -260,6 +245,7 @@ const CheckoutPage = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'include',
                 body: JSON.stringify(data)
             });
             setIsLoading(false);
@@ -288,7 +274,6 @@ const CheckoutPage = () => {
     const handleShippingDetailsSubmit = (details) => {
         setFormData(details);
         setShippingDetails(details);
-        console.log(formData)
     };
 
     const handleShippingOptions = (options) => {
@@ -340,10 +325,7 @@ const CheckoutPage = () => {
 
                     <div>
                         <div>
-                            {/*<div style={{ textAlign: 'center', marginBottom: '20px' }}>
-                                    <img src={BrandIcon} alt="Brand Logo" style={{ width: '100px' }} loading='lazy' />
-                                </div>*/}
-                            {/* Stepper */}
+
                             <Stepper activeStep={activeStep} alternativeLabel sx={stepperStyles}>
                                 {steps.map((label) => (
                                     <Step key={label}>

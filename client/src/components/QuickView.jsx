@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, Box, Typography, Button, Grid, Tabs, Tab, Select, MenuItem, InputLabel, CircularProgress, FormControl, IconButton, Tooltip } from '@mui/material';
 import { useCart } from './CartContext';
 import '../Styles/QuickView.css'
@@ -16,12 +16,13 @@ const modalStyle = {
     bgcolor: 'background.paper',
     boxShadow: 24,
     p: 4,
+    borderRadius: 1
 };
 
 
 
 
-const QuickView = ({ productId, open, handleClose, products, getRelatedProducts }) => {
+const QuickView = ({ productId, open, handleClose, products }) => {
     const [productDetails, setProductDetails] = useState(null);
     const [selectedTab, setSelectedTab] = useState(0);
     const [selectedImage, setSelectedImage] = useState('');
@@ -98,7 +99,7 @@ const QuickView = ({ productId, open, handleClose, products, getRelatedProducts 
 
 
     const handleMouseMove = (e) => {
-        console.log('throttling')
+
         const target = e.target;
         const targetRect = target.getBoundingClientRect();
         const x = e.pageX - targetRect.left - window.scrollX + 40;
@@ -124,18 +125,26 @@ const QuickView = ({ productId, open, handleClose, products, getRelatedProducts 
         } else if (productDetails) {
             // Return the complex JSX for when productDetails are present
             return (
-                <Grid container spacing={2}>
+                <Grid container spacing={2} style={{ minWidth: '280px', }}>
                     <Grid container spacing={2}>
                         <Grid item xs={12} sm={5} md={6}>
 
-                            <Box className='quickview-img-container' sx={{ display: 'flex', flexDirection: { xs: 'row', sm: 'column' } }}>
+                            <Box className='quickview-img-container' sx={{ display: 'flex', flexDirection: { xs: 'row', sm: 'column' }, }}>
                                 {/* Thumbnails */}
                                 <Box>
-                                    <Box sx={{ display: 'flex', }}>
+                                    <Box sx={{ display: 'flex', ml: { sm: 3, md: 0 }, }}>
                                         {productDetails.imgSource.map((image, i) => (
-                                            <Box key={'thumbnail:' + i} className='quickview-thumbnail-container'>
+                                            <Box
+                                                key={'thumbnail:' + i}
+                                                className='quickview-thumbnail-container'
+                                                sx={{
+                                                    visibility: {
+                                                        xs: i < 3 ? 'visible' : 'hidden', // Show the first 3 on extra-small screens
+                                                        sm: 'visible', // Show on small screens and above
+                                                    },
+                                                }}
+                                            >
                                                 <img
-
                                                     className='quickview-thumbnail'
                                                     src={image.url}
                                                     alt={`${productDetails.name} thumbnail ${i}`}
@@ -146,18 +155,24 @@ const QuickView = ({ productId, open, handleClose, products, getRelatedProducts 
                                         ))}
                                     </Box>
 
+
+
                                     {/* Main Image displayed */}
                                     <Box
                                         className="image-container"
                                         onMouseEnter={() => setShowLens(true)}
                                         onMouseMove={handleMouseMoveThrottled}
                                         onMouseLeave={() => setShowLens(false)}
+                                        display={'flex'}
+                                        justifyContent={'center'}
+
                                     >
                                         <img
+                                            className='quickview-main-image'
                                             src={selectedImage}
                                             alt={productDetails.name}
                                             key={productDetails.name}
-                                            style={{ maxWidth: '300px', height: 'auto' }}
+
                                             loading='lazy'
                                         />
                                     </Box>
@@ -202,14 +217,14 @@ const QuickView = ({ productId, open, handleClose, products, getRelatedProducts 
                         </Grid>
                         <Grid item xs={12} sm={7} md={6}>
                             <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <Typography sx={{ width: '90%', fontSize: 22, ml: { xs: 5, sm: 3, md: 0 } }} variant="h6" className='quickview-title'>{productDetails.name}</Typography>
+                                <Typography sx={{ width: '90%', fontSize: { xs: 18, sm: 22 }, ml: { xs: 5, sm: 3, md: 0 } }} variant="h6" className='quickview-title'>{productDetails.name}</Typography>
 
                                 <IconButton className='quickview-close-button' onClick={handleClose}>
 
-                                    <svg height='45' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
-                                        <path fill="inherit" d="M880 112H144c-17.7 0-32 14.3-32 32v736c0 17.7 14.3 32 32 32h736c17.7 0 32-14.3 32-32V144c0-17.7-14.3-32-32-32zm-40 728H184V184h656v656z" />
+                                    <svg height='45' width='45' fill='#282F48' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+                                        <path fill='#282F48' d="M880 112H144c-17.7 0-32 14.3-32 32v736c0 17.7 14.3 32 32 32h736c17.7 0 32-14.3 32-32V144c0-17.7-14.3-32-32-32zm-40 728H184V184h656v656z" />
                                         <path fill="white" d="M184 840h656V184H184v656zm163.9-473.9A7.95 7.95 0 0 1 354 353h58.9c4.7 0 9.2 2.1 12.3 5.7L512 462.2l86.8-103.5c3-3.6 7.5-5.7 12.3-5.7H670c6.8 0 10.5 7.9 6.1 13.1L553.8 512l122.3 145.9c4.4 5.2.7 13.1-6.1 13.1h-58.9c-4.7 0-9.2-2.1-12.3-5.7L512 561.8l-86.8 103.5c-3 3.6-7.5 5.7-12.3 5.7H354c-6.8 0-10.5-7.9-6.1-13.1L470.2 512 347.9 366.1z" />
-                                        <path fill="#333" d="M354 671h58.9c4.8 0 9.3-2.1 12.3-5.7L512 561.8l86.8 103.5c3.1 3.6 7.6 5.7 12.3 5.7H670c6.8 0 10.5-7.9 6.1-13.1L553.8 512l122.3-145.9c4.4-5.2.7-13.1-6.1-13.1h-58.9c-4.8 0-9.3 2.1-12.3 5.7L512 462.2l-86.8-103.5c-3.1-3.6-7.6-5.7-12.3-5.7H354c-6.8 0-10.5 7.9-6.1 13.1L470.2 512 347.9 657.9A7.95 7.95 0 0 0 354 671z" />
+                                        <path fill='#282F48' d="M354 671h58.9c4.8 0 9.3-2.1 12.3-5.7L512 561.8l86.8 103.5c3.1 3.6 7.6 5.7 12.3 5.7H670c6.8 0 10.5-7.9 6.1-13.1L553.8 512l122.3-145.9c4.4-5.2.7-13.1-6.1-13.1h-58.9c-4.8 0-9.3 2.1-12.3 5.7L512 462.2l-86.8-103.5c-3.1-3.6-7.6-5.7-12.3-5.7H354c-6.8 0-10.5 7.9-6.1 13.1L470.2 512 347.9 657.9A7.95 7.95 0 0 0 354 671z" />
                                     </svg>
                                 </IconButton>
                             </Box>
@@ -226,16 +241,17 @@ const QuickView = ({ productId, open, handleClose, products, getRelatedProducts 
 
                             }}>
                                 < TabPanel value={selectedTab} index={0} >
-                                    <Box sx={{ overflow: 'auto', height: '240px', border: .1, px: 2 }}>
+
+                                    <Box sx={{ overflow: 'auto', height: '200px', border: .1, p: 2, boxShadow: ' 1px 4px 6px -1px rgba(0, 0, 0, 0.2);' }}>
 
                                         <span className='quickview-description'>{productDetails.description}</span>
                                     </Box>
                                 </TabPanel>
                                 <TabPanel value={selectedTab} index={1}>
                                     {relatedProducts.map((product) => (
-                                        <Box className='quickview-related-container' key={product._id}> {/* Use `_id` or appropriate key property */}
+                                        <Box onClick={() => setProductDetails(product)} className='quickview-related-container' key={product._id}> {/* Use `_id` or appropriate key property */}
                                             <img className='quickview-related-img' alt='related' src={product.imgSource[0].url} loading='lazy' />
-                                            <Box variant='button' onClick={() => setProductDetails(product)}>
+                                            <Box variant='button'>
                                                 <Tooltip title={product.name} arrow>
                                                     <Box className='quickview-related-name'>{product.name}</Box>
                                                 </Tooltip>
@@ -255,7 +271,7 @@ const QuickView = ({ productId, open, handleClose, products, getRelatedProducts 
                             </Box>
                             {/* Quantity Selector */}
                             <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'start', flexDirection: { xs: 'column', sm: 'row' } }}>
-                                <FormControl sx={{ ml: 3, mb: 1 }} >
+                                <FormControl sx={{ ml: 3, mb: 1, mr: 4 }} >
                                     <InputLabel>Qty</InputLabel>
                                     <Select
                                         sx={{ width: '100px', borderRadius: 0 }}
@@ -290,7 +306,7 @@ const QuickView = ({ productId, open, handleClose, products, getRelatedProducts 
                                 </FormControl>
                             </Box>
                             <Box>
-                                <Button variant="outlined" className='shop-button-cart' sx={{ ml: 3, border: 1, borderRadius: 0, letterSpacing: 2, fontSize: 12, color: 'white', backgroundColor: '#283047', borderColor: '#283047', borderWidth: 1.5, transition: 'all 0.3s', '&:hover': { backgroundColor: '#FE6F49', color: 'white', borderColor: '#FE6F49', transform: 'scale(1.05)' } }} onClick={() => addToCart(productDetails, quantity)}>
+                                <Button variant="outlined" className='shop-button-cart' sx={{ ml: 3, border: 1, borderRadius: 0, height: 55, letterSpacing: 2, fontSize: 12, color: 'white', backgroundColor: '#283047', borderColor: '#283047', borderWidth: 1.5, transition: 'all 0.3s', '&:hover': { backgroundColor: '#FE6F49', color: 'white', borderColor: '#FE6F49', transform: 'scale(1.05)' } }} onClick={() => addToCart(productDetails, quantity)}>
                                     Add to Cart
                                 </Button>
 

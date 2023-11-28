@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
-import { TextField, Select, MenuItem, Snackbar, FormControl, InputLabel, Box, CircularProgress, Typography, Card, CardContent } from '@mui/material';
+import { TextField, Select, MenuItem, Snackbar, FormControl, InputLabel, Box, CircularProgress, Typography, Card, CardContent, Button } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
+import OrderDetails from './OrderDetails';
+
 
 const OrderList = () => {
     const [orders, setOrders] = useState([]);
@@ -11,14 +13,20 @@ const OrderList = () => {
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [filteredOrders, setFilteredOrders] = useState([]);
     const [loading, setLoading] = useState(true);
-
+    const [selectedOrder, setSelectedOrder] = useState(null);
 
     useEffect(() => {
-        fetch('http://localhost:8000/api/order')
+
+        fetch('http://localhost:8000/api/order', {
+            credentials: 'include',
+        })
             .then((response) => response.json())
+
             .then((data) => {
+
                 setOrders(data);
                 setLoading(false);  // Set loading to false once data is fetched
+                filterOrders(data);
             })
             .catch((error) => {
                 console.error('Error fetching orders:', error);
@@ -26,28 +34,75 @@ const OrderList = () => {
             });
     }, []);
 
+    // Function to handle order deletion
+    const handleDeleteOrder = (orderId) => {
+        const isConfirmed = window.confirm('Are you sure you want to delete this order? - It will be permanently deleted');
+        if (isConfirmed) {
+            fetch(`http://localhost:8000/api/order/${orderId}`, {
+                method: 'DELETE',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+                .then((response) => response.json())
+                .then(() => {
+                    // Update orders state to remove the deleted order
+                    const updatedOrders = orders.filter(order => order._id !== orderId);
+                    setOrders(updatedOrders);
+                    setFilteredOrders(updatedOrders);
 
-
+                    setSnackbarMessage('Order deleted successfully');
+                    setSnackbarOpen(true);
+                })
+                .catch((error) => {
+                    console.error('Error deleting order:', error);
+                    setSnackbarMessage('Error deleting order');
+                    setSnackbarOpen(true);
+                });
+        };
+    };
     // Use this effect to filter and update filteredOrders
     useEffect(() => {
         filterOrders();
 
-    }, [searchKeyword, filterCriteria]);
+    }, [searchKeyword, filterCriteria,]);
 
-    const handleSearch = () => {
-        filterOrders();
-    };
 
-    const filterOrders = () => {
-        const filtered = orders.filter((order) => {
+
+
+
+    const filterOrders = (fetchedOrders = orders) => {
+        const filtered = fetchedOrders.filter((order) => {
+            const keyword = searchKeyword.toLowerCase();
+            // Combine all product names into a single string
+
+
+            // Combine all product names into a single string
+            const productNames = order.products
+                .map((product) => product.name.toLowerCase())
+                .join(' ');
+
+
             return (
                 (filterCriteria === '' || order.orderStatus === filterCriteria) &&
-                (!searchKeyword || searchKeyword === '' ||
-                    order._id.toLowerCase().includes(searchKeyword.toLowerCase()))
+                (keyword === '' ||
+                    order._id.toLowerCase().includes(keyword) ||
+                    order.customer.toLowerCase().includes(keyword) ||
+                    order.orderDate.toLowerCase().includes(keyword) ||
+                    order.orderStatus.toLowerCase().includes(keyword) ||
+                    order.address?.toLowerCase().includes(keyword) ||
+                    order.shippingMethod.provider?.toLowerCase().includes(keyword) ||
+
+                    order.products.productId?.toString().includes(keyword) ||
+                    productNames.includes(keyword)
+                )
             );
         });
         setFilteredOrders(filtered);
     };
+
+
 
 
 
@@ -75,7 +130,7 @@ const OrderList = () => {
                         }
                     });
                     setOrders(updatedOrders);
-
+                    setFilteredOrders(updatedOrders)
                     // Show a success message to the user
                     setSnackbarMessage(`Order status updated to ${updatedOrder.orderStatus}`);
                     setSnackbarOpen(true);
@@ -90,8 +145,6 @@ const OrderList = () => {
         }
     };
 
-    console.log(searchKeyword)
-
 
 
 
@@ -99,11 +152,18 @@ const OrderList = () => {
         setSnackbarOpen(false);
     };
 
+    const handleDetailsClick = (order) => {
+        setSelectedOrder(order);
+    };
+
+
+
+
     const columns = [
         {
             field: '_id',
             headerName: 'Order ID',
-            width: 90,
+            flex: 2,
             renderCell: (params) => (
                 <Tooltip title={params.value}>
                     <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
@@ -113,11 +173,10 @@ const OrderList = () => {
             ),
         },
 
-        { field: 'orderNumber', headerName: 'Number', width: 90 },
         {
             field: 'customer',
             headerName: 'Customer ID',
-            width: 150,
+            flex: 1.5,
             renderCell: (params) => (
                 <Tooltip title={params.value}>
                     <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
@@ -130,34 +189,40 @@ const OrderList = () => {
         {
             field: 'orderDate',
             headerName: 'Order Date',
-            width: 125,
+            flex: 1,
             valueFormatter: ({ value }) => new Date(value).toLocaleDateString(),
         },
-        //{
-        //    field: 'products',
-        //    headerName: 'Product',
-        //    width: 125,
-        //    renderCell: (params) => <div>{params.row.products[0].product}</div>
-        //},
-        { field: 'totalAmount', headerName: 'Order Total', width: 100 },
         {
-            field: 'shippingAddress',
-            headerName: 'Shipping Address',
-            width: 250,
-            valueFormatter: ({ value }) =>
-                `${value.address}, ${value.city}, ${value.state}, ${value.zipCode}, ${value.country}`,
-            renderCell: (params) => (
-                <Tooltip title={`${params.value.street}, ${params.value.city}, ${params.value.state}, ${params.value.zipCode}, ${params.value.country}`}>
-                    <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                        {params.value.street}, {params.value.city}, {params.value.state}, {params.value.zipCode}, {params.value.country}
-                    </div>
-                </Tooltip>
-            ),
+            field: 'address',
+            headerName: 'Shipping To',
+            flex: 1.5,
+
         },
+        {
+            field: 'actions',
+            headerName: 'Actions',
+            flex: 1.5,
+            renderCell: (params) => (
+                <Box>
+                    <Button sx={{ fontSize: 10, m: 1, p: 1 }} variant="outlined" color="secondary" onClick={() => handleDeleteOrder(params.row._id)}>
+                        Delete
+                    </Button>
+                    <Button
+                        sx={{ fontSize: 10, p: 1 }}
+                        variant="outlined"
+                        onClick={() => handleDetailsClick(params.row)}
+                    >
+                        Details
+                    </Button>
+                </Box>
+            )
+        },
+
+
         {
             field: 'orderStatus',
             headerName: 'Order Status',
-            width: 170,
+            flex: 1.5,
             renderCell: (params) => (
                 <Select
                     fullWidth
@@ -166,24 +231,10 @@ const OrderList = () => {
                     onChange={(e) => handleOrderStatusChange(e, params.row._id)}
 
                 >
-                    <MenuItem value="Pending">
+                    <MenuItem value="Pending" >
 
                         <svg color='blue' xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M17 12c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm1.65 7.35L16.5 17.2V14h1v2.79l1.85 1.85-.7.71zM18 3h-3.18C14.4 1.84 13.3 1 12 1s-2.4.84-2.82 2H6c-1.1 0-2 .9-2 2v15c0 1.1.9 2 2 2h6.11a6.743 6.743 0 0 1-1.42-2H6V5h2v3h8V5h2v5.08c.71.1 1.38.31 2 .6V5c0-1.1-.9-2-2-2zm-6 2c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z" /></svg>
                         Pending
-                    </MenuItem>
-                    <MenuItem value="Processing">
-                        <svg height='24' version="1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" enableBackground="new 0 0 48 48">
-                            <g fill="#9C27B0">
-                                <polygon points="31,8 42.9,9.6 33.1,19.4" />
-                                <polygon points="17,40 5.1,38.4 14.9,28.6" />
-                                <polygon points="8,17 9.6,5.1 19.4,14.9" />
-                                <path d="M9.3,21.2L5.1,22C5,22.7,5,23.3,5,24c0,4.6,1.6,9,4.6,12.4l3-2.6C10.3,31.1,9,27.6,9,24 C9,23.1,9.1,22.1,9.3,21.2z" />
-                                <path d="M24,5c-5.4,0-10.2,2.3-13.7,5.9l2.8,2.8C15.9,10.8,19.7,9,24,9c0.9,0,1.9,0.1,2.8,0.3l0.7-3.9 C26.4,5.1,25.2,5,24,5z" />
-                                <path d="M38.7,26.8l4.2-0.8c0.1-0.7,0.1-1.3,0.1-2c0-4.4-1.5-8.7-4.3-12.1l-3.1,2.5c2.2,2.7,3.4,6.1,3.4,9.5 C39,24.9,38.9,25.9,38.7,26.8z" />
-                                <path d="M34.9,34.3C32.1,37.2,28.3,39,24,39c-0.9,0-1.9-0.1-2.8-0.3l-0.7,3.9c1.2,0.2,2.4,0.3,3.5,0.3 c5.4,0,10.2-2.3,13.7-5.9L34.9,34.3z" />
-                                <polygon points="40,31 38.4,42.9 28.6,33.1" />
-                            </g>
-                        </svg>Processing
                     </MenuItem>
                     <MenuItem value="Shipped">
                         <svg height='24' version="1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" enableBackground="new 0 0 48 48">
@@ -201,7 +252,7 @@ const OrderList = () => {
                             <polygon fill="#DCEDC8" points="21.8,13.8 13.9,21.7 10.2,17.9 8,20.1 13.9,26 24,15.9" />
                         </svg>Shipped
                     </MenuItem>
-                    <MenuItem value="Delivered">
+                    <MenuItem value="Delivered" >
                         <svg height='24' version="1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" enableBackground="new 0 0 48 48">
                             <polygon fill="#43A047" points="40.6,12.1 17,35.7 7.4,26.1 4.6,29 17,41.3 43.4,14.9" />
                         </svg> Delivered
@@ -228,7 +279,8 @@ const OrderList = () => {
     return (
 
         <Box sx={{ m: 3, py: 5 }}>
-            <Typography variant="h4" gutterBottom>Order List</Typography>
+            <Typography variant="h4" gutterBottom>Order List </Typography>
+
             <Card variant="outlined" sx={{ mb: 3 }}>
                 <CardContent sx={{ py: 2 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -276,7 +328,7 @@ const OrderList = () => {
             {
                 filteredOrders.length === 0 && !loading && <Typography variant='h4' sx={{ textAlign: "center" }} >No orders found based on the current filter/search criteria.</Typography>
             }
-
+            {selectedOrder && <OrderDetails order={selectedOrder} />}
         </Box>
 
     );

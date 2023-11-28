@@ -1,0 +1,118 @@
+/* src/AboutUs.css */
+
+
+.about-container {
+
+    padding: 40px;
+    background-color: #F7F6F1;
+    margin-top: -80px;
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.about-container h1 {
+    color: #26828A;
+    margin: 10px;
+}
+
+.slogan {
+    color: #424242;
+    font-style: italic;
+}
+
+section {
+    margin-top: 20px;
+}
+
+section h2 {
+    color: #26828A;
+}
+
+section p {
+    color: #424242;
+    line-height: 1.6;
+}
+
+
+/* Additional CSS in src/AboutUs.css */
+
+.product-gallery {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.product-display {
+    display: flex;
+    justify-content: space-around;
+}
+
+.product-display img {
+    max-width: 200px;
+    height: auto;
+    border-radius: 10px;
+    margin: 20px;
+}
+
+.about-product-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+
+
+
+
+
+.gallery-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.gallery-controls button {
+    margin: 0 10px;
+    padding: 5px 10px;
+    background-color: #26828A;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.gallery-controls span {
+    font-weight: bold;
+}
+
+/*
+.faq-accordion {
+    border-top: 2px solid #2e7d32;
+}
+
+.faq-item {
+    border-bottom: 1px solid #ddd;
+}
+
+.fax-button-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.faq-question {
+    cursor: pointer;
+    background-color: #f4f4f4;
+    color: #333;
+    padding: 10px;
+    width: 100%;
+    text-align: left;
+    border: none;
+    outline: none;
+    transition: background-color 0.3s ease;
+}
+
+.faq-question:hover {
+    background-color: #e0e0e0;
+}*/

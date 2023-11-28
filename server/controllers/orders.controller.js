@@ -1,5 +1,10 @@
 const Orders = require('../models/orders.model')
 const Product = require('../models/products.model')
+const moment = require('moment')
+
+
+
+
 module.exports = {
 
 
@@ -114,12 +119,133 @@ module.exports = {
             .then(data => { res.json(data) })
             .catch(err => res.json(err))
     },
+
+
     deleteOne: (req, res) => {
         Orders.deleteOne({ _id: req.params.id })
             .then(data => {
                 res.json(data)
             }).catch(err => res.json(err))
     },
+
+
+
+
+    getTopSellingProducts: async (req, res) => {
+        try {
+            const { limit } = req.query; // Get the limit from the query parameters
+
+            // Validate the limit value to ensure it's a positive integer (you can add more validation as needed)
+            if (!limit || isNaN(limit) || parseInt(limit) <= 0) {
+                return res.status(400).json({ error: 'Invalid limit value' });
+            }
+            // Calculate the date 6 months ago from today
+            const sixMonthsAgo = moment().subtract(6, 'months').toDate();
+
+            // MongoDB aggregation pipeline
+            const bestSellers = await Orders.aggregate([
+                {
+                    $match: {
+                        orderDate: { $gte: sixMonthsAgo }, // Filter orders from the last 6 months
+                    },
+                },
+                {
+                    $unwind: '$products', // Split orders into separate documents for each product
+                },
+                {
+                    $group: {
+                        _id: '$products.productId', // Group by product ID
+                        productName: { $first: '$products.name' }, // Get the product name
+                        totalQuantitySold: { $sum: '$products.quantity' }, // Sum the quantity sold
+                    },
+                },
+                {
+                    $sort: {
+                        totalQuantitySold: -1, // Sort by total quantity sold in descending order
+                    },
+                },
+                {
+                    $limit: parseInt(limit), // Limit the result to the top 3 best-selling products
+                },
+            ]);
+
+            // Check if the product name is null for any items and retrieve it from Products
+            for (const bestSeller of bestSellers) {
+                if (!bestSeller.productName) {
+                    const productInfo = await Product.findById(bestSeller._id);
+                    if (productInfo) {
+                        bestSeller.productName = productInfo.name;
+                    }
+                }
+            }
+
+            res.json(bestSellers);
+        } catch (error) {
+            console.error('Error getting best sellers:', error);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    },
+
+
+
+    getAmountSoldPerMonthLast6Months: async (req, res) => {
+        try {
+            // Calculate the date 6 months ago from the current date
+            const sixMonthsAgo = new Date();
+            sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+            // Use MongoDB Aggregation to group orders by month and product
+            const result = await Orders.aggregate([
+                {
+                    $match: {
+                        orderDate: { $gte: sixMonthsAgo }, // Filter orders in the last 6 months
+                    },
+                },
+                {
+                    $unwind: '$products', // Split orders into separate documents for each product
+                },
+                {
+                    $group: {
+                        _id: {
+                            month: { $month: '$orderDate' }, // Group by month
+                            productId: '$products.productId', // Group by product ID
+                        },
+                        totalAmount: { $sum: { $multiply: ['$products.price', '$products.quantity'] } },
+                        totalQuantity: { $sum: '$products.quantity' },
+                    },
+                },
+                {
+                    $sort: { '_id.month': 1 }, // Sort by month in ascending order
+                },
+                {
+                    $project: {
+                        month: '$_id.month', // Include month in the result
+                        productId: '$_id.productId', // Include product ID in the result
+                        totalAmount: 1, // Include total amount in the result
+                        totalQuantity: 1, // Include total quantity in the result
+                        _id: 0, // Exclude the default _id field
+                    },
+                },
+            ]);
+            for (const results of result) {
+                if (!results.name) {
+                    const productInfo = await Product.findById(results.productId);
+                    if (productInfo) {
+                        results.name = productInfo.name;
+                    }
+                }
+            }
+            console.log(result)
+            res.json(result);
+        } catch (error) {
+            console.error('Error getting amount sold per month:', error);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    },
+
+
+
+
 
 
 }

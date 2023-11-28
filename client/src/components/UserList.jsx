@@ -1,105 +1,135 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
-import AddAdminModal from '../models/AddAdminModal';
+import EditCustomerModal from '../models/EditCustomerModal';
 
 const UserList = () => {
-    const [admins, setAdmins] = useState([]);
+    const [editCustomerModalOpen, setEditCustomerModalOpen] = useState(false);
+    const [selectedCustomer, setSelectedCustomer] = useState(null);
+
     const [customers, setCustomers] = useState([]);
-    const [addAdminModalOpen, setAddAdminModalOpen] = useState(false);
-    const [editAdminModalOpen, setEditAdminModalOpen] = useState(false);
-    const [adminDataForEdit, setAdminDataForEdit] = useState(null);
+
 
     useEffect(() => {
-        // Fetch admin data from your backend API
-        fetch('http://localhost:8000/api/staff') // Replace with your admin endpoint
-            .then((response) => response.json())
-            .then((data) => {
-                // Update the state with the retrieved admin data
-                setAdmins(data);
-            })
-            .catch((error) => {
-                console.error('Error fetching admin data:', error);
-            });
-
         // Fetch customer data from your backend API
-        fetch('http://localhost:8000/api/customer') // Replace with your customer endpoint
+        fetch('http://localhost:8000/api/customer', {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+
+
             .then((response) => response.json())
             .then((data) => {
                 // Update the state with the retrieved customer data
-                setCustomers(data);
+                setCustomers(data)
+
             })
             .catch((error) => {
                 console.error('Error fetching customer data:', error);
             });
     }, []);
 
-    const handleDeleteAdmin = (adminId) => {
-        const confirmDelete = window.confirm('Are you sure you want to delete this admin?');
+    // Derived state for admins - filter customers who are admins
+    const admins = customers.filter(customer => customer.isAdmin);
 
-        if (confirmDelete) {
-            // Send a DELETE request to your API to delete the admin with the provided adminId
-            fetch(`http://localhost:8000/api/staff/${adminId}`, {
-                method: 'DELETE',
+
+    const handleMakeAdmin = (customerId) => {
+        // Send request to backend to update the isAdmin flag
+        fetch(`http://localhost:8000/api/customer/${customerId}`, {
+            method: 'PUT', // or the appropriate method used in your backend
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            // You might need to send additional data or authentication tokens depending on your backend setup
+        })
+            .then((response) => response.json())
+            .then((updatedCustomer) => {
+                // Update the customers list in state
+                setCustomers(customers.map(customer =>
+                    customer._id === customerId ? { ...customer, isAdmin: true } : customer
+                ));
             })
-                .then((response) => {
-                    if (response.ok) {
-                        // If the admin is successfully deleted, update the state to remove the admin
-                        setAdmins((prevAdmins) => prevAdmins.filter((admin) => admin._id !== adminId));
-                    } else {
-                        // Handle error or show an error message to the user
-                        console.error('Error deleting admin:', response.statusText);
-                    }
-                })
-                .catch((error) => {
-                    console.error('Error deleting admin:', error);
-                });
-        }
+            .catch((error) => {
+                console.error('Error:', error);
+            });
     };
 
-    const handleOpenAddAdminModal = () => {
-        setAddAdminModalOpen(true);
+
+    const handleRemoveFromAdmin = (adminId) => {
+        // Send request to backend to update the isAdmin flag
+        fetch(`http://localhost:8000/api/customer/${adminId}`, {
+            method: 'PUT', // or the appropriate method used in your backend
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            // Additional data or authentication tokens might be needed
+        })
+            .then((response) => response.json())
+            .then(() => {
+                // Update the customers list in state
+                setCustomers(customers.map(customer =>
+                    customer._id === adminId ? { ...customer, isAdmin: false } : customer
+                ));
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
     };
 
-    const handleCloseAddAdminModal = () => {
-        setAddAdminModalOpen(false);
+    const handleEditCustomer = (customer) => {
+        setSelectedCustomer(customer);
+        setEditCustomerModalOpen(true);
     };
 
-    const handleOpenEditAdminModal = (admin) => {
-        setAdminDataForEdit(admin);
-        setEditAdminModalOpen(true); // Open the modal for editing
-    };
-
-    const handleCloseEditAdminModal = () => {
-        setEditAdminModalOpen(false);
-        setAdminDataForEdit(null);
-    };
+    const buttonStyles = {
+        fontSize: '10px',
+        margin: '5px',
+    }
 
     return (
-        <div>
-            <h2>Admin List</h2>
+        <div style={{ padding: 20, margin: 20 }}>
+            <h2 style={{ margin: 10 }}>Admin List</h2>
             <DataGrid
+
                 rows={admins}
                 columns={[
-                    { field: 'username', headerName: 'Admin Name', flex: 1 },
+                    {
+                        field: 'fullName',
+                        headerName: 'Full Name',
+                        flex: 1,
+                        renderCell: (params) => (
+                            <div>{params.row.firstName} {params.row.lastName}</div>
+                        )
+                    },
                     { field: 'email', headerName: 'Email', flex: 1 },
-                    { field: '_id', headerName: 'ID', flex: 1 },
-                    { field: 'createdAt', headerName: 'Registration Date', flex: 1 },
+                    { field: '_id', headerName: 'ID', flex: 1.25 },
+                    { field: 'createdAt', headerName: 'Registration Date', flex: 0.75, valueFormatter: ({ value }) => new Date(value).toLocaleDateString(), },
                     {
                         field: 'actions',
                         headerName: 'Actions',
-                        flex: 1,
+                        flex: 1.5,
                         renderCell: (params) => (
                             <div>
-                                <Button onClick={() => handleOpenEditAdminModal(params.row)}>
-                                    Edit
-                                </Button>
                                 <Button
+                                    sx={buttonStyles}
                                     variant="outlined"
                                     color="secondary"
-                                    onClick={() => handleDeleteAdmin(params.row._id)}
+                                    onClick={() => handleRemoveFromAdmin(params.row._id)}
                                 >
-                                    Delete
+                                    Remove Admin
+                                </Button>
+                                <Button
+                                    sx={buttonStyles}
+                                    variant="outlined"
+                                    color="error"
+
+                                >
+                                    Delete User
                                 </Button>
                             </div>
                         ),
@@ -109,40 +139,64 @@ const UserList = () => {
                 disableSelectionOnClick
                 getRowId={(row) => row._id}
             />
-
-            <Button variant="contained" color="primary" onClick={handleOpenAddAdminModal}>
-                Add Admin
-            </Button>
-
-            <AddAdminModal
-                open={addAdminModalOpen}
-                onClose={handleCloseAddAdminModal}
-                admins={admins}
-                setAdmins={setAdmins}
-            />
-
-            <AddAdminModal
-                open={editAdminModalOpen} // Open the modal for editing
-                onClose={handleCloseEditAdminModal}
-                adminDataForEdit={adminDataForEdit} // Pass the admin data for editing
-                admins={admins}
-                setAdmins={setAdmins}
-            />
-
-            <h2>Customer List</h2>
+            <h2 style={{ margin: 10 }}>Customer List</h2>
             <DataGrid
                 rows={customers}
                 columns={[
-                    { field: `firstName`, headerName: 'First Name', flex: 1 },
-                    { field: `lastName`, headerName: 'Last Name', flex: 1 },
+                    {
+                        field: 'fullName',
+                        headerName: 'Full Name',
+                        flex: 1,
+                        renderCell: (params) => (
+                            <div>{params.row.firstName} {params.row.lastName}</div>
+                        )
+                    },
                     { field: 'email', headerName: 'Email', flex: 1 },
                     { field: '_id', headerName: 'ID', flex: 1 },
-                    { field: 'registrationDate', headerName: 'Registration Date', flex: 1 },
+                    { field: 'createdAt', headerName: 'Registration Date', flex: 1, valueFormatter: ({ value }) => new Date(value).toLocaleDateString(), },
+                    {
+                        field: 'makeAdmin',
+                        headerName: 'Make Admin',
+                        flex: 1.5,
+                        renderCell: (params) => (
+                            !params.row.isAdmin && (
+                                <>
+                                    <Button
+                                        sx={buttonStyles}
+                                        variant="outlined"
+                                        color='secondary'
+                                        onClick={() => handleEditCustomer(params.row)}
+                                    >
+                                        Edit
+                                    </Button>
+                                    <Button
+                                        sx={buttonStyles}
+                                        variant="outlined"
+                                        color="primary"
+                                        onClick={() => handleMakeAdmin(params.row._id)}
+                                    >
+                                        Make Admin
+                                    </Button>
+
+                                </>
+
+                            )
+                        ),
+                    },
                 ]}
                 autoHeight
                 disableSelectionOnClick
                 getRowId={(row) => row._id}
             />
+            {editCustomerModalOpen && (
+                <EditCustomerModal
+                    open={editCustomerModalOpen}
+                    onClose={() => setEditCustomerModalOpen(false)}
+                    customer={selectedCustomer}
+                    updateCustomerList={setCustomers}
+                />
+            )}
+
         </div>
     );
 };

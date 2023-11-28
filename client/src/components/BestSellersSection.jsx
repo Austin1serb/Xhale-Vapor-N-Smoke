@@ -39,14 +39,14 @@ const BestSellersSection = () => {
 
 
     useEffect(() => {
-        console.log('firing')
+
         const observer = new IntersectionObserver((entries) => {
             const firstEntry = entries[0];
             if (firstEntry.isIntersecting && bestSellers.length === 0) {
                 fetchBestSellers();
 
             }
-        }, { threshold: 0.01 });
+        }, { threshold: 0.1 });
 
         const currentLoaderRef = loaderRef.current;
         if (currentLoaderRef) {

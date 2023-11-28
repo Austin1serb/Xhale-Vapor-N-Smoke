@@ -2,7 +2,7 @@ import { Button, CircularProgress, IconButton, TextField, Typography } from "@mu
 import { useState } from "react";
 
 // ForgotPassword.jsx
-const ForgotPassword = ({ close }) => {
+const ForgotPassword = ({ close, type }) => {
     const [email, setEmail] = useState('');
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
@@ -86,25 +86,25 @@ const ForgotPassword = ({ close }) => {
         left: '50%',
         transform: 'translate(-50%, -50%)',
         width: '300px',
-        height: '40vh',
+        height: '400px',
         backgroundColor: 'white',
         bgcolor: 'background.paper',
-        boxShadow: 24,
-        padding: '10px',
-        borderRadius: '10px',
+
+
+        borderRadius: '5px',
         border: '0.1px solid black',
     }
     return (
 
         <div style={styles}>
 
-            <Typography variant="h5" align="center" >
-                Forgot Password
+            <Typography sx={{ backgroundColor: '#0F75E0', padding: 2, color: 'white', pb: 2 }} variant="h5" align="center" >
+                {type === 'change' ? ('Reset Password') : (' Forgot Password')}
             </Typography>
-            <IconButton style={{ transform: 'translate(255px, -45px)', }} onClick={() => close(false)}>
+            <IconButton style={{ transform: 'translate(240px, -60px)', color: '#282F48' }} onClick={() => close(false)}>
 
 
-                <svg style={{ border: '1px solid black', borderRadius: '10px' }} height='40' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+                <svg height='40' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
                     <path fill="white" d="M184 840h656V184H184v656zm163.9-473.9A7.95 7.95 0 0 1 354 353h58.9c4.7 0 9.2 2.1 12.3 5.7L512 462.2l86.8-103.5c3-3.6 7.5-5.7 12.3-5.7H670c6.8 0 10.5 7.9 6.1 13.1L553.8 512l122.3 145.9c4.4 5.2.7 13.1-6.1 13.1h-58.9c-4.7 0-9.2-2.1-12.3-5.7L512 561.8l-86.8 103.5c-3 3.6-7.5 5.7-12.3 5.7H354c-6.8 0-10.5-7.9-6.1-13.1L470.2 512 347.9 366.1z" />
                     <path fill="#333" d="M354 671h58.9c4.8 0 9.3-2.1 12.3-5.7L512 561.8l86.8 103.5c3.1 3.6 7.6 5.7 12.3 5.7H670c6.8 0 10.5-7.9 6.1-13.1L553.8 512l122.3-145.9c4.4-5.2.7-13.1-6.1-13.1h-58.9c-4.8 0-9.3 2.1-12.3 5.7L512 462.2l-86.8-103.5c-3.1-3.6-7.6-5.7-12.3-5.7H354c-6.8 0-10.5 7.9-6.1 13.1L470.2 512 347.9 657.9A7.95 7.95 0 0 0 354 671z" />
                 </svg>
@@ -112,40 +112,43 @@ const ForgotPassword = ({ close }) => {
 
 
             </IconButton>
-            <div style={{ borderTop: '0.1px solid black', transform: 'translateY(-48px)', marginLeft: '-10px', marginRight: '-10px' }}>
+            <div >
             </div>
-            <Typography mb={4} mt={-3} textAlign='center' variant="body2">Send a link to reset  <br />  your password</Typography>
+            <Typography mb={4} mt={{ sm: -3, md: 0 }} textAlign='center' variant="body2">Send a link to reset  <br />  your password</Typography>
+            <div style={{ padding: 10 }}>
+                <TextField
+                    id="email"
+                    type="email"
+                    autoComplete="email"
+                    label="Email Address"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    fullWidth
+                    error={!!errors.email}
+                    helperText={errors.email || ''}
 
-            <TextField
+                />
+                <Button
+                    variant="outlined"
+                    color="secondary"
+                    fullWidth
+                    onClick={handleSubmit}
+                    disabled={isButtonDisabled || loading}
+                    type="submit"
+                    sx={{ mt: 8, height: '50px' }}
+                >
+                    {loading ? (
+                        <CircularProgress size={24} />
+                    ) : isButtonDisabled ? (
+                        `Resend Link (${countdown})`
+                    ) : (
+                        'Send Link'
+                    )}
+                </Button>
 
-                label="Email Address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                fullWidth
-                error={!!errors.email}
-                helperText={errors.email || ''}
-
-            />
-            <Button
-                variant="contained"
-                color="primary"
-                fullWidth
-                onClick={handleSubmit}
-                disabled={isButtonDisabled || loading}
-                type="submit"
-                sx={{ mt: 5, height: '50px' }}
-            >
-                {loading ? (
-                    <CircularProgress size={24} />
-                ) : isButtonDisabled ? (
-                    `Resend Link (${countdown})`
-                ) : (
-                    'Send Link'
-                )}
-            </Button>
-
-            {message && <p style={{ textAlign: 'center', color: '#30842E', marginTop: '5px' }}>{message}</p>}
+                {message && <p style={{ textAlign: 'center', color: '#30842E', marginTop: '5px' }}>{message}</p>}
+            </div>
         </div>
 
     );

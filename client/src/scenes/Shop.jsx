@@ -1,7 +1,7 @@
 
 import '../Styles/Shop.css'
 import React, { useCallback, useEffect, useState } from 'react';
-import { Box, Typography, TextField, Button, Grid, Skeleton } from '@mui/material';
+import { Box, Typography, TextField, Button, Grid, Skeleton, InputAdornment, IconButton } from '@mui/material';
 import axios from 'axios';
 import { useCart } from '../components/CartContext.jsx';
 import QuickView from '../components/QuickView';
@@ -55,7 +55,6 @@ const Shop = () => {
 
 
     const fetchProducts = (url) => {
-        console.log(filter)
         setLoading(true);
         axios.get(url)
             .then(response => {
@@ -80,10 +79,8 @@ const Shop = () => {
         setFilter(newFilter);
         setProducts([]);
         setPage(1);
-        console.log('newFilter:', newFilter)
         const url = `http://localhost:8000/api/product/paginate/?page=1&pageSize=${pageSize}&filter=${newFilter}`;
-        fetchProducts(url);
-        console.log("Fetching products with URL:", url);
+        fetchProducts(url)
 
     }, [location.search]);
 
@@ -107,7 +104,6 @@ const Shop = () => {
                         setProducts(prevProducts => [...prevProducts, ...response.data.products]);
                         setPage(prevPage => prevPage + 1);
                         setLoadingMore(false);
-                        console.log(products)
                     })
                     .catch(error => {
                         console.error("There was an error fetching more products:", error);
@@ -159,10 +155,23 @@ const Shop = () => {
         justifyContent: 'space-between'
     }
     return (
-        <Box className="shop" sx={{ padding: '20px' }}>
+        <Box className="shop" sx={{ padding: '20px', mt: -10 }}>
 
             <Box mb={4}>
-                <TextField label="Search Products" variant="outlined" value={searchTerm} onChange={handleSearchChange} fullWidth />
+                <TextField
+                    autoCorrect="off"
+                    InputProps={{
+                        endAdornment:
+                            <InputAdornment position="end" >
+
+                                <IconButton sx={{ mr: -1 }}>
+                                    {/* magnify icon */}
+                                    <svg fill='#0F75E0' xmlns="http://www.w3.org/2000/svg" height='20' viewBox="0 0 512 512"><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" /></svg>
+                                </IconButton>
+
+                            </InputAdornment>
+                    }}
+                    label="Search Products" variant="outlined" value={searchTerm} onChange={handleSearchChange} fullWidth />
             </Box>
 
 

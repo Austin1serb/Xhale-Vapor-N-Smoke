@@ -2,6 +2,10 @@ const OrdersController = require('../controllers/orders.controller')
 const express = require("express");
 const router = express.Router();
 
+
+
+router.route("/best-sellers-six-months").get(OrdersController.getAmountSoldPerMonthLast6Months);
+router.route("/best-sellers").get(OrdersController.getTopSellingProducts);
 router.route("/test").get(OrdersController.test);
 router.route('/').get(OrdersController.getAll);
 router.route('/pageinate/').get(OrdersController.getAllPaginate);
