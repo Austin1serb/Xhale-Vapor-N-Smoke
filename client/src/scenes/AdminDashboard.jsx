@@ -32,6 +32,11 @@ const AdminDashboard = () => {
     const [selectedComponent, setSelectedComponent] = useState('AdminDashboard');
     const [anchorEl, setAnchorEl] = useState(null);
     const { isLoggedIn, logout, isAdmin } = useAuth();
+
+
+
+
+
     // Function to handle menu open
     const handleMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
@@ -152,8 +157,10 @@ const AdminDashboard = () => {
                         color="inherit"
                         aria-label="menu"
                         onClick={handleSidebarToggle}
+                        sx={{ color: 'white', transition: '0.3s color ease', '&:hover': { transition: '0.3s color ease', color: '#FE6F49' } }}
+
                     >
-                        <MenuIcon />
+                        <MenuIcon sx={{ fontSize: 32 }} />
                     </IconButton>
                     <Typography variant="h6">Admin Dashboard</Typography>
                     <Box onClick={handleMenuOpen}>
@@ -161,7 +168,7 @@ const AdminDashboard = () => {
                             size="large"
                             edge="end"
                             aria-label="account of current user"
-                            sx={{ color: 'white' }}
+                            sx={{ color: 'white', transition: '0.3s color ease', '&:hover': { transition: '0.3s color ease', color: '#FE6F49' } }}
                         >
                             <AccountCircle sx={{ fontSize: '32px' }} />
                         </IconButton>

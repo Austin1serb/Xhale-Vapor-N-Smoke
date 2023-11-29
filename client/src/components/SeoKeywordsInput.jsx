@@ -62,7 +62,7 @@ const SeoKeywordsInput = ({ seoKeywords, onAddKeyword, onRemoveKeyword }) => {
                 <TextField
                     spellCheck={true}
                     label="Keywords"
-
+                    name='keywords'
                     value={newKeyword}
                     onChange={(e) => setNewKeyword(e.target.value)}
                 />

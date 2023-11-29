@@ -12,49 +12,44 @@ exports.forgotPassword = async (req, res) => {
 
     try {
         const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(400).send({ message: "User with given email doesn't exist" });
+        if (user) {
+            const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, { expiresIn: '10min' });
+            const resetLink = `${fontendDomain}reset-password/${token}`;
+
+            // Email logic
+            const transporter = nodemailer.createTransport({
+                service: 'gmail', // Or your email service provider
+                auth: {
+                    user: process.env.EMAIL_USERNAME,
+                    pass: process.env.EMAIL_PASSWORD
+                }
+            });
+
+            const mailOptions = {
+                from: process.env.EMAIL_USERNAME,
+                to: email,
+                subject: 'Password Reset Link-Herbal Zestfulness',
+                html: `<p>Please use the following link to reset your password: <a href="${resetLink}">${resetLink}</a></p>`
+            };
+
+            transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                    console.error('Error sending email:', error);
+                } else {
+                    console.log('Email sent:', info.response);
+                }
+            });
         }
 
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, { expiresIn: '10min' });
+        // Generic response
+        res.status(200).send({ message: "Password Link Sent" });
 
-
-        const resetLink = `${fontendDomain}reset-password/${token}`;
-
-        console.log(resetLink)
-        // Email logic
-        const transporter = nodemailer.createTransport({
-            service: 'gmail', // Or your email service provider
-            auth: {
-                user: process.env.EMAIL_USERNAME,
-                pass: process.env.EMAIL_PASSWORD
-            }
-        });
-
-        const mailOptions = {
-            from: process.env.EMAIL_USERNAME,
-            to: email,
-            subject: 'Password Reset Link-Herbal Zestfulness',
-            html: `<p>Please use the following link to reset your password: <a href="${resetLink}">${resetLink}</a></p>`
-        };
-
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                console.error(error);
-                res.status(500).send({ message: "Error sending email" });
-            } else {
-                console.log('Email sent: ' + info.response);
-                res.send({ message: "Password reset link has been sent to your email." });
-            }
-        });
-
-
-        res.send({ message: "Password reset link has been sent to your email." });
     } catch (error) {
-        console.error(error);
+        console.error('Internal Server Error:', error);
         res.status(500).send({ message: "Internal Server Error" });
     }
 };
+
 
 exports.resetPassword = async (req, res) => {
     const { token, password } = req.body;

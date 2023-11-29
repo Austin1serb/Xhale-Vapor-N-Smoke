@@ -1,4 +1,6 @@
 const Guest = require('../models/guest.model');
+const jwt = require('jsonwebtoken');
+
 
 exports.createGuest = async (req, res) => {
     try {

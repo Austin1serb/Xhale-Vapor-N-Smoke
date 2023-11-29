@@ -205,7 +205,7 @@ module.exports = {
                 httpOnly: true,
                 secure: false, // use secure in production
                 maxAge: 43300000/* refresh token expiry in milliseconds */,
-                sameSite: 'lax',
+                sameSite: 'Lax',
             });
 
             // Send the initial access token  to the client
@@ -264,7 +264,7 @@ module.exports = {
                     httpOnly: true,
                     secure: false,
                     maxAge: 43300000/* refresh token expiry in milliseconds */,
-                    sameSite: 'lax',
+                    sameSite: 'Lax',
                 });
 
 

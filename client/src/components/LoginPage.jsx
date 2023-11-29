@@ -39,6 +39,26 @@ const LoginPage = () => {
     const location = useLocation();
     const params = new URLSearchParams(location.search);
     const returnUrl = params.get('returnUrl') || '/';
+    const [countdown, setCountdown] = useState(30);
+    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+    const startCountdown = () => {
+        setIsButtonDisabled(true);
+        setCountdown(30);
+
+        const interval = setInterval(() => {
+            setCountdown((currentCountdown) => {
+                if (currentCountdown <= 1) {
+                    clearInterval(interval);
+                    setIsButtonDisabled(false);
+                    return 0;
+                }
+                return currentCountdown - 1;
+            });
+        }, 1000);
+    };
+
+
+
 
     const shouldShowGuestCheckout = () => {
         return returnUrl && returnUrl.includes('/checkout');
@@ -174,6 +194,7 @@ const LoginPage = () => {
 
                 <TextField
                     id="email"
+                    name="email"
                     autoComplete='email'
                     type='email'
                     label="Email"
@@ -187,6 +208,7 @@ const LoginPage = () => {
                 />
                 <TextField
                     id="password"
+                    name="password"
                     autoComplete="current-password"
                     label="Password"
                     type={showPassword ? 'text' : 'password'}
@@ -212,12 +234,17 @@ const LoginPage = () => {
                     }}
                 />
 
-                <Checkbox
-                    checked={rememberMe}
-                    onChange={() => setRememberMe(!rememberMe)} // Toggle 'rememberMe' state
-                    color="primary"
-                />
-                <label>Remember Me</label>
+
+                <label id="rememberMe" name="rememberMe" >
+                    <Checkbox
+                        id="rememberMe"
+                        name="rememberMe"
+                        label='WDWWD'
+                        checked={rememberMe}
+                        onChange={() => setRememberMe(!rememberMe)} // Toggle 'rememberMe' state
+                        color="primary"
+                    />Remember Me
+                </label>
 
                 {loading ? (
                     <CircularProgress />
@@ -256,7 +283,12 @@ const LoginPage = () => {
 
             >
                 <div >
-                    <ForgotPassword close={setForgotPasswordOpen} />
+                    <ForgotPassword
+                        close={setForgotPasswordOpen}
+                        startCountdown={startCountdown}
+                        isButtonDisabled={isButtonDisabled}
+                        countdown={countdown}
+                    />
                 </div>
             </Modal>
         </div>

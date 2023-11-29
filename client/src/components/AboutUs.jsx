@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import '../Styles/AboutUs.css';
 import { Accordion, AccordionDetails, AccordionSummary, Button, CircularProgress } from '@mui/material';
-import QuickView from './QuickView';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import brandIcon from '../assets/brandIconSmall.webp'
 const AboutUs = () => {
+    //lazy load imports
+    const QuickView = React.lazy(() => import('./QuickView'));
+
+
 
     const [bestSellers, setBestSellers] = useState([]);
     const [isLoading, setIsLoading] = useState(false);

@@ -12,8 +12,6 @@ const GuestCheckoutPage = () => {
         const customerId = "guest-" + uuidv4(); // Generate a UUID
         localStorage.setItem('customerId', customerId); // Store  in localStorage
 
-
-
         navigate('/checkout/1');
     };
 

@@ -4,9 +4,10 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Box, Typography, TextField, Button, Grid, Skeleton, InputAdornment, IconButton } from '@mui/material';
 import axios from 'axios';
 import { useCart } from '../components/CartContext.jsx';
-import QuickView from '../components/QuickView';
 import { useLocation } from 'react-router-dom';
 
+
+const QuickView = React.lazy(() => import('../components/QuickView'));
 
 const ProductSkeleton = ({ count }) => (
 
@@ -19,7 +20,8 @@ const ProductSkeleton = ({ count }) => (
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                height: '300px',
+                height: '321px',
+                width: '335px',
                 justifyContent: 'space-between'
             }}>
                 <Skeleton variant="rectangular" width="100%" height={150} />
@@ -97,7 +99,9 @@ const Shop = () => {
                 // Fetch the next page of products
 
                 axios
-                    .get(`http://localhost:8000/api/product/paginate/?page=${page}&pageSize=${pageSize}`)
+                    .get(`http://localhost:8000/api/product/paginate/?page=${page}&pageSize=${pageSize}`,
+
+                    )
                     .then(response => {
 
                         // Append the new products to the existing products array
@@ -155,18 +159,29 @@ const Shop = () => {
         justifyContent: 'space-between'
     }
     return (
-        <Box className="shop" sx={{ padding: '20px', mt: -10 }}>
+        <Box className="shop" sx={{ padding: '20px', mt: 10 }}>
 
             <Box mb={4}>
                 <TextField
+                    name='searchBar'
                     autoCorrect="off"
                     InputProps={{
                         endAdornment:
                             <InputAdornment position="end" >
 
-                                <IconButton sx={{ mr: -1 }}>
+                                <IconButton
+                                    name='magnifying-icon'
+                                    id='magnifying-icon'
+                                    aria-label="magnifying-icon"
+
+                                    sx={{ mr: -1 }}>
                                     {/* magnify icon */}
-                                    <svg fill='#0F75E0' xmlns="http://www.w3.org/2000/svg" height='20' viewBox="0 0 512 512"><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" /></svg>
+                                    <svg
+                                        name='magnifying-icon-svg'
+                                        id='magnifying-icon-svg'
+                                        aria-label="magnifying-icon-svg"
+
+                                        fill='#0F75E0' xmlns="http://www.w3.org/2000/svg" height='20' viewBox="0 0 512 512"><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" /></svg>
                                 </IconButton>
 
                             </InputAdornment>
@@ -186,9 +201,18 @@ const Shop = () => {
                         <Grid item xs={12} sm={6} md={4} key={product._id} style={{ animationDelay: `${index * 0.2}s` }} className="product-slide-in-shop">
                             <div style={productStyles}>
 
-                                <img className="shop-img" src={product.imgSource[0].url} alt={product.name} height="150px" loading='lazy' />
+                                <img
+                                    className="shop-img"
+                                    src={`${product.imgSource[0].url.split('/upload/').join('/upload/c_fill,h_150,w_150/f_auto,q_auto:eco/')}`}
+                                    alt={product.name}
+                                    height="150px"
+                                    width='150px'
+                                    loading='lazy'
+
+                                />
+
                                 <Typography sx={{ fontWeight: 100, fontSize: 14 }} className='shop-name' mt={2}>{product.name}</Typography>
-                                <Typography variant="subtitle1" className='shop-brand' sx={{ fontSize: 12, fontWeight: 100, color: 'gray' }}>{product.brand}</Typography>
+                                <Typography variant="subtitle1" className='shop-brand' sx={{ fontSize: 12, fontWeight: 100, color: 'black' }}>{product.brand}</Typography>
                                 <Typography variant="subtitle2" sx={{ fontWeight: 100, fontSize: 16 }} className='shop-price'>${product.price.toFixed(2)}</Typography>
                                 {/*<Typography variant="body2" mt={2} noWrap>
                                 {product.description.length > 60 ? product.description.substring(0, 60) + "..." : product.description}
@@ -229,6 +253,7 @@ const Shop = () => {
             />
 
         </Box>
+
     );
 }
 

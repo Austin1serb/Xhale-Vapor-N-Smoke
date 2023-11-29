@@ -2,7 +2,7 @@ const Products = require('../models/products.model');
 const { uploadToCloudinary, deleteFromCloudinary } = require('../services/cloudinary');
 
 const createOneProd = async (req, res) => {
-    console.log(req.body);
+
     const productData = extractProductData(req.body);
     const isUpdate = Boolean(req.params.id);
 
@@ -98,7 +98,7 @@ module.exports = {
         const page = parseInt(req.query.page) || 1;
         const pageSize = parseInt(req.query.pageSize) || 10;
         const filter = req.query.filter || '';
-        console.log(filter)
+
         try {
             const skip = (page - 1) * pageSize;
             let query = {};
