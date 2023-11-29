@@ -258,8 +258,9 @@ const RegistrationPage = () => {
         justifyContent: 'center',
         alignItems: 'center',
         height: '90%',
-        marginTop: '-60px',
+        marginTop: '-40px',
         marginBottom: '40px'
+
 
     }
 
@@ -405,6 +406,7 @@ const RegistrationPage = () => {
                     />
                     <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
                         <ReCAPTCHA
+                            id='recaptcha'
                             sitekey={siteKey}
                             onChange={onRecaptchaChange}
                         />

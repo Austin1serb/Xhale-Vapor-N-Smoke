@@ -5,6 +5,8 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import { format, addDays } from 'date-fns';
 import ShippingDetailsComponent from './ShippingDetailsComponent';
 const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, back, isLoading, onShippingOptionsChange, handleCheckout, setEstimatedShipping, lastAddress, setLastAddress, shipmentOptions, setShipmentOptions, }) => {
+
+
     const [shippingOptions, setShippingOptions] = useState([]);
     const [loading, setLoading] = useState(false);
     const [shippingCost, setShippingCost] = useState('');
@@ -139,9 +141,6 @@ const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, b
 
 
     useEffect(() => {
-
-
-
         setButtonDisabled(new Array(shippingOptions.length).fill(false));
     }, [shippingOptions]);
 
@@ -262,7 +261,7 @@ const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, b
 
 
             {/* Proceed to Payment Button */}
-            <Grid container style={{ marginTop: '20px', justifyContent: 'space-between' }}>
+            <Grid container sx={{ marginTop: '20px', justifyContent: 'space-between', marginLeft: { xs: 3.5, sm: 0 } }}>
 
                 <Button onClick={back} variant="outlined" sx={{ m: 1, width: { xs: '75%', sm: '45%', md: '230px' }, letterSpacing: 2, color: '#283047', backgroundColor: 'white', borderColor: '#283047', borderWidth: 1.5, height: 55, '&:hover': { backgroundColor: '#0F75E0', color: 'white', } }}>
                     <ArrowBackIosNewIcon sx={{ fontSize: 18, mr: 1 }} />

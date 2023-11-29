@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Box, Typography, Button, Grid, Tabs, Tab, Select, MenuItem, InputLabel, CircularProgress, FormControl, IconButton, Tooltip } from '@mui/material';
+import { Modal, Box, Typography, Button, Grid, Tabs, Tab, Select, MenuItem, InputLabel, CircularProgress, FormControl, IconButton, } from '@mui/material';
 import { useCart } from './CartContext';
 import '../Styles/QuickView.css'
 import useThrottle from './Utilities/useThrottle';
@@ -252,9 +252,9 @@ const QuickView = ({ productId, open, handleClose, products }) => {
                                         <Box onClick={() => setProductDetails(product)} className='quickview-related-container' key={product._id}> {/* Use `_id` or appropriate key property */}
                                             <img className='quickview-related-img' alt='related' src={product.imgSource[0].url} loading='lazy' />
                                             <Box variant='button'>
-                                                <Tooltip title={product.name} arrow>
-                                                    <Box className='quickview-related-name'>{product.name}</Box>
-                                                </Tooltip>
+
+                                                <Box className='quickview-related-name'>{product.name}</Box>
+
                                             </Box>
 
                                         </Box>
@@ -271,9 +271,12 @@ const QuickView = ({ productId, open, handleClose, products }) => {
                             </Box>
                             {/* Quantity Selector */}
                             <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'start', flexDirection: { xs: 'column', sm: 'row' } }}>
-                                <FormControl sx={{ ml: 3, mb: 1, mr: 4 }} >
-                                    <InputLabel>Qty</InputLabel>
+                                <FormControl sx={{ ml: 3, mb: 1, mr: 4 }}  >
+                                    <InputLabel name="quantity-label" id="quantity-label">Qty</InputLabel>
                                     <Select
+                                        labelId="quantity-label"
+                                        id="quantity-select"
+                                        name="quantity-select"
                                         sx={{ width: '100px', borderRadius: 0 }}
                                         value={quantity}
                                         onChange={(e) => setQuantity(Number(e.target.value))}
@@ -289,8 +292,11 @@ const QuickView = ({ productId, open, handleClose, products }) => {
                                 </FormControl>
                                 {/*Flavor Selector */}
                                 <FormControl sx={{ width: '280px', ml: { xs: 3, sm: 0 } }}>
-                                    <InputLabel>Flavor</InputLabel>
+                                    <InputLabel id="flavor-label" name="flavor-label"  >Flavor</InputLabel>
                                     <Select
+                                        labelId="flavor-label"
+                                        id="flavor-select"
+                                        name='flavor-select'
                                         sx={{ borderRadius: 0 }}
                                         value={flavor ? productDetails.flavor : flavor}
                                         onChange={(e) => setFlavor(e.target.value)}

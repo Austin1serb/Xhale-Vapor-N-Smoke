@@ -5,6 +5,8 @@ function arrayLimit(val) {
 const ProductSchema = new mongoose.Schema({
     brand: {
         type: String,
+        minlength: [2, 'Brand must be at least 2 characters long.'],
+        maxlength: [60, 'Brand cannot be longer than 30 characters'],
         required: [true, 'Please add a Brand'],
     },
     totalSold: {

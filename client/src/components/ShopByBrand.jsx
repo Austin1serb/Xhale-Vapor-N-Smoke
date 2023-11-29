@@ -5,6 +5,8 @@ import wyld from '../assets/Wyld.webp'
 import koi from '../assets/koi-logo.webp'
 import beezbee from '../assets/beezbee.webp'
 import { Link } from 'react-router-dom';
+
+
 const BestSellersSection = () => {
     const [anchorElWyld, setAnchorElWyld] = React.useState(null);
     const [anchorElBeeZbee, setAnchorElBeeZbee] = React.useState(null);
@@ -118,7 +120,8 @@ const BestSellersSection = () => {
                         </Popover>
 
                         <div className="brand-img-container">
-                            <img className="brand-image" src={wyld} alt="wldLogo" loading='lazy' />
+                            <img className="brand-image" src={wyld} alt="wldLogo" loading='lazy' width='280px'
+                                height='190px' />
                         </div>
                         <Box component={Link} to="/shop?filter=brand-wyld">
                             <Button className='brand-button' >SHOP NOW</Button>
@@ -171,6 +174,8 @@ const BestSellersSection = () => {
                                 alt='beeZbeelogo'
                                 className="brand-image"
                                 loading='lazy'
+                                width='280px'
+                                height='190px'
                             />
 
                         </div>
@@ -218,7 +223,8 @@ const BestSellersSection = () => {
                                 src={koi}
                                 alt='koiLogo'
                                 className="brand-image"
-
+                                width='280px'
+                                height='190px'
                                 loading='lazy'
                             />
 

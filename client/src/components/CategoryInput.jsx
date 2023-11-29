@@ -40,6 +40,7 @@ const CategoryInput = ({ category, onAddCategory, onRemoveCategory, error }) => 
     return (
         <FormControl
             sx={{
+
                 width: '97%',
                 pl: 1,
                 py: 1,
@@ -63,9 +64,14 @@ const CategoryInput = ({ category, onAddCategory, onRemoveCategory, error }) => 
                     },
                 },
             }}
+            name='category-input'
             component="fieldset"
         >
             <FormLabel
+                name='category-input'
+
+                id="category-input"
+
                 component="legend"
                 className="form-label-sx"
                 sx={{
@@ -76,6 +82,7 @@ const CategoryInput = ({ category, onAddCategory, onRemoveCategory, error }) => 
             </FormLabel>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <TextField
+                    name='categories'
                     spellCheck={true}
                     label="Categories*"
                     value={newCategory}

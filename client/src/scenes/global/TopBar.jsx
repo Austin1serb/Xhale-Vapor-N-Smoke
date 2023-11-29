@@ -1,20 +1,31 @@
 
-import { AppBar, Toolbar, Typography, IconButton, Badge, Box, Drawer, } from '@mui/material';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import Badge from '@mui/material/Badge';
+import Box from '@mui/material/Box';
+import Drawer from '@mui/material/Drawer';
+import CircularProgress from '@mui/material/CircularProgress';
 import '../../Styles/TopBar.css';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import BrandIcon from '../../assets/brandText.webp'
-import React, { useState, useEffect, useRef, } from 'react';
+import React, { useState, useEffect, useRef, Suspense, } from 'react';
 import { Link, } from 'react-router-dom';
 import { useCart } from '../../components/CartContext.jsx';
-import Cart from '../../components/Cart';
 import { useAuth } from '../../components/Utilities/useAuth';
-import DropdownMenu from '../../components/DropDownMenu';
 
+
+
+
+const Cart = React.lazy(() => import('../../components/Cart'));
+const DropdownMenu = React.lazy(() => import('../../components/DropDownMenu'));
 
 
 const TopBar = () => {
+
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [showBorder, setShowBorder] = useState(false);
     const isMobile = useMediaQuery('(max-width:600px)');
@@ -129,12 +140,12 @@ const TopBar = () => {
             >
                 {isLoggedIn ? [
                     !!isAdmin ? (<MenuItem key="admin" onClick={handleMenuClose}>
-                        <Link style={{ textDecoration: 'none', color: 'black' }} to={'/api/customer/admin'}>Admin</Link>
+                        <Link id='link-admin' style={{ textDecoration: 'none', color: 'black' }} to={'/api/customer/admin'}>Admin</Link>
                     </MenuItem>) : (null),
-                    <MenuItem key="account" onClick={handleMenuClose}>
+                    <MenuItem id='link-account' key="account" onClick={handleMenuClose}>
                         <Link style={{ textDecoration: 'none', color: 'black' }} to={'/details'}>Account</Link>
                     </MenuItem>,
-                    <MenuItem key="logout" onClick={handleLogout}>
+                    <MenuItem id='link-logout' key="logout" onClick={handleLogout}>
                         <span style={{ textDecoration: 'none', cursor: 'pointer' }}>Logout</span>
                     </MenuItem>
 
@@ -149,6 +160,7 @@ const TopBar = () => {
     );
 
     const toggleDropdown = () => {
+
         setIsDropdownVisible(!isDropdownVisible);
     };
 
@@ -226,12 +238,17 @@ const TopBar = () => {
 
 
                     <Box className={`dropdown-box-mobile ${mobileDrawerOpen ? 'dropdown-visible' : ''}`} ref={dropdownRef}>
-                        <DropdownMenu onLinkClick={toggleDropdown} />
+                        <Suspense fallback={<CircularProgress />}>
+                            <DropdownMenu onLinkClick={handleMobileMenuClose} />
+                        </Suspense>
+
                     </Box>
                     <Typography variant="h6" sx={{ flexGrow: 1 }}>
-                        <Box component={Link} to="/" className="nav-link">
-                            <Box component={'img'} src={BrandIcon} alt="Brand Icon" className='brand-icon' ></Box>
-                        </Box>
+                        {/*<Box component={Link} to="/" className="nav-link">
+                            <img 
+                            
+                            src={BrandIcon} alt="Brand Icon" className='brand-icon' ></img>
+                        </Box>*/}
                     </Typography>
                     {!isMobile ? (
                         <Typography component='div' className='nav-typography' variant="body1" sx={{ flexGrow: 10, display: { sm: 'none', md: 'flex', }, }}  >
@@ -248,7 +265,11 @@ const TopBar = () => {
                                 </Box>
                                 <Box className="dropdown-box" sx={{}}>
                                     <Box className='dropdown-separation'></Box>
-                                    {isDropdownVisible && <DropdownMenu onLinkClick={toggleDropdown} isVisible={isDropdownVisible} />}
+                                    {isDropdownVisible &&
+                                        <Suspense fallback={<CircularProgress />}>
+                                            <DropdownMenu onLinkClick={toggleDropdown} isVisible={isDropdownVisible} />
+                                        </Suspense>
+                                    }
                                 </Box>
                             </Box>
                             <Box component={Link} to='/registration' className="nav-link" sx={{ marginRight: 2 }}>
@@ -264,7 +285,12 @@ const TopBar = () => {
                         </Typography>
                     ) : null}
                     <Box className="nav-link" onClick={() => setDrawerOpen(true)}>
-                        <IconButton id="cart" aria-label="cart" sx={{ mr: -2, ml: { xs: 0, sm: 0 } }} color="inherit">
+                        <IconButton
+                            id="cart"
+                            aria-label="cart-button"
+                            name='cart-button'
+                            sx={{ mr: -2, ml: { xs: 0, sm: 0 } }}
+                            color="inherit">
                             <Badge badgeContent={totalItems} color="secondary">
 
                                 <svg xmlns="http://www.w3.org/2000/svg" fill='currentColor' className={shake ? 'shake-animation' : ''} width="28" height="28" viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 3c0 .55.45 1 1 1h1l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h11c.55 0 1-.45 1-1s-.45-1-1-1H7l1.1-2h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A.996.996 0 0 0 20.01 4H5.21l-.67-1.43a.993.993 0 0 0-.9-.57H2c-.55 0-1 .45-1 1zm16 15c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z" /></svg>
@@ -275,6 +301,8 @@ const TopBar = () => {
                         <IconButton
                             size="large"
                             edge="end"
+                            className="profile-icon"
+                            id='profile-icon-button'
                             aria-label="account of current user"
                             aria-controls={menuId}
                             aria-haspopup="true"
@@ -300,9 +328,9 @@ const TopBar = () => {
                     py: 3,
                     height: '100vh'  // Taking up the entire viewport height
                 }}>
-                    <Cart
-                        setDrawerOpen={setDrawerOpen}
-                    />
+                    <Suspense fallback={<CircularProgress />}>
+                        <Cart setDrawerOpen={setDrawerOpen} />
+                    </Suspense>
                 </Box>
             </Drawer >
         </Box >

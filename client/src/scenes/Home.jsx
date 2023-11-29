@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import '../Styles/Home.css'; // You can create a CSS file for styling
 import cdbImage from '../assets/cbd.webp'
-import { Box, Typography, List, ListItem, ListItemText, ListItemIcon, Button } from '@mui/material';
-import ShopByBrand from '../components/ShopByBrand.jsx'
-import BestSellersSection from '../components/BestSellersSection';
-import { Link } from 'react-router-dom';
+import { Box, Typography, List, ListItem, ListItemText, ListItemIcon, Button, CircularProgress } from '@mui/material';
 
+
+import { Link } from 'react-router-dom';
+//lazy load my imports
+const BestSellersSection = React.lazy(() => import('../components/BestSellersSection.jsx'));
+const ShopByBrand = React.lazy(() => import('../components/ShopByBrand.jsx'));
 
 const Home = () => {
 
@@ -35,7 +37,14 @@ const Home = () => {
                     </div>
                 </div>
                 <div className="right-content animated-left slide-in">
-                    <img src={cdbImage} alt="cbd" loading='lazy' />
+                    <img
+                        src={cdbImage}
+                        alt="cbd"
+                        loading='lazy'
+                        height='400px'
+                        width='400px'
+
+                    />
                 </div>
             </Box>
             <Box component='div' py={{ xs: 5, sm: 16 }} sx={{ width: '70%', height: 'auto', alignItems: 'center', justifyContent: 'center', margin: '0 auto', textAlign: 'center', mt: { xs: -30, sm: -40, md: 0 } }}>
@@ -121,8 +130,12 @@ const Home = () => {
                     </Box>
                 </Box>
             </Box>
-            <BestSellersSection />
-            <ShopByBrand />
+            <Suspense fallback={<CircularProgress />}>
+                <BestSellersSection />
+            </Suspense>
+            <Suspense fallback={<CircularProgress />}>
+                <ShopByBrand />
+            </Suspense>
         </div>
 
     );

@@ -20,11 +20,22 @@ const InformationComponent = ({ next, back, onShippingDetailsSubmit, formData, o
     const storedFirstName = localStorage.getItem('userFirstName');
     const storedLastName = localStorage.getItem('userLastName');
     const storedEmail = localStorage.getItem('userEmail');
+    const storedPhone = localStorage.getItem('userPhone');
+    const storedAddress = localStorage.getItem('userAddress');
+    const storedAddress2 = localStorage.getItem('userAddress2');
+    const storedCity = localStorage.getItem('userCity');
+    const storedState = localStorage.getItem('userState');
+    const storedZip = localStorage.getItem('userZip');
+    const storedCountry = localStorage.getItem('userCountry');
+
 
 
     const isGuestUser = () => {
         const customerId = localStorage.getItem('customerId');
-        return customerId && customerId.startsWith('guest-');
+        const isGuestFlag = localStorage.getItem('isGuest') === 'true';
+
+        return (customerId && customerId.startsWith('guest-')) || isGuestFlag;
+
     };
 
 
@@ -35,15 +46,17 @@ const InformationComponent = ({ next, back, onShippingDetailsSubmit, formData, o
             setFirstName(formData.firstName || storedFirstName || '');
             setLastName(formData.lastName || storedLastName || '');
             setEmail(formData.email || storedEmail || '');
-            setPhone(formData.phone);
-            setAddress(formData.address);
-            setAddress2(formData.address2);
-            setCity(formData.city);
-            setZip(formData.zip);
-            setState(formData.state);
-            setCountry(formData.country);
+            setPhone(formData.phone || storedPhone || '');
+            setAddress(formData.address || storedAddress || '');
+            setAddress2(formData.address2 || storedAddress2 || '');
+            setCity(formData.city || storedCity || '');
+            setState(formData.state || storedState || '');
+            setZip(formData.zip || storedZip || '');
+            setCountry(formData.country || storedCountry || '');
         }
-    }, [formData, formSubmitted, storedEmail, storedFirstName, storedLastName]);
+
+
+    }, [formData, formSubmitted, storedAddress, storedAddress2, storedCity, storedCountry, storedEmail, storedFirstName, storedLastName, storedPhone, storedState, storedZip]);
 
     const [errors, setErrors] = useState({
         email: '',
@@ -142,24 +155,50 @@ const InformationComponent = ({ next, back, onShippingDetailsSubmit, formData, o
 
         next(); // Proceed to the next step
     };
+
+    const doesFormDataMatchLocalStorage = (formData) => {
+        const keys = ['firstName', 'lastName', 'email', 'phone', 'address', 'address2', 'city', 'state', 'zip', 'country'];
+        return keys.every(key => formData[key] === localStorage.getItem('user' + key.charAt(0).toUpperCase() + key.slice(1)));
+    };
+
+
     const submitFormData = async (data) => {
         try {
             let response;
 
             if (isGuestUser()) {
-                // Create a new guest user
-                response = await fetch(`http://localhost:8000/api/guest`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data)
-                });
-                if (response.ok) {
-                    const guestUserData = await response.json();
-                    // Handle the guest user data, e.g., store the temporary ID
-                    localStorage.setItem('customerId', guestUserData.temporaryId);
-                    localStorage.setItem('isGuest', 'true');
+                const customerId = localStorage.getItem('customerId');
+
+                // New guest user or guest user with updated information
+                if (!customerId || customerId.startsWith('guest-') || !doesFormDataMatchLocalStorage(data)) {
+                    const url = customerId && !customerId.startsWith('guest-')
+                        ? `http://localhost:8000/api/guest/${customerId}` // URL for updating existing guest
+                        : `http://localhost:8000/api/guest`; // URL for creating new guest
+
+                    const method = customerId && !customerId.startsWith('guest-') ? 'PUT' : 'POST';
+
+                    // Send a POST (for new guest) or PUT (for existing guest) request
+                    response = await fetch(url, {
+                        method: method,
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    if (response.ok) {
+                        const responseData = await response.json();
+                        const idToStore = method === 'POST' ? responseData.permanentId : customerId;
+                        localStorage.setItem('customerId', idToStore);
+                        localStorage.setItem('isGuest', 'true');
+                        Object.keys(data).forEach(key => {
+                            localStorage.setItem('user' + key.charAt(0).toUpperCase() + key.slice(1), data[key]);
+                        });
+                    } else {
+                        const errorData = await response.json();
+                        console.error("Failed to submit form data:", errorData.message);
+                        return;
+                    }
                 }
             } else {
                 const { email, firstName, lastName, ...dataToSend } = data;
@@ -173,25 +212,19 @@ const InformationComponent = ({ next, back, onShippingDetailsSubmit, formData, o
                     credentials: 'include',
                     body: JSON.stringify(dataToSend)
                 });
-            }
-            if (!response.ok) {
-                const errorData = await response.json(); // Assuming the server sends JSON response
-                console.error("Failed to submit form data:", errorData.message);
-            }
 
-            if (response.ok) {
-                // Handle successful response
+            }
+            if (response && !response.ok) {
+                const errorData = await response.json();
+                console.error("Failed to submit form data:", errorData.message);
+            } else if (response && response.ok) {
                 console.log("Form data submitted successfully");
-            } else {
-                // Handle errors
-                console.error("Failed to submit form data");
             }
 
         } catch (error) {
             console.error("Error submitting form data:", error);
         }
     };
-
 
     const handleAddressChange = (place) => {
         let streetNumber = '';
@@ -266,9 +299,6 @@ const InformationComponent = ({ next, back, onShippingDetailsSubmit, formData, o
 
 
 
-
-
-
     const textFieldStyles = {
         '& .MuiInputBase-input': {
             fontSize: '14px' // Adjust the font size as needed
@@ -313,7 +343,6 @@ const InformationComponent = ({ next, back, onShippingDetailsSubmit, formData, o
                     name="phone"
                     label="phone (optional)"
                     value={phone || ''}
-
                     onChange={handlePhoneChange}
                     color={phone && !errors.phone ? 'success' : 'primary'}
                     focused={!!phone}
@@ -397,7 +426,7 @@ const InformationComponent = ({ next, back, onShippingDetailsSubmit, formData, o
 
                         <TextField
                             helperText={<span>
-
+                                {/* information icon */}
                                 <svg height='16' style={{ transform: 'translateY(3px)' }} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22ZM12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20ZM11 7H13V9H11V7ZM11 11H13V17H11V11Z" /></svg>
                                 {' Add a Building /Appartment number if you have one'}
                             </span>}
@@ -410,6 +439,8 @@ const InformationComponent = ({ next, back, onShippingDetailsSubmit, formData, o
                             onChange={e => setAddress2(e.target.value)}
                             value={address2 || ''}
                             sx={textFieldStyles}
+                            focused={!!address2}
+                            color={address2 ? 'success' : 'primary'}
                         />
                     </Grid>
 

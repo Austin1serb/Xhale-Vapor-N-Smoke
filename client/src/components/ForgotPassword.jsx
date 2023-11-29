@@ -1,31 +1,14 @@
 import { Button, CircularProgress, IconButton, TextField, Typography } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 // ForgotPassword.jsx
-const ForgotPassword = ({ close, type }) => {
-    const [email, setEmail] = useState('');
+const ForgotPassword = ({ close, type, resetEmail, startCountdown, countdown, isButtonDisabled }) => {
+    const [email, setEmail] = useState(resetEmail || '');
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState({});
-    const [countdown, setCountdown] = useState(30);
-    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-    const startCountdown = () => {
-        setIsButtonDisabled(true);
-        setCountdown(30);
 
-        const interval = setInterval(() => {
-            setCountdown((currentCountdown) => {
-                if (currentCountdown <= 1) {
-                    clearInterval(interval);
-                    setIsButtonDisabled(false);
-                    return 0;
-                }
-                return currentCountdown - 1;
-            });
-        }, 1000);
-    };
 
-    // Call startCountdown in handleSubmit on successful send
 
 
 
@@ -52,6 +35,7 @@ const ForgotPassword = ({ close, type }) => {
 
             const response = await fetch('http://localhost:8000/api/forgot-password', {
                 method: 'POST',
+                credentials: 'include',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email })
             });
@@ -61,19 +45,24 @@ const ForgotPassword = ({ close, type }) => {
                 setLoading(false);
                 setMessage(data.message);
                 startCountdown();
+
+            } if (response.status === 429) {
+                setErrors({ email: response.statusText, });
+
             } else {
                 // If the response contains field-specific errors
                 if (data.errors && data.errors.email) {
                     setErrors({ email: data.errors.email });
                 } else {
                     // General error message
-                    setErrors({ email: data.message || 'Error occurred' });
+                    setMessage(data.message || 'Error occurred');
                 }
             }
         } catch (error) {
             setLoading(false);
             // Handle network or other errors here
             setErrors({ message: error.message });
+
         }
         finally {
             setLoading(false);
@@ -104,10 +93,8 @@ const ForgotPassword = ({ close, type }) => {
             <IconButton style={{ transform: 'translate(240px, -60px)', color: '#282F48' }} onClick={() => close(false)}>
 
 
-                <svg height='40' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
-                    <path fill="white" d="M184 840h656V184H184v656zm163.9-473.9A7.95 7.95 0 0 1 354 353h58.9c4.7 0 9.2 2.1 12.3 5.7L512 462.2l86.8-103.5c3-3.6 7.5-5.7 12.3-5.7H670c6.8 0 10.5 7.9 6.1 13.1L553.8 512l122.3 145.9c4.4 5.2.7 13.1-6.1 13.1h-58.9c-4.7 0-9.2-2.1-12.3-5.7L512 561.8l-86.8 103.5c-3 3.6-7.5 5.7-12.3 5.7H354c-6.8 0-10.5-7.9-6.1-13.1L470.2 512 347.9 366.1z" />
-                    <path fill="#333" d="M354 671h58.9c4.8 0 9.3-2.1 12.3-5.7L512 561.8l86.8 103.5c3.1 3.6 7.6 5.7 12.3 5.7H670c6.8 0 10.5-7.9 6.1-13.1L553.8 512l122.3-145.9c4.4-5.2.7-13.1-6.1-13.1h-58.9c-4.8 0-9.3 2.1-12.3 5.7L512 462.2l-86.8-103.5c-3.1-3.6-7.6-5.7-12.3-5.7H354c-6.8 0-10.5 7.9-6.1 13.1L470.2 512 347.9 657.9A7.95 7.95 0 0 0 354 671z" />
-                </svg>
+                {/* CLOSE ICON */}
+                <svg xmlns="http://www.w3.org/2000/svg" fill='white' height="40" width="40"><path d="m10.458 31.458-1.916-1.916 9.5-9.542-9.5-9.542 1.916-1.916 9.542 9.5 9.542-9.5 1.916 1.916-9.5 9.542 9.5 9.542-1.916 1.916-9.542-9.5Z" /></svg>
 
 
 
@@ -117,17 +104,20 @@ const ForgotPassword = ({ close, type }) => {
             <Typography mb={4} mt={{ sm: -3, md: 0 }} textAlign='center' variant="body2">Send a link to reset  <br />  your password</Typography>
             <div style={{ padding: 10 }}>
                 <TextField
-                    id="email"
+                    id="email-reset"
                     type="email"
                     autoComplete="email"
                     label="Email Address"
-                    value={email}
+                    disabled={type === 'change' ? true : false}
+                    //fill with reset email if type === change
+
+                    value={type === 'change' ? resetEmail : email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     fullWidth
                     error={!!errors.email}
                     helperText={errors.email || ''}
-
+                    name="email"
                 />
                 <Button
                     variant="outlined"

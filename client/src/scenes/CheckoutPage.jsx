@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Stepper, Step, StepLabel, Box } from '@mui/material';
+import { Stepper, Step, StepLabel, Box, Snackbar, Alert, IconButton } from '@mui/material';
 import InformationPage from '../components/InformationPage';
 import ShippingComponent from '../components/ShippingComponent';
 import CartSummaryComponent from '../components/CartSummaryComponent';
 import { useCart } from '../components/CartContext';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import SquarePaymentForm from '../components/SquarePaymentForm';
 import LoadingModal from '../components/Common/LoadingModal';
 import { useAuth } from '../components/Utilities/useAuth';
@@ -28,6 +28,21 @@ const CheckoutPage = () => {
     const [estimatedShipping, setEstimatedShipping] = useState('')
     const [lastAddress, setLastAddress] = useState({});
     const { isLoggedIn, customerId } = useAuth();
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+
+    const handleOpenSnackbar = () => {
+        setSnackbarOpen(true);
+    };
+
+    const handleCloseSnackbar = (event, reason) => {
+        if (reason === 'clickaway') {
+            return; // Do not close if the user clicks away
+        }
+        setSnackbarOpen(false);
+    };
+
+
+
 
     const [formData, setFormData] = useState({
         email: '',
@@ -42,7 +57,11 @@ const CheckoutPage = () => {
     });
 
     const isGuestUser = () => {
-        return localStorage.getItem('isGuest') === 'true';
+        const customerId = localStorage.getItem('customerId');
+        const isGuestFlag = localStorage.getItem('isGuest') === 'true';
+
+        return (customerId && customerId.startsWith('guest-')) || isGuestFlag;
+
     };
 
 
@@ -65,6 +84,9 @@ const CheckoutPage = () => {
     useEffect(() => {
         if (activeStep === 3 && !isSquareSdkLoaded) {
             loadSquareSdk();
+        }
+        if (activeStep === 0) {
+            handleOpenSnackbar();
         }
 
     }, [activeStep, isSquareSdkLoaded]);
@@ -126,8 +148,9 @@ const CheckoutPage = () => {
                         // Update guest data for guest users
                         const guestData = { orders: createdOrder._id };
                         await updateGuestDataAsync(localStorage.getItem('customerId'), guestData);
-                        localStorage.removeItem('customerId')
-                        localStorage.removeItem('isGuest')
+                        const isVerified = localStorage.getItem('isVerified')
+                        localStorage.clear()
+                        localStorage.setItem('isVerified', isVerified)
                     }
                     clearCart()
                     // Navigate to success page after all processes are complete
@@ -148,15 +171,19 @@ const CheckoutPage = () => {
 
 
     useEffect(() => {
-        const customerId = localStorage.getItem('customerId') || sessionStorage.getItem('customerId')
-        if (!isLoggedIn) {
+        const customerId = localStorage.getItem('customerId');
+        const isGuest = isGuestUser();
+
+        if (!isLoggedIn && !isGuest) {
+            // Redirect to registration if not logged in and not a guest
             navigate('/registration?returnUrl=/checkout/1');
-        } else if (!customerId) {
+        } else if (!customerId && !isGuest) {
+            // Redirect to login if no customerId and not a guest
             navigate('/login?returnUrl=/checkout/1');
         } else {
-            // Proceed with checkout logic
+            // Proceed with checkout logic for logged-in or guest users
         }
-    }, [isLoggedIn, customerId, navigate]);
+    }, [isLoggedIn, navigate]);
 
 
 
@@ -430,6 +457,33 @@ const CheckoutPage = () => {
                     : null}
             </Box>
             ;
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={null}
+                onClose={handleCloseSnackbar}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+            >
+                <Alert
+                    severity="info"
+                    action={
+                        <>
+
+                            <IconButton
+                                aria-label="close"
+                                color="inherit"
+                                onClick={handleCloseSnackbar}
+                            >
+                                {/* CLOSE ICON */}
+                                <svg xmlns="http://www.w3.org/2000/svg" fill='black' height="40" width="40"><path d="m10.458 31.458-1.916-1.916 9.5-9.542-9.5-9.542 1.916-1.916 9.542 9.5 9.542-9.5 1.916 1.916-9.5 9.542 9.5 9.542-1.916 1.916-9.542-9.5Z" /></svg>
+                            </IconButton>
+                        </>
+                    }
+                >
+                    Checking out as guest.<br />   <Link to="/registration" color="inherit" underline="hover">
+                        Create account?
+                    </Link>
+                </Alert>
+            </Snackbar>
         </div>
     );
 };

@@ -6,11 +6,12 @@
 
 /* CART SUMMARY COMPONENT */
 .cartSummary-container {
+
     background-color: rgba(15, 117, 224, 0.1);
     border-left: 1px solid gray;
     border-bottom: 1px solid gray;
     border-radius: 5px;
-
+    padding-bottom: 2px;
 
 }
 

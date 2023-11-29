@@ -92,8 +92,7 @@ const processPayment = async (req, res) => {
         if (response && responseBody.payment.status === 'COMPLETED') {
             const emailRecieptUrl = responseBody.receiptUrl;
 
-            //console.log("orderDetails OUTSIDE sendReceiptEmail:", orderDetails);
-            // Attempt to send the receipt email
+
             await sendReceiptEmail(cost, notes, estimatedShipping, orderDetails, last4, emailRecieptUrl);
 
 
@@ -122,10 +121,7 @@ const processPayment = async (req, res) => {
 
 async function sendReceiptEmail(cost, notes, estimatedShipping, orderDetails, last4, emailRecieptUrl) {
 
-    //console.log("orderDetails inside sendReceiptEmail:", orderDetails);
-    //if (orderDetails) {
-    //    console.log("orderDetails.products inside sendReceiptEmail:", orderDetails.products);
-    //}
+
 
 
     let transporter = nodemailer.createTransport({

@@ -29,6 +29,28 @@ const AccountDetails = () => {
     const navigate = useNavigate();
     const [openDialog, setOpenDialog] = useState(false);
     const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
+    const [countdown, setCountdown] = useState(30);
+    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+    const startCountdown = () => {
+        setIsButtonDisabled(true);
+        setCountdown(30);
+
+        const interval = setInterval(() => {
+            setCountdown((currentCountdown) => {
+                if (currentCountdown <= 1) {
+                    clearInterval(interval);
+                    setIsButtonDisabled(false);
+                    return 0;
+                }
+                return currentCountdown - 1;
+            });
+        }, 1000);
+    };
+
+    // Call startCountdown in handleSubmit on successful send
+
+
+
 
 
     useEffect(() => {
@@ -107,7 +129,7 @@ const AccountDetails = () => {
                 setCustomer(data);
                 setLoading(false)
                 setIsFormChanged(false);
-
+                window.alert('Account Succssfully Updated!')
                 console.log('Customer data updated successfully:', data);
             }
         } catch (error) {
@@ -167,7 +189,7 @@ const AccountDetails = () => {
     }
 
     return (
-        <Paper sx={{ p: 4, maxWidth: 800, margin: '0px auto', marginTop: -5, marginBottom: 5 }}>
+        <Paper sx={{ p: 4, maxWidth: 800, margin: '0px auto', marginTop: 5, marginBottom: 5 }}>
             <Typography variant="h5" sx={{ marginBottom: 2 }}>
                 Account Details
             </Typography>
@@ -203,11 +225,21 @@ const AccountDetails = () => {
                         <TextField
                             label="Email"
                             fullWidth
+
+                            autoComplete="email"
+                            type='email'
+                            id='email'
                             name="email"
                             value={customer?.email || ''}
                             onChange={handleChange}
                             error={!!errors.email}
-                            helperText={errors.email}
+                            helperText={errors.email ? errors.email :
+                                <span>
+                                    {/* information icon */}
+                                    <svg height='16' fill='#0F75E0' style={{ transform: 'translateY(3px)' }} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22ZM12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20ZM11 7H13V9H11V7ZM11 11H13V17H11V11Z" /></svg>
+                                    {' This will change the email associated with your account'}
+                                </span>
+                            }
                         />
                     </Grid>
                     {/* Address Line 1 */}
@@ -298,7 +330,7 @@ const AccountDetails = () => {
 
                         <Typography variant="body2" align="center" mt={2}>
                             <Button
-                                type='text'
+                                type='button'
                                 onClick={() => setForgotPasswordOpen(true)}
                                 color="primary"
                             >
@@ -313,7 +345,15 @@ const AccountDetails = () => {
 
                         >
                             <div >
-                                <ForgotPassword close={setForgotPasswordOpen} type={'change'} />
+                                <ForgotPassword
+                                    close={setForgotPasswordOpen}
+                                    type={'change'}
+                                    resetEmail={customer?.email}
+                                    startCountdown={startCountdown}
+                                    isButtonDisabled={isButtonDisabled}
+                                    countdown={countdown}
+
+                                />
                             </div>
                         </Modal>
                     </Grid>

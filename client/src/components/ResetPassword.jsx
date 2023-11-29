@@ -73,6 +73,7 @@ const ResetPassword = () => {
             </Typography>
             <form onSubmit={handleSubmit}>
                 <TextField
+                    name='password'
                     label="New Password"
                     type="password"
                     value={password}
@@ -84,6 +85,7 @@ const ResetPassword = () => {
                     helperText={errors.password}
                 />
                 <TextField
+                    name='confirmPassword'
                     label="Confirm Password"
                     type="password"
                     value={confirmPassword}

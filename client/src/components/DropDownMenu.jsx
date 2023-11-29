@@ -1,10 +1,10 @@
 import { Box, Button, CircularProgress, IconButton, List, ListItem, Paper, } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import '../Styles/DropDownMenu.css';
 import { Link } from 'react-router-dom';
-import QuickView from './QuickView';
 
 
+const QuickView = React.lazy(() => import('../components/QuickView'));
 
 const DropdownMenu = ({ isVisible, onLinkClick }) => {
     const [openedSection, setOpenedSection] = useState(false);
@@ -117,12 +117,6 @@ const DropdownMenu = ({ isVisible, onLinkClick }) => {
 
 
 
-    const handleLinkClick = () => {
-        if (isVisible) {
-            onLinkClick(); // This will call the function in the parent to update isVisible
-        }
-    };
-
 
     const buttonStyle = {
         fontSize: '10px',
@@ -149,16 +143,16 @@ const DropdownMenu = ({ isVisible, onLinkClick }) => {
                         </div>
                         {(openedSection === 'SHOP_ALL_CBD' || window.innerWidth > 900) && (
                             <List className='list-container' >
-                                <ListItem className="list-item" component={Link} to="/shop?filter=best-sellers" onClick={handleLinkClick}>
+                                <ListItem className="list-item" component={Link} to="/shop?filter=best-sellers" onClick={onLinkClick}>
                                     <span className="list-content">Best Sellers</span>
                                 </ListItem>
-                                <ListItem className="list-item" component={Link} to="/shop?filter=new-products" onClick={handleLinkClick}>
+                                <ListItem className="list-item" component={Link} to="/shop?filter=new-products" onClick={onLinkClick}>
                                     <span className="list-content">New Products</span>
                                 </ListItem>
-                                <ListItem className="list-item" component={Link} to="/shop?filter=high-potency" onClick={handleLinkClick}>
+                                <ListItem className="list-item" component={Link} to="/shop?filter=high-potency" onClick={onLinkClick}>
                                     <span className="list-content">High Potency</span>
                                 </ListItem>
-                                <ListItem className="list-item" component={Link} to="/shop?filter=featured" onClick={handleLinkClick}>
+                                <ListItem className="list-item" component={Link} to="/shop?filter=featured" onClick={onLinkClick}>
                                     <span className="list-content">Featured Products</span>
                                 </ListItem>
 
@@ -179,25 +173,25 @@ const DropdownMenu = ({ isVisible, onLinkClick }) => {
                         </div>
                         {(openedSection === 'SHOP_BY_CATEGORY' || window.innerWidth > 900) && (
                             <List className='list-container'>
-                                <ListItem className="list-item" component={Link} to="/shop?filter=gummies">
+                                <ListItem className="list-item" component={Link} to="/shop?filter=gummies" onClick={onLinkClick}>
                                     <span className="list-content">CBD Gummies</span>
                                 </ListItem>
-                                <ListItem className="list-item" component={Link} to="/shop?filter=oils">
+                                <ListItem className="list-item" component={Link} to="/shop?filter=oils" onClick={onLinkClick}>
                                     <span className="list-content">CBD Oils</span>
                                 </ListItem>
-                                <ListItem className="list-item" component={Link} to="/shop?filter=pills">
+                                <ListItem className="list-item" component={Link} to="/shop?filter=pills" onClick={onLinkClick}>
                                     <span className="list-content">CBD Pills</span>
                                 </ListItem>
-                                <ListItem className="list-item" component={Link} to="/shop?filter=topicals">
+                                <ListItem className="list-item" component={Link} to="/shop?filter=topicals" onClick={onLinkClick}>
                                     <span className="list-content">CBD Topicals</span>
                                 </ListItem>
-                                <ListItem className="list-item" component={Link} to="/shop?filter=smokables">
+                                <ListItem className="list-item" component={Link} to="/shop?filter=smokables" onClick={onLinkClick}>
                                     <span className="list-content">CBD Smokables</span>
                                 </ListItem>
-                                <ListItem className="list-item" component={Link} to="/shop?filter=edibles">
+                                <ListItem className="list-item" component={Link} to="/shop?filter=edibles" onClick={onLinkClick}>
                                     <span className="list-content">CBD Edibles</span>
                                 </ListItem>
-                                <ListItem className="list-item" component={Link} to="/shop?filter=cbd">
+                                <ListItem className="list-item" component={Link} to="/shop?filter=cbd" onClick={onLinkClick}>
                                     <span className="list-content">THC-Free CBD</span>
                                 </ListItem>
 
@@ -218,16 +212,16 @@ const DropdownMenu = ({ isVisible, onLinkClick }) => {
                         </div>
                         {(openedSection === 'MORE_CANNABINOIDS' || window.innerWidth > 900) && (
                             <List className='list-container'>
-                                <ListItem className="list-item" component={Link} to="/">
+                                <ListItem className="list-item" component={Link} to="/" onClick={onLinkClick}>
                                     <span className="list-content">CBN</span>
                                 </ListItem>
-                                <ListItem className="list-item" component={Link} to="/">
+                                <ListItem className="list-item" component={Link} to="/" onClick={onLinkClick}>
                                     <span className="list-content">CBG</span>
                                 </ListItem>
-                                <ListItem className="list-item" component={Link} to="/">
+                                <ListItem className="list-item" component={Link} to="/" onClick={onLinkClick}>
                                     <span className="list-content">CBDa</span>
                                 </ListItem>
-                                <ListItem className="list-item" component={Link} to="/">
+                                <ListItem className="list-item" component={Link} to="/" onClick={onLinkClick}>
                                     <span className="list-content">Delta 9</span>
                                 </ListItem>
                             </List>
@@ -246,10 +240,10 @@ const DropdownMenu = ({ isVisible, onLinkClick }) => {
                         </div>
                         {(openedSection === 'OTHER_PRODUCTS' || window.innerWidth > 900) && (
                             <List className='list-container'>
-                                <ListItem className="list-item" component={Link} to="/shop?filter=pet">
+                                <ListItem className="list-item" onClick={onLinkClick} component={Link} to="/shop?filter=pet">
                                     <span className="list-content">CBD for Pets</span>
                                 </ListItem>
-                                <ListItem className="list-item" component={Link} to="/shop?filter=pet">
+                                <ListItem className="list-item" onClick={onLinkClick} component={Link} to="/shop?filter=pet">
                                     <span className="list-content">CBD for Horses</span>
                                 </ListItem>
                             </List>
@@ -268,8 +262,8 @@ const DropdownMenu = ({ isVisible, onLinkClick }) => {
                         </div>
                         {(openedSection === 'JOIN_US' || window.innerWidth > 900) && (
                             <List className='list-container'>
-                                <ListItem className="list-item" component={Link} to="/">
-                                    <span className="list-content">Careers</span>
+                                <ListItem className="list-item" component={Link} to="/registration" onClick={onLinkClick}>
+                                    <span className="list-content">Sign Up</span>
                                 </ListItem>
                                 {/* Add more list items if necessary */}
                             </List>
@@ -278,7 +272,8 @@ const DropdownMenu = ({ isVisible, onLinkClick }) => {
 
                     {/* "About Us" Section */}
                     <Box className="dropdown-section" sx={{ display: { sm: 'block', md: 'none' } }}>
-                        <div className='list-header' onClick={() => handleToggleSection('ABOUT_US')}>
+                        <div className='list-header' onClick={() => handleToggleSection('ABOUT_US')} >
+
                             <span className="list-content">About Us</span>
                             <IconButton className='icon-button-dropdown' sx={{ display: { md: 'none' } }}>
 
@@ -288,7 +283,7 @@ const DropdownMenu = ({ isVisible, onLinkClick }) => {
                         </div>
                         {(openedSection === 'ABOUT_US' || window.innerWidth > 900) && (
                             <List className='list-container'>
-                                <ListItem className="list-item" component={Link} to="/">
+                                <ListItem className="list-item" component={Link} to="/" onClick={onLinkClick}>
                                     <span className="list-content">Our Story</span>
                                 </ListItem>
                                 {/* Add more list items if necessary */}
@@ -308,10 +303,10 @@ const DropdownMenu = ({ isVisible, onLinkClick }) => {
                         </div>
                         {(openedSection === 'SUPPORT' || window.innerWidth > 900) && (
                             <List className='list-container'>
-                                <ListItem className="list-item" component={Link} to="/">
+                                <ListItem className="list-item" component={Link} to="/" onClick={onLinkClick}>
                                     <span className="list-content">Customer Service</span>
                                 </ListItem>
-                                {/* Add more list items if necessary */}
+
                             </List>
                         )}
                     </Box>
@@ -322,17 +317,17 @@ const DropdownMenu = ({ isVisible, onLinkClick }) => {
                     <Box className='dropdown-featured'>
                         <legend className='dropdown-featured-header' >Featured Products</legend>
                         {featuredProducts.map((product) => (
-                            <Box className='drowdown-featured-container' key={product._id}> {/* Use `_id` or appropriate key property */}
+                            <Box onClick={() => {
+                                setQuickViewProduct(product._id);
+                                setQuickViewOpen(true);
+                            }} className='drowdown-featured-container' key={product._id}> {/* Use `_id` or appropriate key property */}
                                 <img className='dropdown-featured-img' alt='featured' src={product.imgSource[0].url} loading='lazy' />
                                 <Box>
 
                                     <Box className='dropdown-featured-name'>{product.name}</Box>
 
                                     <Box className='dropdown-featured-price' >${product.price}
-                                        <Button variant='outlined' sx={buttonStyle} className='dropdown-featured-button' onClick={() => {
-                                            setQuickViewProduct(product._id);
-                                            setQuickViewOpen(true);
-                                        }}>Quick View</Button>
+                                        <Button variant='outlined' sx={buttonStyle} className='dropdown-featured-button' >Quick View</Button>
                                     </Box>
 
                                 </Box>
@@ -347,12 +342,14 @@ const DropdownMenu = ({ isVisible, onLinkClick }) => {
             <Box sx={{ textAlign: 'center', mt: 5, borderBottom: .5 }}>
                 Exhale Vapor & Smoke
             </Box>
-            <QuickView
-                productId={quickViewProduct}
-                open={quickViewOpen}
-                handleClose={() => setQuickViewOpen(false)}
-                products={featuredProducts}
-            />
+            <Suspense fallback={<CircularProgress />}>
+                <QuickView
+                    productId={quickViewProduct}
+                    open={quickViewOpen}
+                    handleClose={() => setQuickViewOpen(false)}
+                    products={featuredProducts}
+                />
+            </Suspense>
         </Paper>
 
 

@@ -3,6 +3,7 @@ import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { TextField, Select, MenuItem, Snackbar, FormControl, InputLabel, Box, CircularProgress, Typography, Card, CardContent, Button } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 import OrderDetails from './OrderDetails';
+import { set } from 'date-fns';
 
 
 const OrderList = () => {
@@ -14,6 +15,14 @@ const OrderList = () => {
     const [filteredOrders, setFilteredOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedOrder, setSelectedOrder] = useState(null);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+    // Function to handle dialog close
+    const handleCloseDialog = () => {
+        setIsDialogOpen(false);
+    };
+
+
 
     useEffect(() => {
 
@@ -154,6 +163,7 @@ const OrderList = () => {
 
     const handleDetailsClick = (order) => {
         setSelectedOrder(order);
+        setIsDialogOpen(true)
     };
 
 
@@ -204,15 +214,16 @@ const OrderList = () => {
             flex: 1.5,
             renderCell: (params) => (
                 <Box>
-                    <Button sx={{ fontSize: 10, m: 1, p: 1 }} variant="outlined" color="secondary" onClick={() => handleDeleteOrder(params.row._id)}>
-                        Delete
-                    </Button>
+
                     <Button
                         sx={{ fontSize: 10, p: 1 }}
                         variant="outlined"
                         onClick={() => handleDetailsClick(params.row)}
                     >
                         Details
+                    </Button>
+                    <Button sx={{ fontSize: 10, m: 1, p: 1 }} variant="outlined" color="secondary" onClick={() => handleDeleteOrder(params.row._id)}>
+                        Delete
                     </Button>
                 </Box>
             )
@@ -285,6 +296,7 @@ const OrderList = () => {
                 <CardContent sx={{ py: 2 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <TextField
+                            name='searchBar'
                             sx={{ mr: 5, flexGrow: 1 }}
                             label="Search by keyword"
                             value={searchKeyword}
@@ -328,7 +340,8 @@ const OrderList = () => {
             {
                 filteredOrders.length === 0 && !loading && <Typography variant='h4' sx={{ textAlign: "center" }} >No orders found based on the current filter/search criteria.</Typography>
             }
-            {selectedOrder && <OrderDetails order={selectedOrder} />}
+            {selectedOrder && <OrderDetails order={selectedOrder} open={isDialogOpen}
+                onClose={handleCloseDialog} />}
         </Box>
 
     );

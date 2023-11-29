@@ -235,7 +235,7 @@ module.exports = {
                     }
                 }
             }
-            console.log(result)
+
             res.json(result);
         } catch (error) {
             console.error('Error getting amount sold per month:', error);

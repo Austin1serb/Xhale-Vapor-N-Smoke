@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { BarChart } from '@mui/x-charts/BarChart';
-import { Box, Card, CardContent, CircularProgress, Grid, Typography } from '@mui/material';
+import { Box, Button, Card, CardContent, CircularProgress, Grid, Typography } from '@mui/material';
 import { axisClasses } from '@mui/x-charts';
+import OrderDetails from './OrderDetails';
 
 
 
@@ -19,6 +20,13 @@ const SalesOverview = () => {
     const [recentCustomers, setRecentCustomers] = useState([]);
     const [loading, setLoading] = useState(false);
     const [orders, setOrders] = useState([]);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    // Function to handle dialog close
+    const handleCloseDialog = () => {
+        setIsDialogOpen(false);
+    };
+
+
 
 
 
@@ -91,14 +99,12 @@ const SalesOverview = () => {
 
 
     useEffect(() => {
-
         const controller = new AbortController();
         const { signal } = controller;
 
         // Fetch all necessary data on component mount
         const fetchAllData = async () => {
             try {
-                console.log('fetching')
                 setLoading(true);
 
                 // Fetch products
@@ -192,7 +198,7 @@ const SalesOverview = () => {
 
     const shuffleArray = (array) => {
         for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
+            const j = Math.floor(0.2 * (i + 1));
             [array[i], array[j]] = [array[j], array[i]]; // Swap elements
         }
         return array;
@@ -316,8 +322,12 @@ const SalesOverview = () => {
                             {/* Display recent orders */}
                             {recentOrders.map(order => (
                                 <Box key={order._id}>
-                                    <Typography variant="body2">Order ID: {order._id}</Typography>
-
+                                    <Typography component={Button} onClick={() => setIsDialogOpen(true)} variant="body2">Order ID: {order._id} • Order Status: <strong>{order.orderStatus}</strong></Typography>
+                                    <OrderDetails
+                                        order={order}
+                                        open={isDialogOpen}
+                                        onClose={handleCloseDialog}
+                                    />
                                 </Box>
                             ))}
                         </CardContent>
