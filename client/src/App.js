@@ -8,7 +8,6 @@ import { CartProvider } from './components/CartContext';
 import { Backdrop, CircularProgress } from '@mui/material';
 import ProtectedRoute from './components/Utilities/ProtectedRoute';
 import AuthProvider from './components/Utilities/AuthProvider';
-import Footer from './scenes/Footer';
 
 
 const AdminDashboard = React.lazy(() => import('./scenes/AdminDashboard'));
@@ -25,7 +24,7 @@ const ResetPassword = React.lazy(() => import('./components/ResetPassword'));
 const AboutUs = React.lazy(() => import('./components/AboutUs'));
 const ShippingPolicy = React.lazy(() => import('./components/ShippingPolicy'));
 const Home = React.lazy(() => import('./scenes/Home'));
-
+const Footer = React.lazy(() => import('./scenes/Footer'));
 const AgeVerification = React.lazy(() => import('./scenes/AgeVerification'))
 const App = () => {
 
@@ -72,7 +71,6 @@ const App = () => {
             <Routes>
               <Route>
 
-                <Route path="/" element={Home} />
                 {/* PROTECTED/LAZY LOADED ADMINDASHBOARD */}
                 <Route
                   path="/api/customer/admin"
@@ -82,9 +80,7 @@ const App = () => {
                     </ProtectedRoute>
                   }
                 />
-
-
-
+                <Route path="/" element={<Home />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/about" element={<AboutUs />} />
                 <Route path="/reset-password/:token" element={<ResetPassword />} />
@@ -100,7 +96,11 @@ const App = () => {
               </Route>
             </Routes>
           </Suspense>
-          <Footer />
+          <Suspense fallback={
+            <CircularProgress color="inherit" />
+          }>
+            <Footer />
+          </Suspense>
         </CartProvider>
       </AuthProvider>
     </div >

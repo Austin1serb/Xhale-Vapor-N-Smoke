@@ -321,7 +321,8 @@ const DropdownMenu = ({ isVisible, onLinkClick }) => {
                                 setQuickViewProduct(product._id);
                                 setQuickViewOpen(true);
                             }} className='drowdown-featured-container' key={product._id}> {/* Use `_id` or appropriate key property */}
-                                <img className='dropdown-featured-img' alt='featured' src={product.imgSource[0].url} loading='lazy' />
+                                <img className='dropdown-featured-img' alt='featured' src={product.imgSource[0].url.split('/upload/').join('/upload/c_fill,h_50,w_50/f_auto,q_auto:good/')}
+                                    loading='lazy' />
                                 <Box>
 
                                     <Box className='dropdown-featured-name'>{product.name}</Box>

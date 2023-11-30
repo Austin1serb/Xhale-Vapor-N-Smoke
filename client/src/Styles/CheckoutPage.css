@@ -22,10 +22,18 @@
 }
 
 .cart-img {
+    transition: transform 0.3s ease;
     border: 0.1px solid black;
     border-radius: 5px;
     background-color: white;
+
 }
+
+.cart-img:hover {
+    transition: transform 0.3s ease;
+    transform: scale(1.05);
+}
+
 
 .cartSummary-cost {
 

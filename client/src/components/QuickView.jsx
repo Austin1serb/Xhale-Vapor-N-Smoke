@@ -102,8 +102,8 @@ const QuickView = ({ productId, open, handleClose, products }) => {
 
         const target = e.target;
         const targetRect = target.getBoundingClientRect();
-        const x = e.pageX - targetRect.left - window.scrollX + 40;
-        const y = e.pageY - targetRect.top - window.scrollY + 25;
+        const x = e.pageX - targetRect.left - window.scrollX + 50;
+        const y = e.pageY - targetRect.top - window.scrollY + 45;
 
         setLensPosition({
             x: x - lensSize.width / 2,
@@ -145,8 +145,10 @@ const QuickView = ({ productId, open, handleClose, products }) => {
                                                 }}
                                             >
                                                 <img
+                                                    key={'image'}
+
                                                     className='quickview-thumbnail'
-                                                    src={image.url}
+                                                    src={`${image.url.split('/upload/').join('/upload/c_fill,h_75,w_75/f_auto,q_auto:eco/')}`}
                                                     alt={`${productDetails.name} thumbnail ${i}`}
                                                     onClick={() => handleThumbnailClick(image.url)}
                                                     loading='lazy'
@@ -231,9 +233,9 @@ const QuickView = ({ productId, open, handleClose, products }) => {
 
                             <Box sx={{ borderBottom: 1, borderColor: 'divider', }}>
                                 <Tabs sx={{ ml: { xs: 5, sm: 3, md: 0 } }} value={selectedTab} onChange={handleChangeTab} aria-label="Product details tabs" >
-                                    <Tab tabIndex={0} role="button" label="Details" />
-                                    <Tab tabIndex={1} role="button" label="Related" />
-                                    <Tab tabIndex={3} role="button" label="Specs" />
+                                    <Tab tabIndex={0} type='button' label="Details" />
+                                    <Tab tabIndex={1} type='button' label="Related" />
+                                    <Tab tabIndex={3} type='button' label="Specs" />
                                 </Tabs>
                             </Box>
                             {/* Content for each tab */}
@@ -250,7 +252,7 @@ const QuickView = ({ productId, open, handleClose, products }) => {
                                 <TabPanel value={selectedTab} index={1}>
                                     {relatedProducts.map((product) => (
                                         <Box onClick={() => setProductDetails(product)} className='quickview-related-container' key={product._id}> {/* Use `_id` or appropriate key property */}
-                                            <img className='quickview-related-img' alt='related' src={product.imgSource[0].url} loading='lazy' />
+                                            <img className='quickview-related-img' alt='related' src={`${product.imgSource[0].url.split('/upload/').join('/upload/c_fill,h_50,w_50/f_auto,q_auto:eco/')}`} loading='lazy' />
                                             <Box variant='button'>
 
                                                 <Box className='quickview-related-name'>{product.name}</Box>
