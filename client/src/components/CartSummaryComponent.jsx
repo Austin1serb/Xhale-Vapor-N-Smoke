@@ -78,8 +78,9 @@ const CartSummaryComponent = ({ cartItems, shippingCost, total, removeFromCart, 
                     ) : (
                         cartItems.map((item, index) => (
                             <Box key={'product:' + index} sx={{ display: 'flex', mx: { xs: 2, sm: 5 }, my: 2 }}>
-                                <Badge badgeContent={item.quantity} color="secondary">
-                                    <img className='cart-img' src={item.img} alt={item.name} width={80} height={80} loading='lazy' />
+                                <Badge badgeContent={item.quantity} color="secondary" sx={{ '.MuiBadge-badge': { backgroundColor: 'rgba(40, 47, 72, 0.72)', color: 'white' } }}>
+                                    <img className='cart-img' src={item.img.split('/upload/').join('/upload/c_fill,h_200,w_200/f_auto,q_auto:good/')}
+                                        alt={item.name} width={80} height={80} loading='lazy' />
                                 </Badge>
                                 <Box >
                                     <Box sx={{

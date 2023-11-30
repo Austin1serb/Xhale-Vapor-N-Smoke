@@ -3,9 +3,11 @@ import '../Styles/AboutUs.css';
 import { Accordion, AccordionDetails, AccordionSummary, Button, CircularProgress } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import brandIcon from '../assets/brandIconSmall.webp'
+const QuickView = React.lazy(() => import('./QuickView'));
+
 const AboutUs = () => {
     //lazy load imports
-    const QuickView = React.lazy(() => import('./QuickView'));
+
 
 
 
@@ -133,7 +135,9 @@ const AboutUs = () => {
                     <div className="product-gallery">
                         <div className="product-display">
                             <div className='about-product-item'>
-                                <img src={bestSellers[currentProductIndex]?.imgSource[0].url} alt={bestSellers[currentProductIndex]?.name} />
+                                <img src={bestSellers[currentProductIndex]?.imgSource[0].url.split('/upload/').join('/upload/c_fill,h_200,w_200/f_auto,q_auto:good/')}
+
+                                    alt={bestSellers[currentProductIndex]?.name} />
                                 {/* ADD A BUTTON THAT OPENS THE QUICKVIEW OF THAT PRODUCT */}
 
                                 <Button variant='outlined' sx={buttonStyle} className='dropdown-featured-button' onClick={() => {
@@ -142,7 +146,8 @@ const AboutUs = () => {
                                 }}>Quick View</Button>
                             </div>
                             {bestSellers[currentProductIndex + 1] ? (<div className='about-product-item'>
-                                <img src={bestSellers[currentProductIndex + 1]?.imgSource[0].url} alt={bestSellers[currentProductIndex + 1]?.name} />
+                                <img src={bestSellers[currentProductIndex + 1]?.imgSource[0].url.split('/upload/').join('/upload/c_fill,h_200,w_200/f_auto,q_auto:good/')}
+                                    alt={bestSellers[currentProductIndex + 1]?.name} />
                                 <Button variant='outlined' sx={buttonStyle} className='dropdown-featured-button' onClick={() => {
                                     setQuickViewProduct(bestSellers[currentProductIndex + 1]?._id);
                                     setQuickViewOpen(true);
@@ -150,7 +155,8 @@ const AboutUs = () => {
                             </div>) : (null)}
                             {bestSellers[currentProductIndex + 2] ? (<div className='about-product-item'>
                                 <div className='about-product-item'>
-                                    <img src={bestSellers[currentProductIndex + 2]?.imgSource[0].url} alt={bestSellers[currentProductIndex + 2]?.name} />
+                                    <img src={bestSellers[currentProductIndex + 2]?.imgSource[0].url.split('/upload/').join('/upload/c_fill,h_200,w_200/f_auto,q_auto:good/')}
+                                        alt={bestSellers[currentProductIndex + 2]?.name} />
                                     <Button variant='outlined' sx={buttonStyle} className='dropdown-featured-button' onClick={() => {
                                         setQuickViewProduct(bestSellers[currentProductIndex + 2]?._id);
                                         setQuickViewOpen(true);

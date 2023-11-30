@@ -104,7 +104,11 @@ const BestSellersSection = () => {
                         <Grid item xs={12} sm={6} md={4} key={product._id} style={{ animationDelay: `${index * 0.4}s` }} className="product-slide-in">
                             <div style={productStyles}>
 
-                                <img className="shop-img" src={product.imgSource[0].url} alt={product.name} height="150px" loading='lazy' />
+                                <img className="shop-img"
+                                    src={`${product.imgSource[0].url.split('/upload/').join('/upload/c_fill,h_150,w_150/f_auto,q_auto:eco/')}`}
+
+                                    alt={product.name}
+                                    height="150px" loading='lazy' />
                                 <Typography sx={{ textAlign: 'center', fontWeight: 100, fontSize: 14, height: '20px', overflow: "clip" }} className='shop-name' mt={2}>{product.name}</Typography>
                                 <Typography variant="subtitle1" className='shop-brand' sx={{ fontSize: 12, fontWeight: 100, color: 'gray' }}>{product.brand}</Typography>
                                 <Typography variant="subtitle2" sx={{ fontWeight: 100, fontSize: 16 }} className='shop-price'>${product.price.toFixed(2)}</Typography>

@@ -40,7 +40,6 @@ const Home = () => {
                     <img
                         src={cdbImage}
                         alt="cbd"
-                        loading='lazy'
                         height='400px'
                         width='400px'
 
