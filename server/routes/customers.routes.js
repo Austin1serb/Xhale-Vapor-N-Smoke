@@ -38,12 +38,11 @@ router.route('/logout').post(CustomersController.logoutUser);
 router.route('/refresh').post(CustomersController.refreshToken);
 
 // Routes below require authentication
-router.use(verifyToken, isAdmin); // Apply verifyToken middleware to routes below
+router.use(verifyToken); // Apply verifyToken middleware to routes below
 router.route('/:id').get(CustomersController.getOne);
 router.route('/:id').put(CustomersController.updateOne);
 router.route('/:id').delete(CustomersController.deleteOne);
-
-//router.use(isAdmin);
+router.use(isAdmin);
 router.route('/').get(CustomersController.getAll);
 
 
