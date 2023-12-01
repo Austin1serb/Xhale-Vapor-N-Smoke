@@ -43,7 +43,6 @@ const productRoutes = require('./routes/products.routes');
 const orderRoutes = require('./routes/orders.routes');
 const guestRoutes = require('./routes/guest.routes')
 const customerRoutes = require('./routes/customers.routes');
-const cartRoutes = require('./routes/carts.routes');
 const shippoRoutes = require('./routes/shippo.routes');
 const { uploadToCloudinary } = require('./services/cloudinary');
 const suggestionsRoutes = require('./routes/suggestions.routes');
@@ -58,7 +57,6 @@ app.use("/api/product", productRoutes);
 app.use("/api/order", orderRoutes);
 app.use('/api/guest', guestRoutes);
 app.use("/api/customer", customerRoutes);
-app.use("/api/cart", cartRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/upload", uploadToCloudinary);
 app.use('/api/shippo', shippoRoutes);

@@ -27,15 +27,14 @@ router.route('/admin', verifyToken, isAdmin, (req, res) => {
 });
 
 
-// These route does not require authentication
-// Apply the rate limiter to the registration route
-//router.post('/register', registerLimiter, CustomersController.createOne);
+
+
 router.route('/test').get(CustomersController.test);
-router.post('/register', tokenRefreshLimiter, CustomersController.createOne);
+router.post('/register', registerLimiter, CustomersController.createOne);
 
 router.route('/login').post(CustomersController.loginUser);
 router.route('/logout').post(CustomersController.logoutUser);
-router.route('/refresh').post(CustomersController.refreshToken);
+router.post('/refresh', tokenRefreshLimiter, CustomersController.refreshToken);
 
 // Routes below require authentication
 router.use(verifyToken); // Apply verifyToken middleware to routes below

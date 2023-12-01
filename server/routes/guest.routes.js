@@ -1,13 +1,17 @@
 const express = require('express');
 const router = express.Router();
 const guestController = require('../controllers/guest.controller');
+const { verifyToken, isAdmin } = require('../verifyToken'); // Import your verifyToken middleware
+
 
 router.post('/', guestController.createGuest);
-router.delete('/:id', guestController.deleteGuest);
+
 router.get('/:id', guestController.getGuestById);
-router.get('/', guestController.getAllGuests);
+
 router.put('/:id', guestController.updateGuest);
 
-// Add other routes as needed
+router.use(isAdmin);
+router.get('/', guestController.getAllGuests);
+router.delete('/:id', guestController.deleteGuest);
 
 module.exports = router;

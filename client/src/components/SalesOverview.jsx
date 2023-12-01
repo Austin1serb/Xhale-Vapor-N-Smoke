@@ -7,8 +7,9 @@ import OrderDetails from './OrderDetails';
 
 
 const SalesOverview = () => {
+
     const [salesData, setSalesData] = useState([]);
-    const [products, setProducts] = useState(['']); // State to store the products
+    const [products, setProducts] = useState(['']);
     const [totalProducts, setTotalProducts] = useState(0);
     const [totalOrders, setTotalOrders] = useState(0);
     const [totalSales, setTotalSales] = useState(0);
@@ -22,7 +23,8 @@ const SalesOverview = () => {
     const [orders, setOrders] = useState([]);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [currentOrderId, setCurrentOrderId] = useState(null);
-
+    const [guestData, setGuestData] = useState([]);
+    const totalGuestOrders = guestData.reduce((total, guest) => total + guest.orders.length, 0);
 
 
     const handleOpenDialog = orderId => {
@@ -118,11 +120,20 @@ const SalesOverview = () => {
             try {
                 setLoading(true);
 
+
+
+                // Fetch guest data
+                const guestDataResponse = await fetchData('http://localhost:8000/api/guest', signal);
+                setGuestData(guestDataResponse);
+
+
+
                 // Fetch products
                 const productData = await fetchData('http://localhost:8000/api/product', signal);
                 setProducts(productData);
-
                 setTotalProducts(productData.length);
+
+
 
                 // Fetch orders
                 const orderData = await fetchData('http://localhost:8000/api/order', signal);
@@ -322,6 +333,29 @@ const SalesOverview = () => {
                         <CardContent >
                             <Typography variant="body1" gutterBottom>Recent Customer Registrations: </Typography>
                             <Typography variant="body2"> {recentCustomers.map(customer => <li key={customer._id}>{customer.firstName} {customer.lastName} - {customer.email}</li>)}</Typography>
+                        </CardContent>
+                    </Card>
+                </Grid>
+                <Grid item xs={12} md={8} lg={6}>
+                    <Card>
+                        <CardContent>
+                            <Typography variant="body1">Guest Information:</Typography>
+                            {/* Display guest data */}
+                            {/*{guestData.map(guest => (
+                                <Box key={guest._id}>*/}
+                            <Typography variant="body2">
+                                Total Guests: {guestData.length}
+                            </Typography>
+                            <Typography variant="body2">
+                                Total Guest Orders: {totalGuestOrders}
+                            </Typography>
+                            <Typography variant="body2">
+
+                            </Typography>
+
+                            {/*</Box>
+
+                            ))}*/}
                         </CardContent>
                     </Card>
                 </Grid>
