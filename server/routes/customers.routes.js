@@ -21,10 +21,11 @@ const tokenRefreshLimiter = rateLimit({
 
 
 // Admin route
-router.get('/admin', verifyToken, isAdmin, (req, res) => {
+router.route('/admin', verifyToken, isAdmin, (req, res) => {
     // Handle the request
     res.json({ message: 'Welcome to the Admin Dashboard' });
 });
+
 
 // These route does not require authentication
 // Apply the rate limiter to the registration route
@@ -34,14 +35,14 @@ router.post('/register', tokenRefreshLimiter, CustomersController.createOne);
 
 router.route('/login').post(CustomersController.loginUser);
 router.route('/logout').post(CustomersController.logoutUser);
-
+router.route('/refresh').post(CustomersController.refreshToken);
 
 // Routes below require authentication
-//router.use(verifyToken); // Apply verifyToken middleware to routes below
+router.use(verifyToken, isAdmin); // Apply verifyToken middleware to routes below
 router.route('/:id').get(CustomersController.getOne);
 router.route('/:id').put(CustomersController.updateOne);
 router.route('/:id').delete(CustomersController.deleteOne);
-router.route('/refresh').post(CustomersController.refreshToken);
+
 //router.use(isAdmin);
 router.route('/').get(CustomersController.getAll);
 

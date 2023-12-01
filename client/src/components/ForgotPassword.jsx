@@ -69,6 +69,8 @@ const ForgotPassword = ({ close, type, resetEmail, startCountdown, countdown, is
 
         }
     };
+
+
     const styles = {
         position: 'absolute',
         top: '50%',

@@ -21,6 +21,17 @@ const SalesOverview = () => {
     const [loading, setLoading] = useState(false);
     const [orders, setOrders] = useState([]);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [currentOrderId, setCurrentOrderId] = useState(null);
+
+
+
+    const handleOpenDialog = orderId => {
+        setCurrentOrderId(orderId);
+        setIsDialogOpen(true);
+    };
+
+
+
     // Function to handle dialog close
     const handleCloseDialog = () => {
         setIsDialogOpen(false);
@@ -322,12 +333,16 @@ const SalesOverview = () => {
                             {/* Display recent orders */}
                             {recentOrders.map(order => (
                                 <Box key={order._id}>
-                                    <Typography component={Button} onClick={() => setIsDialogOpen(true)} variant="body2">Order ID: {order._id} • Order Status: <strong>{order.orderStatus}</strong></Typography>
-                                    <OrderDetails
-                                        order={order}
-                                        open={isDialogOpen}
-                                        onClose={handleCloseDialog}
-                                    />
+                                    <Typography component={Button} onClick={() => handleOpenDialog(order._id)} variant="body2">
+                                        Order ID: {order._id} • Order Status: <strong>{order.orderStatus}</strong>
+                                    </Typography>
+                                    {currentOrderId === order._id && (
+                                        <OrderDetails
+                                            order={order}
+                                            open={currentOrderId === order._id}
+                                            onClose={() => setCurrentOrderId(null)}
+                                        />
+                                    )}
                                 </Box>
                             ))}
                         </CardContent>

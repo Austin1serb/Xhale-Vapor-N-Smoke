@@ -3,7 +3,7 @@ import '../Styles/AboutUs.css';
 import { Accordion, AccordionDetails, AccordionSummary, Button, CircularProgress } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import brandIcon from '../assets/brandIconSmall.webp'
-const QuickView = React.lazy(() => import('./QuickView'));
+const QuickView = React.lazy(() => import('../components/QuickView'));
 
 const AboutUs = () => {
     //lazy load imports

@@ -1,5 +1,5 @@
 import React from 'react';
-import '../Styles/ShippingPolicy.css'; // Import your CSS file for styling
+import '../Styles/PolicyPages.css'; // Import your CSS file for styling
 
 function ShippingPolicy() {
     return (

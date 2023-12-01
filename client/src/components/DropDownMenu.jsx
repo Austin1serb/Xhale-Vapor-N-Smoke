@@ -153,7 +153,7 @@ const DropdownMenu = ({ isVisible, onLinkClick }) => {
                                     <span className="list-content">High Potency</span>
                                 </ListItem>
                                 <ListItem className="list-item" component={Link} to="/shop?filter=featured" onClick={onLinkClick}>
-                                    <span className="list-content">Featured Products</span>
+                                    <span className="list-content">Featured </span>
                                 </ListItem>
 
                             </List>
