@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
-
+import '../Styles/PolicyPages.css';
 import {
     Box,
     Paper,
@@ -18,8 +18,8 @@ import ReCAPTCHA from 'react-google-recaptcha';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import jwtDecode from 'jwt-decode';
-import GuestCheckoutPage from './GuestCheckout';
-import { useAuth } from './Utilities/useAuth';
+import GuestCheckoutPage from '../components/GuestCheckout';
+import { useAuth } from '../components/Utilities/useAuth';
 
 
 

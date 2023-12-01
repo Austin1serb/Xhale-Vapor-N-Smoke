@@ -18,9 +18,9 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
-import GuestCheckoutPage from './GuestCheckout';
-import ForgotPassword from './ForgotPassword';
-import { useAuth } from './Utilities/useAuth';
+import GuestCheckoutPage from '../components/GuestCheckout';
+import ForgotPassword from '../components/ForgotPassword';
+import { useAuth } from '../components/Utilities/useAuth';
 
 const LoginPage = () => {
     const [openSnackbar, setOpenSnackbar] = React.useState(false);

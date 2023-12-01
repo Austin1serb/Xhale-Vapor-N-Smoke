@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Box, Typography, Button, List, ListItem, IconButton, Badge, } from '@mui/material';
 import { useCart } from './CartContext';  // Adjust the path based on your file structure
 import { Link } from 'react-router-dom';
-
+import '../Styles/Shop.css'
 
 const Cart = ({ setDrawerOpen }) => {
     const [note, setNote] = useState('');
@@ -77,7 +77,7 @@ const Cart = ({ setDrawerOpen }) => {
                                         }}>
                                             <Badge badgeContent={item.quantity} sx={{ '.MuiBadge-badge': { backgroundColor: 'rgba(40, 47, 72, 0.72)', color: 'white' } }}
                                             >
-                                                <img className='cart-img' style={{}} src={item.product.imgSource[0].url.split('/upload/').join('/upload/c_fill,h_100,w_100/f_auto,q_auto:good/')}
+                                                <img className='cart-img1' src={item.product.imgSource[0].url.split('/upload/').join('/upload/c_fill,h_100,w_100/f_auto,q_auto:good/')}
 
                                                     alt={item.product.name} width={100} height={100} loading='lazy' />
                                             </Badge>

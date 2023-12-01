@@ -1,6 +1,5 @@
 import React from 'react'
-
-
+import '../Styles/PolicyPages.css';
 
 
 const RefundPolicy = () => {

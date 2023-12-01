@@ -1,14 +1,17 @@
-import { Button, Card, CardContent, Dialog, DialogContent, DialogTitle, Grid, Typography, colors } from '@mui/material';
+import { Button, Card, CardContent, Dialog, DialogContent, DialogTitle, Grid, IconButton, Typography } from '@mui/material';
 import React from 'react';
 
 const OrderDetails = ({ order, open, onClose }) => {
 
 
     return (
-
-
         <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
-            <DialogTitle sx={{ backgroundColor: '#282F48', color: 'white', textAlign: 'center' }}>Order Details</DialogTitle>
+            <DialogTitle sx={{ backgroundColor: '#282F48', color: 'white', textAlign: 'center', display: 'flex', justifyContent: 'space-between' }}><span style={{ fontSize: '28px', }}>Order Details</span>
+                <IconButton sx={{ transform: 'translate(0px, -7px)' }} className="cart-close-icon" onClick={onClose}>
+                    {/* CLOSE ICON */}
+                    <svg xmlns="http://www.w3.org/2000/svg" fill='white' height="35" width="35"><path d="m10.458 31.458-1.916-1.916 9.5-9.542-9.5-9.542 1.916-1.916 9.542 9.5 9.542-9.5 1.916 1.916-9.5 9.542 9.5 9.542-1.916 1.916-9.542-9.5Z" /></svg>
+                </IconButton>
+            </DialogTitle>
             <DialogContent dividers>
                 <div>
 

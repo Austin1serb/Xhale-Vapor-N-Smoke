@@ -32,13 +32,25 @@ function verifyToken(req, res, next) {
     });
 }
 
-const isAdmin = (req, res, next) => {
-    if (req.user && req.user.isAdmin) {
-        return next(); // User is admin, proceed to the next middleware
+const isAdmin = async (req, res, next) => {
+    const refreshToken = req.cookies.refreshToken;
+    if (!refreshToken) {
+        return res.status(401).json({ message: 'No token provided.' });
     }
-    return res.status(403).json({ message: 'Access denied. Admins only.' });
-};
 
+    try {
+        const decoded = jwt.verify(refreshToken, secretKey);
+        const user = await Customers.findById(decoded.customerId);
+        console.log(decoded);
+        if (user.isAdmin && user.isAdmin === true || user.isAdmin === 'true') {
+            return next();
+        } else {
+            return res.status(403).json({ message: 'Access denied. Admins only.' });
+        }
+    } catch (error) {
+        return res.status(403).json({ message: 'Invalid or expired token.' });
+    }
+};
 
 
 

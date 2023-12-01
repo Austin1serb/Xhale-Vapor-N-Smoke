@@ -207,7 +207,7 @@ const Shop = () => {
                                     alt={product.name}
                                     height="150px"
                                     width='150px'
-                                    loading='lazy'
+
 
                                 />
 
