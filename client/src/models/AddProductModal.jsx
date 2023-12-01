@@ -240,6 +240,7 @@ const AddProductModal = ({ open, onClose, onAddProduct, selectedProduct, onUpdat
         return fetch(url, {
             method,
             headers: HEADERS,
+            credentials: 'include',
             body: JSON.stringify(data),
         });
     };
