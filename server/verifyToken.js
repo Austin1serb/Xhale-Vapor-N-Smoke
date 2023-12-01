@@ -41,7 +41,7 @@ const isAdmin = async (req, res, next) => {
     try {
         const decoded = jwt.verify(refreshToken, secretKey);
         const user = await Customers.findById(decoded.customerId);
-        console.log(decoded);
+
         if (user.isAdmin && user.isAdmin === true || user.isAdmin === 'true') {
             return next();
         } else {
