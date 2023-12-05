@@ -237,16 +237,9 @@
 }
 
 
-@media(max-width:980px) {
+@media(max-width:902px) {
     .dropdown-featured {
         display: none;
-    }
-
-}
-
-@media(min-width:1080px) {
-    .dropdown-featured {
-        margin-right: 0;
     }
 
 }

@@ -1,15 +1,16 @@
 
 import '../Styles/Shop.css'
 import React, { useCallback, useEffect, useState } from 'react';
-import { Box, Typography, TextField, Button, Grid, Skeleton, InputAdornment, IconButton } from '@mui/material';
+import { Box, Typography, TextField, Button, Grid, Skeleton, InputAdornment, IconButton, Snackbar, Alert } from '@mui/material';
 import axios from 'axios';
 import { useCart } from '../components/CartContext.jsx';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 
 const QuickView = React.lazy(() => import('../components/QuickView'));
 
 const ProductSkeleton = ({ count }) => (
+
 
     Array.from({ length: count }).map((_, index) => (
         <Grid item xs={12} sm={6} md={4} key={index}>
@@ -38,6 +39,12 @@ const ProductSkeleton = ({ count }) => (
 
 
 const Shop = () => {
+    useEffect(() => {
+        document.title = "Shop at Herba Naturals - Explore Koi, Beezbee, Wyld Products and More";
+        document.querySelector('meta[name="description"]').setAttribute("content", "Browse Herba Natural's online store for the finest CBD products. Featuring brands like Koi, Beezbee, and Wyld with a variety of CBD oils, edibles, and topicals.");
+    }, []);
+
+
     const [products, setProducts] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [quickViewOpen, setQuickViewOpen] = useState(false);
@@ -51,12 +58,18 @@ const Shop = () => {
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const [filter, setFilter] = useState('');
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
 
 
+    useEffect(() => {
+        setSnackbarOpen(true);
+    }, []);
 
 
 
     const fetchProducts = (url) => {
+
+
         setLoading(true);
         axios.get(url)
             .then(response => {
@@ -160,7 +173,38 @@ const Shop = () => {
     }
     return (
         <Box className="shop" sx={{ padding: '20px', mt: 10 }}>
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={6000}
+                sx={{ mt: 10 }}
+                onClose={() => setSnackbarOpen(false)}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
 
+            >
+                <Alert onClose={() => setSnackbarOpen(false)} sx={{ width: '100%' }}>
+                    Enjoy free shipping on all orders over $50!
+                </Alert>
+            </Snackbar>
+
+            {/* Display the current filter */}
+            <Box sx={{ mb: 4 }}>
+                <Link to="/shop" style={{ textDecoration: 'none' }}>
+                    <Typography variant="body1" component="h1" >
+                        SHOP
+                    </Typography>
+                </Link>
+                {filter && (
+                    <div style={{ marginLeft: '10px' }}>
+
+                        <Typography variant="body1" component="span" > {' > '} </Typography>
+                        <Link to={`/shop?filter=${filter}`} style={{ textDecoration: 'none' }}>
+                            <Typography variant="body1" component="span" >
+                                {filter.toUpperCase()}
+                            </Typography>
+                        </Link>
+                    </div>
+                )}
+            </Box>
             <Box mb={4}>
                 <TextField
                     name='searchBar'
@@ -198,18 +242,19 @@ const Shop = () => {
             ) : ( // Render products when not loading
                 <Grid container spacing={3} >
                     {filteredProducts.map((product, index) => (
+
                         <Grid item xs={12} sm={6} md={4} key={product._id} style={{ animationDelay: `${index * 0.2}s` }} className="product-slide-in-shop">
                             <div style={productStyles}>
 
                                 <img
                                     className="shop-img"
-                                    src={`${product.imgSource[0].url.split('/upload/').join('/upload/c_fill,h_150,w_150/f_auto,q_auto:eco/')}`}
+                                    src={`${product.imgSource[0].url.replace('/upload/', '/upload/c_scale,w_150,h_150,f_auto,q_auto,dpr_auto/')}`}
                                     alt={product.name}
-                                    height="150px"
-                                    width='150px'
-
+                                    height="150"
+                                    width="150"
 
                                 />
+
 
                                 <Typography sx={{ fontWeight: 100, fontSize: 14 }} className='shop-name' mt={2}>{product.name}</Typography>
                                 <Typography variant="subtitle1" className='shop-brand' sx={{ fontSize: 12, fontWeight: 100, color: 'black' }}>{product.brand}</Typography>

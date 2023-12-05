@@ -58,7 +58,8 @@ const CartSummaryComponent = ({ cartItems, shippingCost, total, removeFromCart, 
 
             <List disablePadding >
                 <Box ref={boxRef} sx={{ maxHeight: '60vh', minHeight: '65vh', overflow: 'auto', mt: { xs: 1, sm: -2.5 }, mb: -1.25, }}>
-                    <Typography sx={{ borderBottom: .1, my: 2, textAlign: 'center', }} variant="h6" gutterBottom>
+                    <Typography variant="h1" component="h1" sx={{ borderBottom: .1, my: 2, textAlign: 'center', fontSize: 'h5.fontSize' }} gutterBottom>
+
                         Order Summary
                     </Typography>
                     {cartItems.length === 0 ? (
@@ -78,7 +79,7 @@ const CartSummaryComponent = ({ cartItems, shippingCost, total, removeFromCart, 
                     ) : (
                         cartItems.map((item, index) => (
                             <Box key={'product:' + index} sx={{ display: 'flex', mx: { xs: 2, sm: 5 }, my: 2 }}>
-                                <Badge badgeContent={item.quantity} color="secondary" sx={{ '.MuiBadge-badge': { backgroundColor: 'rgba(40, 47, 72, 0.72)', color: 'white' } }}>
+                                <Badge badgeContent={item.quantity} color="secondary" sx={{ '.MuiBadge-badge': { backgroundColor: 'rgba(195, 26, 210, 0.72)', color: 'white' } }}>
                                     <img className='cart-img' src={item.img.split('/upload/').join('/upload/c_fill,h_200,w_200/f_auto,q_auto:good/')}
                                         alt={item.name} width={80} height={80} loading='lazy' />
                                 </Badge>

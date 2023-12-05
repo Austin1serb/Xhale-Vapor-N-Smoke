@@ -6,40 +6,42 @@ const { Client, Environment, ApiError } = require("square");
 
 const client = new Client({
     accessToken: process.env.SQUARE_ACCESS_TOKEN,
-    environment: Environment.Sandbox,
+    environment: Environment.Production,
 
 });
 const paymentsApi = client.paymentsApi;
-const { locationsApi } = client;
 
-async function getLocations() {
-    try {
-        let listLocationsResponse = await locationsApi.listLocations();
 
-        let locations = listLocationsResponse.result.locations;
+//const { locationsApi } = client;
 
-        locations.forEach(function (location) {
-            console.log(
-                location.id + ": " +
-                location.name + ", " +
-                location.address.addressLine1 + ", " +
-                location.address.locality
-            );
-        });
-    } catch (error) {
-        if (error instanceof ApiError) {
-            error.result.errors.forEach(function (e) {
-                console.log(e.category);
-                console.log(e.code);
-                console.log(e.detail);
-            });
-        } else {
-            console.log("Unexpected error occurred: ", error);
-        }
-    }
-};
+//async function getLocations() {
+//    try {
+//        let listLocationsResponse = await locationsApi.listLocations();
 
-getLocations();
+//        let locations = listLocationsResponse.result.locations;
+
+//        locations.forEach(function (location) {
+//            console.log(
+//                location.id + ": " +
+//                location.name + ", " +
+//                location.address.addressLine1 + ", " +
+//                location.address.locality
+//            );
+//        });
+//    } catch (error) {
+//        if (error instanceof ApiError) {
+//            error.result.errors.forEach(function (e) {
+//                console.log(e.category);
+//                console.log(e.code);
+//                console.log(e.detail);
+//            });
+//        } else {
+//            console.log("Unexpected error occurred: ", error);
+//        }
+//    }
+//};
+
+//getLocations();
 
 function convertBigIntToString(obj) {
     for (let key in obj) {
@@ -89,8 +91,8 @@ const processPayment = async (req, res) => {
 
 
 
-        if (response && responseBody.payment.status === 'COMPLETED') {
-            const emailRecieptUrl = responseBody.receiptUrl;
+        if (response && responseBody.payment && responseBody.payment.status === 'COMPLETED') {
+            const emailReceiptUrl = responseBody.payment.receipt_url;
 
 
             await sendReceiptEmail(cost, notes, estimatedShipping, orderDetails, last4, emailRecieptUrl);
@@ -100,8 +102,8 @@ const processPayment = async (req, res) => {
             res.json({
                 success: true,
                 message: 'Payment processed successfully',
-                paymentId: response.id,
-                receiptUrl: response.receiptUrl,
+                paymentId: responseBody.payment.id,
+                receiptUrl: emailReceiptUrl,
                 response: response
             });
         } else {
@@ -120,8 +122,6 @@ const processPayment = async (req, res) => {
 
 
 async function sendReceiptEmail(cost, notes, estimatedShipping, orderDetails, last4, emailRecieptUrl) {
-
-
 
 
     let transporter = nodemailer.createTransport({
@@ -166,33 +166,39 @@ async function sendReceiptEmail(cost, notes, estimatedShipping, orderDetails, la
         to: `${orderDetails.customerEmail}`, // Customer's email address
         subject: 'Thank You for Your Purchase!',
         html: `
-            <div style="font-family: Arial, sans-serif; color: #444;">
-                <h2>Thank You from Herbal Zestfulness!</h2>
-                <div style='display: flex; justify-content: center; align-items: center;'>
-                <img src="https://i.imgur.com/HJTXrac.png" style="width: 200px; " alt="Product Image" onerror="this.style.display='none'"/>
+        <div style="font-family: Arial, sans-serif; color: #333; background-color: #f4f4f4; padding: 20px;">
+            <div style="max-width: 600px; margin: 0 auto; background-color: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 5px; box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);">
+                <h2 style="color: #0F75E0; text-align: center;">Thank You from Herba Naturals!</h2>
+                <div style="text-align: center;">
+                    <img src="https://i.imgur.com/3i30ftP.jpg" style="width: 200px;" alt="Herba Naturals Logo" onerror="this.style.display='none'"/>
                 </div>
-                <p>We appreciate your order and are excited to share our products with you. Here are the details of your purchase:</p>
+                <p style="text-align: center;">We appreciate your order and are excited to share our products with you. Here are the details of your purchase:</p>
                 <ul>
                     ${productsHtml}
                 </ul>
-                <p>Subtotal: $${cost.subTotal.toFixed(2)}</p>
-                <p>Shipping Cost: $${cost.shippingCost.toFixed(2)}</p>
-                <p>Tax: $${cost.tax.toFixed(2)}</p>
+                <p><strong>Subtotal:</strong> $${cost.subTotal.toFixed(2)}</p>
+                <p><strong>Shipping Cost:</strong> $${cost.shippingCost.toFixed(2)}</p>
+                <p><strong>Tax:</strong> $${cost.tax.toFixed(2)}</p>
                 <p><strong>Total: $${cost.grandTotal.toFixed(2)}</strong></p>
-                <p>Card Charged: **** **** **** ${last4}</p>
-                <p>Shipping To: ${orderDetails.address}</p>
-                <p>Estimated Shipping Date: ${estimatedShipping ? estimatedShipping : 'Unavailable'}</p>
-                <p>Notes: ${notes}</p>
-                <p>You can view your receipt and order details <a href="${emailRecieptUrl}">here</a>.</p>
+                <div style="border: 1px solid #ddd; padding: 10px; text-align: center;">
+                    <p><strong>Card Charged:</strong> **** **** **** ${last4}</p>
+                </div>
+                <p><strong>Shipping To:</strong> ${orderDetails.address}</p>
+                <p><strong>Estimated Shipping Date:</strong> ${estimatedShipping ? estimatedShipping : 'Unavailable'}</p>
+                <p><strong>Notes:</strong> ${notes}</p>
+                <p>You can view your receipt and order details <a href="${emailReceiptUrl}" style="color: #0F75E0; text-decoration: none;">here</a>.</p>
+                <p><strong>Your tracking number is:</strong> ${orderDetails.shippingMethod.trackingNumber}</p>
+                <p>You can track your order <a href="${orderDetails.shippingMethod.trackingUrl}" style="color: #0F75E0; text-decoration: none;">here</a>.</p>
                 <p>If you have any questions or concerns about your order, please don't hesitate to contact us.</p>
-                <p>Warm regards,</p>
-                <p>The Herbal Zestfulness Team</p>
+                <p style="text-align: center; color: #0F75E0;">Warm regards,<br>The Herba Naturals Team</p>
             </div>
-        `
+        </div>
+    `
     };
 
     // Send the email
     await transporter.sendMail(mailOptions);
+    //await transporter.sendMail(mailOptions2);
 }
 
 module.exports = {

@@ -1,8 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button, CircularProgress, TextField, Typography } from '@mui/material';
 
 const ResetPassword = () => {
+    useEffect(() => {
+        document.title = "Reset Your Password - Herba Naturals Account Assistance";
+        document.querySelector('meta[name="description"]').setAttribute("content", "Easily reset your Herba Naturals account password. Secure and efficient password recovery for uninterrupted access to our CBD products.");
+    }, []);
+
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [message, setMessage] = useState('');
@@ -68,7 +73,7 @@ const ResetPassword = () => {
 
     return (
         <div style={formStyle}>
-            <Typography variant="h5" align="center">
+            <Typography variant="h5" component="h1" align="center">
                 Reset Password
             </Typography>
             <form onSubmit={handleSubmit}>

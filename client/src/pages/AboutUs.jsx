@@ -1,14 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import '../Styles/AboutUs.css';
 import { Accordion, AccordionDetails, AccordionSummary, Button, CircularProgress } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import brandIcon from '../assets/brandIconSmall.webp'
+import { Link, useLocation } from 'react-router-dom';
 const QuickView = React.lazy(() => import('../components/QuickView'));
 
 const AboutUs = () => {
-    //lazy load imports
-
-
+    useEffect(() => {
+        document.title = "About Herba Naturals - Learn More About Our CBD Journey in Kirkland";
+        document.querySelector('meta[name="description"]').setAttribute("content", "Learn about Herba Natural's mission, our high-quality CBD products, and our journey in the CBD industry in Kirkland.");
+    }, []);
 
 
     const [bestSellers, setBestSellers] = useState([]);
@@ -16,6 +18,17 @@ const AboutUs = () => {
     const [currentProductIndex, setCurrentProductIndex] = useState(0);
     const [quickViewOpen, setQuickViewOpen] = useState(false);
     const [quickViewProduct, setQuickViewProduct] = useState(null);
+    const location = useLocation();
+    const bottomElementRef = useRef(null);
+
+    useEffect(() => {
+
+        if (location.state?.scrollToBottom && bottomElementRef.current) {
+            bottomElementRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [location.state, location.state?.scrollToBottom]);
+
+
 
 
     useEffect(() => {
@@ -115,16 +128,16 @@ const AboutUs = () => {
                 <img src={brandIcon} alt="brand icon" height='100%' width='100%' />
             </div>
 
-            <h1>About Us at Herbal Zestfulness</h1>
+            <h1>About Us at Herba Naturals</h1>
             <p className="slogan">"Harmony in Every Leaf, Relish Herbs for Holistic Living"</p>
 
             <section className="introduction">
-                <p>Welcome to Herbal Zestfulness, a sanctuary where the purity of nature meets the art of holistic wellness. Our journey began with a simple, yet profound belief: nature holds the key to harmony and well-being.  Inspired by the therapeutic virtues of CBD, we embarked on a mission to bring its natural benefits to your doorstep.</p>
+                <p>Welcome to Herba Naturals, a sanctuary where the purity of nature meets the art of holistic wellness. Our journey began with a simple, yet profound belief: nature holds the key to harmony and well-being.  Inspired by the therapeutic virtues of CBD, we embarked on a mission to bring its natural benefits to your doorstep.</p>
             </section>
 
             <section className="philosophy">
                 <h2>Our Philosophy</h2>
-                <p>        At Herbal Zestfulness, we are driven by a passion for purity and quality. We believe that true wellness emerges from products that are as close to their natural state as possible. This philosophy guides our selection of CBD products, ensuring that every item we offer is sourced from the finest, most responsible producers.</p>
+                <p>        At Herba Naturals, we are driven by a passion for purity and quality. We believe that true wellness emerges from products that are as close to their natural state as possible. This philosophy guides our selection of CBD products, ensuring that every item we offer is sourced from the finest, most responsible producers.</p>
             </section>
 
             <section className="products">
@@ -178,12 +191,13 @@ const AboutUs = () => {
 
             <section className="promise">
                 <h2>Our Promise</h2>
-                <p>   At Herbal Zestfulness, we understand that every individual's journey to wellness is unique. Our promise to you is one of unwavering commitment to excellence and education. We strive to be not just a provider of CBD products, but a trusted advisor and friend on your path to holistic living. Our knowledgeable team is always ready to guide you through our selections, ensuring you find the perfect product to harmonize your body, mind, and spirit.</p>
+                <p>   At Herba Naturals, we understand that every individual's journey to wellness is unique. Our promise to you is one of unwavering commitment to excellence and education. We strive to be not just a provider of CBD products, but a trusted advisor and friend on your path to holistic living. Our knowledgeable team is always ready to guide you through our selections, ensuring you find the perfect product to harmonize your body, mind, and spirit.</p>
             </section>
 
             <section className="join-us">
                 <h2>Join Us</h2>
-                <p>         We invite you to experience the tranquil essence of Herbal Zestfulness. Discover the harmony in every leaf, and embrace the world of holistic well-being that awaits you.</p>
+                <p>         We invite you to experience the tranquil essence of Herba Naturals. Discover the harmony in every leaf, and embrace the world of holistic well-being that awaits you.   <Link to="/registration"  >Join Us Now</Link></p>
+
             </section>
 
 
@@ -205,6 +219,7 @@ const AboutUs = () => {
                         </Accordion>
                     ))}
                 </div>
+                <div ref={bottomElementRef}></div>
             </section>
 
             <QuickView

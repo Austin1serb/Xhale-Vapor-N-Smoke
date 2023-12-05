@@ -8,9 +8,16 @@ const AuthProvider = ({ children }) => {
     const navigate = useNavigate();
     const [customerId, setCustomerId] = useState(null);
     const [isAdmin, setIsAdmin] = useState(false);
+    // Constants for the retry mechanism
+    const MAX_RETRY_ATTEMPTS = 3; // Maximum number of retry attempts
+    const RETRY_DELAY_MS = 3000; // Delay between retries in milliseconds (e.g., 3 seconds)
+
+    // Function to delay execution for a specified duration
+    const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 
     useEffect(() => {
+
         const token = localStorage.getItem('token') || sessionStorage.getItem('token');
         if (token) {
             try {
@@ -18,7 +25,7 @@ const AuthProvider = ({ children }) => {
                 const decodedToken = jwtDecode(token);
                 const currentTime = Date.now() / 1000;
 
-                if (decodedToken.isAdmin === true) {
+                if (decodedToken.isAdmin === true || decodedToken.isAdmin === 'true') {
                     setIsAdmin(true)
 
                 }
@@ -41,10 +48,11 @@ const AuthProvider = ({ children }) => {
             setIsLoggedIn(false);
             setCustomerId(null);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [navigate]);
 
 
-    const logout = async () => {
+    const logout = async (attempt = 1) => {
         try {
             const response = await fetch('http://localhost:8000/api/customer/logout', {
                 method: 'POST',
@@ -52,33 +60,43 @@ const AuthProvider = ({ children }) => {
             });
 
             if (response.ok) {
-                console.log('Logout successful');
-                ['token', 'refreshToken', 'userFirstName', 'userLastName', 'customerId', 'userEmail', 'isGuest'].forEach(key => {
-                    localStorage.removeItem(key);
-                });
-                sessionStorage.clear(); // Clear session storage
-                setIsLoggedIn(false); // Update the logged in state
-                navigate('/'); // Redirect to the home page
-                setCustomerId(null);
-                window.alert('USER SUCCESSFULLY LOGGED OUT')
+                clearLocalStorageAndSession();
+                window.alert('USER SUCCESSFULLY LOGGED OUT');
             } else {
-                console.error('Logout failed:', response.status, response.statusText);
-                const data = await response.json();
-                console.error('Error details:', data);
-                // Handle error as needed
+                if (attempt < MAX_RETRY_ATTEMPTS) {
+                    await delay(RETRY_DELAY_MS);
+                    await logout(attempt + 1); // Retry logout
+                } else {
+                    console.error('Logout failed after maximum retries:', response.status, response.statusText);
+                    const data = await response.json();
+                    console.error('Error details:', data);
+                    clearLocalStorageAndSession();
+                }
             }
         } catch (error) {
-            console.error('Network error during logout:', error.message);
-            // Handle network error as needed
+            if (attempt < MAX_RETRY_ATTEMPTS) {
+                console.error(`Network error during logout attempt ${attempt}, retrying...`, error.message);
+                await delay(RETRY_DELAY_MS);
+                await logout(attempt + 1); // Retry logout
+            } else {
+                console.error('Network error during logout, maximum retries reached:', error.message);
+                clearLocalStorageAndSession();
+            }
         }
-        ['token', 'refreshToken', 'userFirstName', 'userLastName', 'customerId', 'userEmail', 'isGuest'].forEach(key => {
-            localStorage.removeItem(key);
-        });
-        //sessionStorage.clear(); // Clear session storage
-        //setIsLoggedIn(false); // Update the logged in state
-        //navigate('/'); // Redirect to the home page
-        //setCustomerId(null);
-    }
+    };
+
+    // Function to clear local storage and session, and update state
+    const clearLocalStorageAndSession = () => {
+        const isVerified = localStorage.getItem('isVerified');
+        localStorage.clear();
+        localStorage.setItem('isVerified', isVerified); // Preserve isVerified if needed
+        sessionStorage.clear(); // Clear session storage
+        setIsLoggedIn(false); // Update the logged-in state
+        setCustomerId(null); // Clear customer ID
+        navigate('/'); // Redirect to the home page
+    };
+
+
     //funciton to delete user
     const deleteUser = async () => {
 
@@ -92,15 +110,22 @@ const AuthProvider = ({ children }) => {
     }
 
 
-    const refreshAccessToken = async () => {
+
+    // The retry mechanism for refreshing the access token
+    const retryRefreshToken = async (attempt = 1) => {
+        if (attempt > MAX_RETRY_ATTEMPTS) {
+            console.error('Maximum retry attempts reached, logging out.');
+            logout();
+            return;
+        }
+
+        console.log(`Attempt ${attempt} to refresh token...`);
         try {
-            console.log("refreshing token..")
+
+
             const response = await fetch('http://localhost:8000/api/customer/refresh', {
                 method: 'POST',
                 credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
             });
 
             if (!response.ok) {
@@ -110,16 +135,27 @@ const AuthProvider = ({ children }) => {
             const data = await response.json();
             const newAccessToken = data.accessToken;
 
-            // Update access token in local or session storage
             localStorage.setItem('token', newAccessToken);
             const decodedToken = jwtDecode(newAccessToken);
             setCustomerId(decodedToken.customerId);
             setIsLoggedIn(true);
         } catch (error) {
-            console.error('Error refreshing access token:', error);
-            logout(); // Logout if token refresh fails
+            console.error(`Error on retry attempt ${attempt}:`, error.message);
+            await delay(RETRY_DELAY_MS);
+            retryRefreshToken(attempt + 1); // Recursive call for the next attempt
         }
     };
+
+    // The primary function to refresh the access token
+    const refreshAccessToken = async () => {
+        try {
+            await retryRefreshToken(); // Initiate the retry mechanism
+        } catch (error) {
+            console.error('Error during token refresh:', error.message);
+            logout(); // Logout on unhandled error
+        }
+    };
+
 
 
 

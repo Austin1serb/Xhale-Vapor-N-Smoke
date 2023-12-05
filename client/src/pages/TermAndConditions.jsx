@@ -1,8 +1,13 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import '../Styles/PolicyPages.css';
 
 
 const TermAndConditions = () => {
+    useEffect(() => {
+        document.title = "Terms and Conditions - Understanding Your Use of Herba Naturals";
+        document.querySelector('meta[name="description"]').setAttribute("content", "Familiarize yourself with Herba Natural's terms and conditions. Know your rights and responsibilities as a valued customer of our CBD products.");
+    }, []);
+
 
 
     return (

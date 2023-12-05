@@ -1,11 +1,155 @@
 const Orders = require('../models/orders.model')
 const Product = require('../models/products.model')
 const moment = require('moment')
+const nodemailer = require('nodemailer');
 
 
+async function sendReceiptEmail(orderDetails) {
+    console.log("orderDetails In Email Functions: ", orderDetails)
+
+    let transporter = nodemailer.createTransport({
+        service: 'gmail', // or your email service provider
+        auth: {
+            user: process.env.EMAIL_USERNAME,
+            pass: process.env.EMAIL_PASSWORD
+
+        }
+    });
+
+    // Construct the list of products with quantities and prices
+    let productsHtml = '';
+    if (orderDetails && Array.isArray(orderDetails.products)) {
+        productsHtml = orderDetails.products.map(product => {
+            const name = product.name || 'Unknown Product';
+            const quantity = product.quantity || 0;
+            const price = product.price || 0;
+            const img = product.img || ''; // URL of the product image
+            return `
+                <div style="margin-bottom: 20px; margin-left:20px">
+                  
+                     <div style='display: flex; justify-content: center; align-items: center;'>
+                       <img src="${img}" alt="${name}" style="width: 100px; height: auto; margin-left: 10px; float: left;">
+                       <div>
+                        <strong>${name}</strong><br>
+                        Quantity: ${quantity}<br>
+                        Price: $${price}
+                        </div>
+                    </div>
+                    <div style="clear: both;"></div>
+                </div>
+            `;
+        }).join('');
+    } else {
+        console.error('orderDetails.products is undefined or not an array');
+        productsHtml = 'Error: orderDetails.products is undefined or not an array';
+    }
+
+
+    let mailOptions2 = {
+        from: 'serbaustin@gmail.com', // Your email address
+        to: 'serbaustin@gmail.com', // Customer's email address
+        subject: 'New Order Notification',
+        html: `
+        <div style="font-family: Arial, sans-serif; color: #444; background-color: #f4f4f4; padding: 20px;">
+        <div style="max-width: 600px; margin: 0 auto; background-color: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 5px;">
+            <h2 style="color: #333; text-align: center;">New Order Notification</h2>
+            <hr style="border: 1px solid #ddd; margin: 15px 0;">
+    
+            <h3>Order Details</h3>
+            <p><strong>Order Number:</strong> ${orderDetails.orderNumber}</p>
+            <p><strong>Order Date:</strong> ${new Date(orderDetails.orderDate).toLocaleString()}</p>
+    
+            <h3>Customer Information</h3>
+            <ul>
+                <li><strong>Name & Address:</strong> ${orderDetails.address}</li>
+                <li><strong>Customer ID:</strong> ${orderDetails.customer}</li>
+                <li><strong>Email:</strong> ${orderDetails.customerEmail}</li>
+                <li><strong>Phone:</strong> ${orderDetails.customerPhone ? orderDetails.customerPhone : 'Not Provided'}</li>
+            </ul>
+    
+            <h3>Product Details</h3>
+            <ul>
+                ${productsHtml}
+            </ul>
+    
+            <h3>Order Notes</h3>
+            <p>${orderDetails.orderNotes || 'No Order Notes'}</p>
+    
+            <h3>Total Amount</h3>
+            <ul>
+                <li><strong>Subtotal:</strong> $${orderDetails.totalAmount.subTotal.toFixed(2)}</li>
+                <li><strong>Shipping Cost:</strong> $${orderDetails.totalAmount.shippingCost.toFixed(2)}</li>
+                <li><strong>Tax:</strong> $${orderDetails.totalAmount.tax.toFixed(2)}</li>
+                <li><strong>Total:</strong> $${orderDetails.totalAmount.grandTotal.toFixed(2)}</li>
+            </ul>
+    
+            <h3>Payment Information</h3>
+            <ul>
+                <li><strong>Payment Status:</strong> ${orderDetails.paymentStatus}</li>
+                <li><strong>Square Transaction ID:</strong> ${orderDetails.transactionId || 'N/A'}</li>
+            </ul>
+    
+            <h3>Shipping Information</h3>
+            <ul>
+                <li><strong>Shipping Method:</strong> ${orderDetails.shippingMethod ? orderDetails.shippingMethod.carrier : 'N/A'}</li>
+                <li><strong>Shipping Type:</strong> ${orderDetails.shippingMethod ? orderDetails.shippingMethod.type : 'N/A'}</li>
+                <li><strong>Print Your Label Here:</strong> ${orderDetails.shippingMethod ? orderDetails.shippingMethod.labelUrl : 'N/A'}</li>
+                <li><strong>Estimated Shipping Date:</strong> ${orderDetails.estimatedShipping ? orderDetails.estimatedShipping : 'Unavailable'}</li>
+                <li><strong>Tracking Number:</strong> ${orderDetails.shippingMethod ? orderDetails.shippingMethod.trackingNumber : 'N/A'}</li>
+                <li><strong>Tracking Link:</strong> <a href="${orderDetails.shippingMethod ? orderDetails.shippingMethod.trackingUrl : '#'}">${orderDetails.shippingMethod ? 'Track Your Order' : 'N/A'}</a></li>
+            </ul>
+    
+            <p style="text-align: center;">Thank you for using our service!</p>
+        </div>
+    </div> `
+    };
+    // Send the email
+
+    await transporter.sendMail(mailOptions2);
+}
 
 
 module.exports = {
+
+
+    createOne: async (req, res) => {
+        try {
+            console.log("incoming Details: ", req.body)
+
+            const newOrder = new Orders(req.body);
+
+            newOrder.orderNumber = newOrder._id; // Assign the _id to orderNumber
+            const savedOrder = await newOrder.save();
+
+
+            console.log("Created Order: ", savedOrder)
+            try {
+                await sendReceiptEmail(savedOrder); // Await the email sending
+            } catch (emailError) {
+                console.error('Error sending email:', emailError);
+                // Decide how to handle email errors
+            }
+
+
+            // Update totalSold for each product in the order
+            for (const product of savedOrder.products) {
+                const soldProduct = await Product.findById(product.productId);
+                if (soldProduct) {
+                    soldProduct.totalSold += product.quantity; // Increment totalSold
+                    await soldProduct.save();
+                } else {
+                    console.error('Product not found:', product.productId);
+                    // Handle the case where product is not found, if necessary
+                }
+            }
+
+            res.json(savedOrder);
+        } catch (err) {
+            console.error('Error creating order:', err);
+            res.status(400).json(err);
+        }
+    },
+
 
 
     test: (req, res) => {
@@ -67,31 +211,7 @@ module.exports = {
                 res.json(data)
             }).catch(err => res.json(err))
     },
-    createOne: async (req, res) => {
-        try {
-            const newOrder = new Orders(req.body);
 
-            newOrder.orderNumber = newOrder._id; // Assign the _id to orderNumber
-            const savedOrder = await newOrder.save();
-
-            // Update totalSold for each product in the order
-            for (const product of savedOrder.products) {
-                const soldProduct = await Product.findById(product.productId);
-                if (soldProduct) {
-                    soldProduct.totalSold += product.quantity; // Increment totalSold
-                    await soldProduct.save();
-                } else {
-                    console.error('Product not found:', product.productId);
-                    // Handle the case where product is not found, if necessary
-                }
-            }
-
-            res.json(savedOrder);
-        } catch (err) {
-            console.error('Error creating order:', err);
-            res.status(400).json(err);
-        }
-    },
 
 
 
@@ -133,20 +253,31 @@ module.exports = {
 
     getTopSellingProducts: async (req, res) => {
         try {
-            const { limit } = req.query; // Get the limit from the query parameters
+            const { limit, month } = req.query; // Get the limit and month from query parameters
 
-            // Validate the limit value to ensure it's a positive integer (you can add more validation as needed)
+            // Validate the limit value
             if (!limit || isNaN(limit) || parseInt(limit) <= 0) {
                 return res.status(400).json({ error: 'Invalid limit value' });
             }
-            // Calculate the date 6 months ago from today
-            const sixMonthsAgo = moment().subtract(6, 'months').toDate();
+
+            // Define the date range for the query
+            let startDate, endDate;
+            if (month) {
+                // If month is provided, calculate the start and end dates for that month
+                const year = new Date().getFullYear();
+                startDate = new Date(year, parseInt(month) - 1, 1);
+                endDate = new Date(year, parseInt(month), 0);
+            } else {
+                // If no month is provided, use the last 6 months
+                startDate = moment().subtract(6, 'months').toDate();
+                endDate = new Date();
+            }
 
             // MongoDB aggregation pipeline
             const bestSellers = await Orders.aggregate([
                 {
                     $match: {
-                        orderDate: { $gte: sixMonthsAgo }, // Filter orders from the last 6 months
+                        orderDate: { $gte: startDate, $lte: endDate }, // Filter orders based on date range
                     },
                 },
                 {
@@ -185,6 +316,8 @@ module.exports = {
             res.status(500).json({ error: 'Internal Server Error' });
         }
     },
+
+
 
 
 
@@ -246,7 +379,7 @@ module.exports = {
 
 
 
-
-
 }
+
+
 

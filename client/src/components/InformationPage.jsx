@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { TextField, Button, Grid, Typography, FormControl, InputAdornment, Tooltip, IconButton } from '@mui/material';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import AddressAutocomplete from './AddressAutocomplete';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-
-const InformationComponent = ({ next, back, onShippingDetailsSubmit, formData, onFormChange }) => {
+import jwtDecode from 'jwt-decode';
+import { useAuth } from './Utilities/useAuth';
+const InformationComponent = ({ next, back, onShippingDetailsSubmit, formData }) => {
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
@@ -16,7 +16,7 @@ const InformationComponent = ({ next, back, onShippingDetailsSubmit, formData, o
     const [zip, setZip] = useState('');
     const [country, setCountry] = useState('');
     const [formSubmitted, setFormSubmitted] = useState(false);
-
+    const { isLoggedIn } = useAuth();
     const storedFirstName = localStorage.getItem('userFirstName');
     const storedLastName = localStorage.getItem('userLastName');
     const storedEmail = localStorage.getItem('userEmail');
@@ -36,6 +36,45 @@ const InformationComponent = ({ next, back, onShippingDetailsSubmit, formData, o
 
         return (customerId && customerId.startsWith('guest-')) || isGuestFlag;
 
+    };
+
+    //useeffect to fetch customer data on page mount
+    useEffect(() => {
+        if (isGuestUser()) {
+
+        } else {
+            const token = localStorage.getItem('token');
+            const decodedToken = jwtDecode(token);
+            const userId = decodedToken.customerId;
+            fetchCustomerData(userId);
+        }
+
+    }, []);
+
+
+    const fetchCustomerData = (userId) => {
+
+        fetch(`http://localhost:8000/api/customer/${userId}`, {
+            credentials: 'include'
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then((data) => {
+                setPhone(data.phone);
+                setAddress(data.address);
+                setAddress2(data.address2);
+                setCity(data.city);
+                setState(data.state);
+                setZip(data.zip);
+                setCountry(data.country);
+            })
+            .catch((error) => {
+                console.error('Error fetching customer data:', error);
+            });
     };
 
 
@@ -188,7 +227,7 @@ const InformationComponent = ({ next, back, onShippingDetailsSubmit, formData, o
 
                     if (response.ok) {
                         const responseData = await response.json();
-                        const idToStore = method === 'POST' ? responseData.permanentId : customerId;
+                        const idToStore = method === 'POST' ? responseData._id : customerId;
                         localStorage.setItem('customerId', idToStore);
                         localStorage.setItem('isGuest', 'true');
                         Object.keys(data).forEach(key => {
@@ -300,6 +339,7 @@ const InformationComponent = ({ next, back, onShippingDetailsSubmit, formData, o
 
 
     const textFieldStyles = {
+
         '& .MuiInputBase-input': {
             fontSize: '14px' // Adjust the font size as needed
         },
@@ -314,10 +354,11 @@ const InformationComponent = ({ next, back, onShippingDetailsSubmit, formData, o
     return (
         <form onSubmit={handleSubmit} className='information-form-container'>
             <FormControl>
-                <Typography fontWeight={600} fontSize={16} mb={1} variant="h6" className='information-titles' >
+                <Typography fontWeight={600} fontSize={16} pb={2} mb={1} variant="h6" className='information-titles' >
                     Contact
                 </Typography>
                 <TextField
+
                     type='email'
                     required
                     id="email"
@@ -333,6 +374,20 @@ const InformationComponent = ({ next, back, onShippingDetailsSubmit, formData, o
                     variant="outlined"
                     onBlur={() => validateField('email', email)}
                     sx={textFieldStyles}
+                    disabled={!!isLoggedIn && !!email}
+                    InputProps={{
+                        endAdornment: (
+                            <InputAdornment position="end" >
+                                {isLoggedIn && email ? ( // Check if the field is disabled
+                                    <Tooltip title="To Change Your Email Please Go To The Account Page By Clicking the Account Icon On The Top Right Of The Page">
+                                        <IconButton sx={{ mr: -1, }}>
+                                            <svg fill='#0f75e0' height='20' viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22ZM12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20ZM11 7H13V9H11V7ZM11 11H13V17H11V11Z" /></svg>
+                                        </IconButton>
+                                    </Tooltip>
+                                ) : null}
+                            </InputAdornment>
+                        ),
+                    }}
                 >
 
                     Email</TextField>
@@ -362,7 +417,7 @@ const InformationComponent = ({ next, back, onShippingDetailsSubmit, formData, o
                     }}
 
                 >Phone</TextField>
-                <Typography fontWeight={600} fontSize={16} my={1} variant="h6" className='information-titles'  >
+                <Typography fontWeight={600} fontSize={16} pb={2} my={1} variant="h6" className='information-titles'  >
                     Shipping Information
                 </Typography>
                 <Grid container spacing={1}>

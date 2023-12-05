@@ -55,6 +55,23 @@ const OrderDetails = ({ order, open, onClose }) => {
                                 </CardContent>
                             </Card>
                         </Grid>
+                        {/* Shipping Details */}
+                        <Grid item xs={12} md={6} lg={4}>
+                            <Card>
+                                <CardContent>
+                                    <Typography variant="body1" gutterBottom>Shipping Details: <strong>{order.shippingMethod.provider} {order.shippingMethod.type}</strong></Typography>
+
+                                    <Typography variant="body2">Print Label:
+                                        <Button sx={{ height: '15px' }} onClick={() => window.open(order.shippingMethod.labelUrl)} >Get Label</Button>
+                                    </Typography>
+
+
+                                    <Typography variant="body2">Print Label:
+                                        <Button sx={{ height: '15px' }} onClick={() => window.open(order.shippingMethod.trackingUrl)} >Tracking Details</Button>
+                                    </Typography>
+                                </CardContent>
+                            </Card>
+                        </Grid>
 
 
                         {/* Products in the Order */}
@@ -90,23 +107,13 @@ const OrderDetails = ({ order, open, onClose }) => {
                         <Grid item xs={12} md={6} lg={3}>
                             <Card>
                                 <CardContent>
-                                    <Typography variant="body1" gutterBottom>Ship to:</Typography>
+                                    <Typography variant="body1" gutterBottom><strong>Ship to:</strong></Typography>
                                     <Typography variant="body2">{order.address}</Typography>
                                 </CardContent>
                             </Card>
                         </Grid>
 
-                        {/* Order Shiping Method */}
-                        <Grid item xs={12} md={6} lg={3}>
-                            <Card>
-                                <CardContent>
-                                    <Typography variant="body1" gutterBottom>Shipping Details:</Typography>
 
-                                    <Typography variant="body2">Provider: {order.shippingMethod.provider}</Typography>
-                                    <Typography variant="body2">Type: {order.shippingMethod.type}</Typography>
-                                </CardContent>
-                            </Card>
-                        </Grid>
                         <Grid sx={{ display: 'flex', justifyContent: 'end' }} item xs={12} md={12} lg={12}>
 
                             <Button variant='outlined' onClick={onClose}>Close</Button>

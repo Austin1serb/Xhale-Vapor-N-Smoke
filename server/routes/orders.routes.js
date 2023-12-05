@@ -7,7 +7,7 @@ router.route("/test").get(OrdersController.test);
 router.route('/create').post(OrdersController.createOne);
 
 
-router.use(isAdmin);
+//router.use(isAdmin, verifyToken);
 router.route("/best-sellers-six-months").get(OrdersController.getAmountSoldPerMonthLast6Months);
 router.route("/best-sellers").get(OrdersController.getTopSellingProducts);
 router.route('/').get(OrdersController.getAll);

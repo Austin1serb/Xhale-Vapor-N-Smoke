@@ -29,7 +29,6 @@ router.route('/admin', verifyToken, isAdmin, (req, res) => {
 
 
 
-router.route('/test').get(CustomersController.test);
 router.post('/register', registerLimiter, CustomersController.createOne);
 
 router.route('/login').post(CustomersController.loginUser);
@@ -37,12 +36,13 @@ router.route('/logout').post(CustomersController.logoutUser);
 router.post('/refresh', tokenRefreshLimiter, CustomersController.refreshToken);
 
 // Routes below require authentication
-router.use(verifyToken); // Apply verifyToken middleware to routes below
+//router.use(verifyToken); // Apply verifyToken middleware to routes below
 router.route('/:id').get(CustomersController.getOne);
 router.route('/:id').put(CustomersController.updateOne);
 router.route('/:id').delete(CustomersController.deleteOne);
-router.use(isAdmin);
+//router.use(isAdmin);
 router.route('/').get(CustomersController.getAll);
+
 
 
 

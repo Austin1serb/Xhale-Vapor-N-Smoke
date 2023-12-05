@@ -68,24 +68,44 @@ const SalesOverview = () => {
     // Function to transform and sort data for the chart
     const transformAndSortDataForChart = (aggregatedData) => {
         const transformedData = {};
+        let previousMonthProducts = new Set(); // To keep track of products from the previous month
+
         Object.keys(aggregatedData).forEach(monthKey => {
             const monthNumber = parseInt(monthKey.split('_')[1], 10);
             const monthName = monthNames[monthNumber - 1]; // Convert month number to month name
             const products = Object.values(aggregatedData[monthKey]);
             products.sort((a, b) => b.totalAmount - a.totalAmount); // Sort by totalAmount
 
-            const topProducts = products.slice(0, 4); // Select top 4 products
+            // Initialize month data
             transformedData[monthKey] = { month: monthName };
 
-            topProducts.forEach((product, index) => {
-                // Use the first 10 characters of the product's name as the key
-                const productNameKey = `${product.name}`;
-                transformedData[monthKey][productNameKey] = product.totalAmount; // Or totalQuantity
+            let currentMonthProducts = new Set(); // To keep track of products for the current month
+
+            if (products.length > 0) {
+                // Process existing products
+                const topProducts = products.slice(0, 4); // Select top 4 products
+                topProducts.forEach((product) => {
+                    const productNameKey = `${product.name}`;
+                    transformedData[monthKey][productNameKey] = product.totalAmount; // Or totalQuantity
+                    currentMonthProducts.add(productNameKey);
+                });
+            }
+
+            // Add missing products from the previous month with totalAmount 0
+            previousMonthProducts.forEach(productName => {
+                if (!currentMonthProducts.has(productName)) {
+                    transformedData[monthKey][productName] = 0;
+                }
             });
+
+            // Update previousMonthProducts for the next iteration
+            previousMonthProducts = new Set([...currentMonthProducts]);
         });
+
 
         return Object.values(transformedData);
     };
+
 
 
 
@@ -163,8 +183,10 @@ const SalesOverview = () => {
 
                 // Fetch top selling products
                 const data = await fetchData('http://localhost:8000/api/order/best-sellers-six-months', signal);
+
                 const aggregatedData = aggregateSalesData(data);
                 const chartData = transformAndSortDataForChart(aggregatedData);
+
                 setSalesData(chartData);
 
 
@@ -215,7 +237,18 @@ const SalesOverview = () => {
     };
 
 
-    const valueFormatter = (value) => `$${value.toFixed(2)}`;
+    const valueFormatter = (value) => {
+        // Convert string to number if necessary
+        const numericValue = typeof value === 'string' ? parseFloat(value) : value;
+
+        // Check if the conversion resulted in a valid number
+        if (!isNaN(numericValue)) {
+            return `$${numericValue.toFixed(2)}`;
+        } else {
+            return 'N/A'; // Return a fallback value for invalid numbers
+        }
+    };
+
 
 
     const shuffleArray = (array) => {
@@ -242,11 +275,6 @@ const SalesOverview = () => {
 
     const chartSeries = generateChartSeries(salesData);
 
-
-
-    useEffect(() => {
-
-    }, [])
 
 
 
@@ -344,7 +372,7 @@ const SalesOverview = () => {
                             {/*{guestData.map(guest => (
                                 <Box key={guest._id}>*/}
                             <Typography variant="body2">
-                                Total Guests: {guestData.length}
+                                Total Guest Accounts: {guestData.length}
                             </Typography>
                             <Typography variant="body2">
                                 Total Guest Orders: {totalGuestOrders}
@@ -353,14 +381,12 @@ const SalesOverview = () => {
 
                             </Typography>
 
-                            {/*</Box>
 
-                            ))}*/}
                         </CardContent>
                     </Card>
                 </Grid>
 
-                <Grid item xs={12} md={8} lg={6}>
+                <Grid item xs={12} md={8} lg={12}>
                     <Card>
                         <CardContent>
                             <Typography variant="body1">Latest Orders:</Typography>

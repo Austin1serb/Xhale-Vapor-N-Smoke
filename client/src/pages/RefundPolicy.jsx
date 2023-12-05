@@ -1,8 +1,14 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import '../Styles/PolicyPages.css';
 
 
 const RefundPolicy = () => {
+    useEffect(() => {
+        document.title = "Refund Policy - Herba Natural's Customer Service Guidelines";
+        document.querySelector('meta[name="description"]').setAttribute("content", "Read Herba Natural's refund policy. Understand how we handle returns, refunds, and exchanges to ensure customer satisfaction.");
+    }, []);
+
+
     return (
 
         <div className="shipping-policy">
@@ -15,9 +21,9 @@ const RefundPolicy = () => {
 
                 <p> To be eligible for a return, your item must be in the same condition that you received it, unworn or unused, with tags, and in its original packaging. You’ll also need the receipt or proof of purchase.</p>
 
-                <p>  To start a return, you can contact us at support@neurogan.com. If your return is accepted, we’ll send you a return shipping label, as well as instructions on how and where to send your package. Items sent back to us without first requesting a return will not be accepted.</p>
+                <p>  To start a return, you can contact us at customerservices@herbanaturals.com. If your return is accepted, we’ll send you a return shipping label, as well as instructions on how and where to send your package. Items sent back to us without first requesting a return will not be accepted.</p>
 
-                <p> You can always contact us for any return question at support@neurogan.com.</p>
+                <p> You can always contact us for any return question at customerservices@herbanaturals.com.</p>
 
 
                 <p> <strong> Damages and issues</strong>

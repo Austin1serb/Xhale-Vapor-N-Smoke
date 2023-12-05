@@ -87,9 +87,7 @@ const verifyAccessToken = (req) => {
 
 
 module.exports = {
-    test: (req, res) => {
-        res.json({ message: "Test customer response!" });
-    },
+
     getAll: (req, res) => {
         Customers.find()
             .then(data => { res.json(data) })
@@ -119,18 +117,18 @@ module.exports = {
     // Controller for token refresh
     refreshToken: async (req, res) => {
         try {
-            const refreshToken = req.cookies.refreshToken;
+            const oldRefreshToken = req.cookies.refreshToken;
 
-            if (!refreshToken) {
+            if (!oldRefreshToken) {
                 return res.status(401).json({ message: 'Refresh token is missing' });
             }
 
-            const existingRevokedToken = await RevokedToken.findOne({ token: refreshToken });
+            const existingRevokedToken = await RevokedToken.findOne({ token: oldRefreshToken });
             if (existingRevokedToken) {
                 return res.status(401).json({ message: 'Refresh token is revoked' });
             }
 
-            jwt.verify(refreshToken, secretKey, async (err, decoded) => {
+            jwt.verify(oldRefreshToken, secretKey, async (err, decoded) => {
                 if (err) {
                     return res.status(401).json({ message: 'Invalid or expired refresh token' });
                 }
@@ -139,19 +137,42 @@ module.exports = {
                 if (!user) {
                     return res.status(404).json({ message: 'User not found' });
                 }
+
+                // Revoke the old refresh token by adding it to RevokedToken model
+                const revokedToken = new RevokedToken({ token: oldRefreshToken });
+                await revokedToken.save();
+
+                // Generate a new refresh token
+                const newRefreshToken = jwt.sign({ customerId: user._id }, secretKey, { expiresIn: '1d' });
+
+                // Update the user's record with the new refresh token
+                user.refreshToken = newRefreshToken;
+                await user.save();
+
+                // Generate a new access token
                 const accessToken = jwt.sign({
                     customerId: user._id,
                     firstName: user.firstName,
                     lastName: user.lastName,
                     email: user.email
                 }, secretKey, { expiresIn: '12h' });
-                console.log('token refreshed')
-                return res.json({ message: 'Token refreshed successfully', accessToken });
+
+                // Set the new refresh token in an HTTP-Only cookie
+                res.cookie('refreshToken', newRefreshToken, {
+                    httpOnly: true,
+                    secure: false, // Use secure in production
+                    maxAge: 86600000, // Refresh token expiry in milliseconds
+                    sameSite: 'Lax',
+                });
+
+                console.log('Tokens refreshed');
+                return res.json({ message: 'Tokens refreshed successfully', accessToken });
             });
         } catch (err) {
             return res.status(500).json({ message: 'Server error', error: err });
         }
     },
+
 
 
 
@@ -186,7 +207,7 @@ module.exports = {
             // Generate a secure refresh token
             const refreshToken = jwt.sign({
                 customerId: customer._id
-            }, secretKey, { expiresIn: '7d' });
+            }, secretKey, { expiresIn: '1d' });
 
             customer.refreshToken = refreshToken;
             await customer.save();
@@ -253,7 +274,7 @@ module.exports = {
                 // Generate a new refresh token
                 const newRefreshToken = jwt.sign({
                     customerId: user._id
-                }, secretKey, { expiresIn: '7d' }); // Adjust expiration as needed
+                }, secretKey, { expiresIn: '1d' }); // Adjust expiration as needed
                 // Store the hashed refresh token in the user's document
                 user.refreshToken = newRefreshToken
                 user.isVerified = true
@@ -333,27 +354,24 @@ module.exports = {
 
     updateOne: async (req, res) => {
         try {
-            const user = await verifyRefreshToken(req);
-
-
-            if (!user) {
+            // Verify the token of the user making the request
+            const requestingUser = await verifyRefreshToken(req);
+            if (!requestingUser) {
                 return res.status(401).json({ message: 'Unauthorized' });
             }
 
+            // Extract the ID of the user to update from the request parameters
+            // and the update data from the request body
+            const targetUserId = req.params.id; // Assuming the target user's ID is passed as a URL parameter
             const updateData = req.body;
-            const customerId = user._id
 
-            // Fetch the user who is making the request
-            const requestingUser = await Customers.findById(user._id);
-
-            if (!requestingUser) {
-                return res.status(404).json({ message: 'Requesting user not found' });
-            }
-
-            const isAdmin = requestingUser.isAdmin;
-
-            if (!isAdmin) {
-                // Exclude sensitive fields for non-admin users
+            // Check if the requesting user is an admin
+            if (!requestingUser.isAdmin) {
+                // For non-admin users, they can only update their own information
+                if (targetUserId !== requestingUser._id.toString()) {
+                    return res.status(403).json({ message: 'Forbidden: You can only update your own information.' });
+                }
+                // Exclude sensitive fields
                 delete updateData.isAdmin;
                 delete updateData.refreshToken;
             }
@@ -364,8 +382,8 @@ module.exports = {
             }
 
             // Proceed with the update operation
-            const updatedCustomer = await Customers.findOneAndUpdate(
-                { _id: customerId },
+            const updatedCustomer = await Customers.findByIdAndUpdate(
+                targetUserId,
                 updateData,
                 { new: true, runValidators: true }
             );
@@ -380,6 +398,8 @@ module.exports = {
 
             if (error.name === 'ValidationError') {
                 res.status(400).json({ message: 'Validation error', error: error });
+            } else if (error.name === 'JsonWebTokenError') {
+                res.status(401).json({ message: 'Invalid token', error: error });
             } else {
                 res.status(500).json({ message: 'An error occurred', error: error });
             }
@@ -388,31 +408,30 @@ module.exports = {
 
 
 
+
     deleteOne: async (req, res) => {
         try {
-            const user = await verifyRefreshToken(req);
-            if (!user) {
+            const requestingUser = await verifyRefreshToken(req);
+            if (!requestingUser) {
                 return res.status(401).json({ message: 'Unauthorized' });
             }
 
-            const customerIdToDelete = user._id;
+            // Extract the ID of the user to delete from the request parameters
+            const targetUserId = req.params.id; // Assuming the target user's ID is passed as a URL parameter
 
-            // Fetch the user who is making the request
-            const requestingUser = await Customers.findById(user._id);
-
-            if (!requestingUser) {
-                return res.status(404).json({ message: 'Requesting user not found' });
+            if (!requestingUser.isAdmin && requestingUser._id.toString() !== targetUserId) {
+                // Non-admin users can only delete their own account
+                return res.status(403).json({ message: 'Forbidden: You can only delete your own account.' });
             }
 
-            // Check if the requesting user is the same as the user to delete or if they are an admin
-            const isAuthorized = requestingUser._id.equals(customerIdToDelete) || requestingUser.isAdmin;
-
-            if (!isAuthorized) {
-                return res.status(403).json({ message: 'Forbidden: You do not have permission to delete this user.' });
+            // Fetch the target user to ensure they exist before attempting to delete
+            const userToDelete = await Customers.findById(targetUserId);
+            if (!userToDelete) {
+                return res.status(404).json({ message: 'User not found' });
             }
 
             // Proceed with the deletion
-            await Customers.deleteOne({ _id: customerIdToDelete });
+            await Customers.deleteOne({ _id: targetUserId });
 
             res.status(200).json({ message: 'User successfully deleted' });
         } catch (error) {

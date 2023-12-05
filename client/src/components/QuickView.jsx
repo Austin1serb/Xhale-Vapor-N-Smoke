@@ -4,8 +4,9 @@ import { useCart } from './CartContext';
 import '../Styles/QuickView.css'
 import useThrottle from './Utilities/useThrottle';
 
-
+const customFont = "freight-display-pro, serif";
 const modalStyle = {
+    fontFamily: customFont,
     position: 'absolute',
     top: '50%',
     left: '50%',
@@ -31,6 +32,36 @@ const QuickView = ({ productId, open, handleClose, products }) => {
     const [loading, setLoading] = useState(false);
     const { addToCart } = useCart();
     const [relatedProducts, setRelatedProducts] = useState([]);
+
+
+    useEffect(() => {
+        if (productDetails) {
+            document.title = productDetails.seo.title || productDetails.name; // Use SEO title if available, else product name
+        }
+    }, [productDetails]);
+    useEffect(() => {
+        if (productDetails) {
+            const metaKeywords = document.querySelector('meta[name="keywords"]');
+            if (metaKeywords) {
+                metaKeywords.content = productDetails.seoKeywords.join(', ') || 'default, keywords';
+            }
+        }
+    }, [productDetails]);
+    useEffect(() => {
+        if (!open) {
+            setProductDetails(null);
+            setSelectedImage('');
+            document.title = 'Shop at Herba Naturals - Explore Koi, Beezbee, Wyld Products and More';
+            const metaDescription = document.querySelector('meta[name="description"]');
+            const metaKeywords = document.querySelector('meta[name="keywords"]');
+            if (metaDescription) {
+                metaDescription.content = "Browse Herba Natural's online store for the finest CBD products. Featuring brands like Koi, Beezbee, and Wyld with a variety of CBD oils, edibles, and topicals.";
+            }
+            if (metaKeywords) {
+                metaKeywords.content = 'default, keywords';
+            }
+        }
+    }, [open]);
 
 
 
@@ -151,7 +182,7 @@ const QuickView = ({ productId, open, handleClose, products }) => {
                                                     src={`${image.url.split('/upload/').join('/upload/c_fill,h_75,w_75/f_auto,q_auto:eco/')}`}
                                                     alt={`${productDetails.name} thumbnail ${i}`}
                                                     onClick={() => handleThumbnailClick(image.url)}
-                                                    loading='lazy'
+
                                                 />
                                             </Box>
                                         ))}
@@ -175,7 +206,7 @@ const QuickView = ({ productId, open, handleClose, products }) => {
                                             alt={productDetails.name}
                                             key={productDetails.name}
 
-                                            loading='lazy'
+
                                         />
                                     </Box>
                                 </Box>
@@ -199,7 +230,7 @@ const QuickView = ({ productId, open, handleClose, products }) => {
                                             <img
                                                 src={selectedImage}
                                                 alt={productDetails.name}
-                                                loading='lazy'
+
                                                 style={{
                                                     position: 'absolute',
 
@@ -219,8 +250,9 @@ const QuickView = ({ productId, open, handleClose, products }) => {
                         </Grid>
                         <Grid item xs={12} sm={7} md={6}>
                             <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <Typography sx={{ width: '90%', fontSize: { xs: 18, sm: 22 }, ml: { xs: 5, sm: 3, md: 0 } }} variant="h6" className='quickview-title'>{productDetails.name}</Typography>
-
+                                <div style={{ marginRight: '-30px' }}>
+                                    <Typography sx={{ width: '100%', fontSize: { xs: 18, sm: 22 }, ml: { xs: 5, sm: 3, md: 0 }, fontFamily: customFont, fontWeight: 600 }} variant="h6" className='quickview-title'>{productDetails.name}</Typography>
+                                </div>
                                 <IconButton className='quickview-close-button' onClick={handleClose}>
 
                                     <svg height='45' width='45' fill='#282F48' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
@@ -231,7 +263,7 @@ const QuickView = ({ productId, open, handleClose, products }) => {
                                 </IconButton>
                             </Box>
 
-                            <Box sx={{ borderBottom: 1, borderColor: 'divider', }}>
+                            <Box sx={{ borderBottom: 1, borderColor: 'divider', mr: { sx: 0, sm: 6, md: 15.01 } }}>
                                 <Tabs sx={{ ml: { xs: 5, sm: 3, md: 0 } }} value={selectedTab} onChange={handleChangeTab} aria-label="Product details tabs" >
                                     <Tab tabIndex={0} type='button' label="Details" />
                                     <Tab tabIndex={1} type='button' label="Related" />
@@ -252,7 +284,7 @@ const QuickView = ({ productId, open, handleClose, products }) => {
                                 <TabPanel value={selectedTab} index={1}>
                                     {relatedProducts.map((product) => (
                                         <Box onClick={() => setProductDetails(product)} className='quickview-related-container' key={product._id}> {/* Use `_id` or appropriate key property */}
-                                            <img className='quickview-related-img' alt='related' src={`${product.imgSource[0].url.split('/upload/').join('/upload/c_fill,h_50,w_50/f_auto,q_auto:eco/')}`} loading='lazy' />
+                                            <img className='quickview-related-img' alt='related' src={`${product.imgSource[0].url.split('/upload/').join('/upload/c_fill,h_50,w_50/f_auto,q_auto:eco/')}`} />
                                             <Box variant='button'>
 
                                                 <Box className='quickview-related-name'>{product.name}</Box>

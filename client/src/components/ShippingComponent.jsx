@@ -4,12 +4,12 @@ import '../Styles/CheckoutPage.css'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import { format, addDays } from 'date-fns';
 import ShippingDetailsComponent from './ShippingDetailsComponent';
-const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, back, isLoading, onShippingOptionsChange, handleCheckout, setEstimatedShipping, lastAddress, setLastAddress, shipmentOptions, setShipmentOptions, }) => {
+const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, back, isLoading, onShippingOptionsChange, handleCheckout, setEstimatedShipping, lastAddress, setLastAddress, shipmentOptions, setShipmentOptions, fullCost, setShippingDetails }) => {
 
 
     const [shippingOptions, setShippingOptions] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [shippingCost, setShippingCost] = useState('');
+    //const [shippingCost, setShippingCost] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 4;
     const [buttonDisabled, setButtonDisabled] = useState([]);
@@ -28,17 +28,21 @@ const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, b
         weight: 2
     };
 
+
+
     cartItems.forEach(item => {
+
         // Use item dimensions if available, otherwise use default dimensions
         const itemLength = item.length || defaultDimensions.length;
         const itemWidth = item.width || defaultDimensions.width;
         const itemHeight = item.height || defaultDimensions.height;
-        const itemWeight = item.weight || defaultDimensions.weight;
+        const itemWeight = item.weight * item.quantity;
 
         totalWeight += itemWeight;
         maxLength = Math.max(maxLength, itemLength);
         maxWidth = Math.max(maxWidth, itemWidth);
         maxHeight = Math.max(maxHeight, itemHeight);
+
     });
 
 
@@ -70,21 +74,11 @@ const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, b
 
             const backendUrl = 'http://localhost:8000/api/shippo';
             const shipmentDetails = {
-                addressFrom: {
 
-                    "name": "SAMI",
-                    "company": "HERBAL ZESTFULNESS",
-                    "street1": "5 lake st",
-                    "city": "Kirkland",
-                    "state": "Wa",
-                    "zip": "98033",
-                    "country": "US", // iso2 country code
-                    "phone": "+1 425 285 9173",
-                    "email": "genius.baar@gmail.com",
-                },
                 addressTo: {
                     name: `${shippingDetails.firstName} ${shippingDetails.lastName}`,
                     street1: shippingDetails.address,
+                    street2: shippingDetails.address2,
                     city: shippingDetails.city,
                     state: shippingDetails.state,
                     zip: shippingDetails.zip,
@@ -97,7 +91,7 @@ const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, b
                     height: maxHeight.toString(),
                     distance_unit: "in",
                     weight: totalWeight.toString(),
-                    mass_unit: "lb"
+                    mass_unit: "oz"
                 }
             };
 
@@ -115,16 +109,22 @@ const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, b
                 console.error(`HTTP Error: ${response.status} ${response.statusText}`, errorText);
                 throw new Error(`HTTP Error: ${response.status}`);
             }
+            else {
+                const result = await response.json();
 
-            const result = await response.json();
+                let sortedRates = result.rates.sort((a, b) => parseFloat(a.amount) - parseFloat(b.amount));
+                if (fullCost.subTotal > 50) {
+                    sortedRates = sortedRates.map(rate => ({
+                        ...rate,
+                        amount_local: parseFloat(rate.amount_local) < 10 ? 0.00 : rate.amount_local,
+                        isFree: parseFloat(rate.amount_local) < 10
+                    }));
+                }
+                setShippingOptions(sortedRates); // sorted by cost
+                setLastAddress(shippingDetails);
+                setShipmentOptions(sortedRates);
 
-            const sortedRates = result.rates.sort((a, b) => parseFloat(a.amount) - parseFloat(b.amount));
-
-            setShippingOptions(sortedRates); // sorted by cost
-            setLastAddress(shippingDetails);
-            setShipmentOptions(sortedRates);
-
-
+            }
 
         } catch (error) {
             console.error('There was a problem with the fetch operation:', error);
@@ -137,7 +137,8 @@ const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, b
         if (shippingDetails && shippingDetails.address) { // Check that required details are present
             calculateShipping();
         }
-    }, [shippingDetails]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
 
     useEffect(() => {
@@ -146,21 +147,44 @@ const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, b
 
 
 
+
+
+
+
+
+
     const handleSelectShippingOption = (cost, index) => {
         const formattedShipping = currentItems.map((option,) => (calculateShippingDate(option.estimated_days)))
+        // Check if the selected option is free
+        if (shippingOptions[index].isFree) {
+            cost = 0.00;
+        }
 
-        setShippingCost(cost);
+        //setShippingCost(cost);
         onShippingCostChange(cost); // Pass the cost to the parent component
+        //Pass the selected shipping option to the parent component
         onShippingOptionsChange(shippingOptions[index]);
-        setEstimatedShipping(formattedShipping[index]);
 
+        setEstimatedShipping(formattedShipping[index]);
 
         // Create a new array with all false, except the index that needs to be disabled
         const updatedDisabledState = buttonDisabled.map((item, idx) => idx === index);
         setButtonDisabled(updatedDisabledState);
         setIsShippingOptionSelected(true);
+        shippingOptions[index].parcel = {
+            length: maxLength.toString(),
+            width: maxWidth.toString(),
+            height: maxHeight.toString(),
+            distance_unit: "in",
+            weight: totalWeight.toString(),
+            mass_unit: "oz"
+        }
+
+        setShippingDetails({ ...shippingOptions[index], ...shippingDetails });
 
     };
+
+
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = shippingOptions.slice(indexOfFirstItem, indexOfLastItem);
@@ -190,6 +214,7 @@ const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, b
 
             <ShippingDetailsComponent
                 shippingDetails={shippingDetails}
+                back={back}
 
             />
             {loading ? <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
@@ -229,7 +254,8 @@ const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, b
                                             </ListItemAvatar>
                                         </div>
                                         <div className='checkout-shipping-item-price-container'>
-                                            <ListItemText className='checkout-shipping-price' primary={'$' + option.amount_local} />
+                                            <ListItemText className='checkout-shipping-price' primary={option.isFree ? 'Free' : '$' + option.amount_local} style={{ marginRight: '5px' }} />
+
 
                                             <Button disabled={buttonDisabled[index]} className='checkout-shipping-button' sx={{ fontSize: 12, minWidth: '80px', ml: 2 }} variant="outlined" onClick={() => handleSelectShippingOption(option.amount_local, index)}>
                                                 {buttonDisabled[index] ? 'Selected' : 'Select'}

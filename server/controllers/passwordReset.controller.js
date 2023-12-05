@@ -28,7 +28,7 @@ exports.forgotPassword = async (req, res) => {
             const mailOptions = {
                 from: process.env.EMAIL_USERNAME,
                 to: email,
-                subject: 'Password Reset Link-Herbal Zestfulness',
+                subject: 'Password Reset Link-Herba Naturals',
                 html: `<p>Please use the following link to reset your password: <a href="${resetLink}">${resetLink}</a></p>`
             };
 

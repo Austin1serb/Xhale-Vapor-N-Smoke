@@ -51,7 +51,7 @@ const EditCustomerModal = ({ open, onClose, customer, updateCustomerList }) => {
         })
             .then((response) => response.json())
             .then((updatedCustomer) => {
-                //updateCustomerList(updatedCustomer);
+                updateCustomerList(updatedCustomer);
                 onClose(); // Close the modal
             })
             .catch((error) => {
