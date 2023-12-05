@@ -12,7 +12,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import BrandIcon from '../../assets/cbdhorizontaltext.webp'
-import SmallBrandIcon from '../../assets/cbdicon.webp'
+import SmallBrandIcon from '../../assets/cbdiconsmall.webp'
 import BrandText from '../../assets/cbdtextwicon.webp'
 import React, { useState, useEffect, useRef, Suspense, } from 'react';
 import { Link, } from 'react-router-dom';
