@@ -20,6 +20,13 @@ import { useAuth } from '../components/Utilities/useAuth';
 import ForgotPassword from '../components/ForgotPassword';
 
 const AccountDetails = () => {
+    useEffect(() => {
+        document.title = "Your Account Details - Herba Naturals User Profile";
+        document.querySelector('meta[name="description"]').setAttribute("content", "Manage your Herba Naturals account details. Update personal information, track orders, and customize your CBD shopping experience.");
+    }, []);
+
+
+
     const { deleteUser } = useAuth();
     const [customer, setCustomer] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -68,7 +75,9 @@ const AccountDetails = () => {
 
     const fetchCustomerData = (userId) => {
         setLoadingPage(true);
-        fetch(`http://localhost:8000/api/customer/${userId}`)
+        fetch(`http://localhost:8000/api/customer/${userId}`, {
+            credentials: 'include'
+        })
             .then((response) => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -83,6 +92,8 @@ const AccountDetails = () => {
                 console.error('Error fetching customer data:', error);
             });
     };
+
+
     const handleChange = (e) => {
         setCustomer({ ...customer, [e.target.name]: e.target.value });
         setIsFormChanged(true);
@@ -130,7 +141,7 @@ const AccountDetails = () => {
                 setLoading(false)
                 setIsFormChanged(false);
                 window.alert('Account Succssfully Updated!')
-                console.log('Customer data updated successfully:', data);
+
             }
         } catch (error) {
             console.error('Unknown error occurred:', error);
@@ -190,9 +201,10 @@ const AccountDetails = () => {
 
     return (
         <Paper sx={{ p: 4, maxWidth: 800, margin: '0px auto', marginTop: 5, marginBottom: 5 }}>
-            <Typography variant="h5" sx={{ marginBottom: 2 }}>
+            <Typography variant="h1" component="h1" sx={{ marginBottom: 2, fontSize: 'h5.fontSize' }}>
                 Account Details
             </Typography>
+
             <form onSubmit={handleFormSubmit}>
                 <Grid container spacing={2}>
                     {/* Add more fields here */}

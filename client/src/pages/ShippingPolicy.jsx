@@ -1,18 +1,24 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import '../Styles/PolicyPages.css'; // Import your CSS file for styling
 
 function ShippingPolicy() {
+    useEffect(() => {
+        document.title = "Shipping Policy - Herba Naturals Delivery Information";
+        document.querySelector('meta[name="description"]').setAttribute("content", "Understand Herba Natural's shipping policies. Get details on shipping methods, delivery times, and tracking your order of CBD products.");
+    }, []);
+
+
     return (
         <div className="shipping-policy">
 
             <h1>Shipping Policy</h1>
 
             <div className="container">
-                <p>Welcome to Herbal Zestfulness! We appreciate your business and want to ensure a smooth and transparent shopping experience for our valued customers. Please take a moment to review our shipping policy, which outlines important information regarding shipping, delivery, and related matters.</p>
+                <p>Welcome to Herba Naturals! We appreciate your business and want to ensure a smooth and transparent shopping experience for our valued customers. Please take a moment to review our shipping policy, which outlines important information regarding shipping, delivery, and related matters.</p>
 
                 <h2>1. Shipping Providers:</h2>
                 <p>
-                    At Herbal Zestfulness, we offer various shipping options to provide flexibility and convenience to our customers. We may use different shipping providers, such as USPS, FedEx, UPS, or others, depending on the availability and destination of the order. Please note that the shipping provider you select at checkout may not always be the one used for your shipment. We reserve the right to choose the shipping provider that best suits your order to ensure a timely and secure delivery.
+                    At Herba Naturals, we offer various shipping options to provide flexibility and convenience to our customers. We may use different shipping providers, such as USPS, FedEx, UPS, or others, depending on the availability and destination of the order. Please note that the shipping provider you select at checkout may not always be the one used for your shipment. We reserve the right to choose the shipping provider that best suits your order to ensure a timely and secure delivery.
                 </p>
 
                 <h2>2. Shipping Times:</h2>
@@ -42,7 +48,7 @@ function ShippingPolicy() {
 
                 <h2>7. Contact Us:</h2>
                 <p>
-                    If you have any questions or concerns regarding our shipping policy or the status of your order, please don't hesitate to contact our customer support team at [Customer Support Email] or [Customer Support Phone Number]. We are here to assist you and ensure that your shopping experience with Herbal Zestfulness is as pleasant as possible.
+                    If you have any questions or concerns regarding our shipping policy or the status of your order, please don't hesitate to contact our customer support team at [Customer Support Email] or [Customer Support Phone Number]. We are here to assist you and ensure that your shopping experience with Herba Naturals is as pleasant as possible.
                 </p>
             </div>
         </div>

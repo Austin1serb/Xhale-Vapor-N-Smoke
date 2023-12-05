@@ -30,7 +30,7 @@ const Footer = () => {
 
                 <Box display="flex" justifyContent="space-between" >
                     <Typography variant="body2">
-                        &copy; {new Date().getFullYear()} Herbal Zestfulness
+                        &copy; {new Date().getFullYear()} Herba Naturals
                     </Typography>
                     {/*<div className='footer-contact-container'>
                         <Typography variant="body2" borderBottom='1px solid white'>

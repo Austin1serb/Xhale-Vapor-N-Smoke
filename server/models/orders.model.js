@@ -20,6 +20,10 @@ const OrderSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    customerPhone: {
+        type: String,
+        required: false,
+    },
 
     products: [
         {

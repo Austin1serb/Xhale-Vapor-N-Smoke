@@ -5,17 +5,17 @@ import { Link } from 'react-router-dom';
 import '../Styles/Shop.css'
 
 const Cart = ({ setDrawerOpen }) => {
-    const [note, setNote] = useState('');
-    const { cart, removeFromCart, adjustQuantity, updateNotes } = useCart();
+
+    const { cart, removeFromCart, adjustQuantity, updateNotes, notes, setNotes } = useCart();
 
     const total = cart.reduce((acc, item) => acc + (item.product.price * item.quantity), 0);
 
     const handleProceedToCheckout = () => {
         setDrawerOpen(false)
-        updateNotes(note);
+        updateNotes(notes);
     };
     const handleNoteChange = (event) => {
-        setNote(event.target.value); // Update note state when the textarea changes
+        setNotes(event.target.value); // Update note state when the textarea changes
     };
 
 
@@ -75,7 +75,7 @@ const Cart = ({ setDrawerOpen }) => {
                                             mt: 1
 
                                         }}>
-                                            <Badge badgeContent={item.quantity} sx={{ '.MuiBadge-badge': { backgroundColor: 'rgba(40, 47, 72, 0.72)', color: 'white' } }}
+                                            <Badge badgeContent={item.quantity} sx={{ '.MuiBadge-badge': { backgroundColor: 'rgba(195, 26, 210, 0.72)', color: 'white' } }}
                                             >
                                                 <img className='cart-img1' src={item.product.imgSource[0].url.split('/upload/').join('/upload/c_fill,h_100,w_100/f_auto,q_auto:good/')}
 
@@ -139,7 +139,7 @@ const Cart = ({ setDrawerOpen }) => {
                         <Box sx={{ borderTop: 0.5, display: 'flex', flexDirection: 'column', alignItems: 'center' }} className="ajax-cart--checkout-add-note">
                             <Typography sx={{ textAlign: 'center', mt: { xs: 1, sm: 2 }, mb: { xs: 0, sm: 2 }, fontWeight: 100, fontSize: 14, color: 'gray', letterSpacing: 1 }}>Add a note for the seller…(optional)</Typography>
                             <textarea name='notes-for-seller' className='textareacart'
-                                value={note}
+                                value={notes}
                                 onChange={handleNoteChange} />
                         </Box>
 

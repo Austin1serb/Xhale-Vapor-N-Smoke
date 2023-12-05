@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     AppBar,
     Toolbar,
@@ -28,6 +28,11 @@ import { Link } from 'react-router-dom';
 
 
 const AdminDashboard = () => {
+    useEffect(() => {
+        document.title = "Admin Dashboard - Herba Naturals Management Portal";
+        document.querySelector('meta[name="description"]').setAttribute("content", "Herba Natural's Admin Dashboard. Manage products, orders, and customer interactions efficiently in our secure admin portal.");
+    }, []);
+
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [selectedComponent, setSelectedComponent] = useState('AdminDashboard');
     const [anchorEl, setAnchorEl] = useState(null);
@@ -162,7 +167,7 @@ const AdminDashboard = () => {
                     >
                         <MenuIcon sx={{ fontSize: 32 }} />
                     </IconButton>
-                    <Typography variant="h6">Admin Dashboard</Typography>
+                    <Typography variant="h1" component="h1" sx={{ fontSize: 'h6.fontSize' }}>Admin Dashboard</Typography>
                     <Box onClick={handleMenuOpen}>
                         <IconButton
                             size="large"

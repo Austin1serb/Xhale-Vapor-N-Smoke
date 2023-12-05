@@ -1,5 +1,5 @@
 import React from 'react';
-import { PaymentForm, CreditCard } from 'react-square-web-payments-sdk';
+import { PaymentForm, CreditCard, } from 'react-square-web-payments-sdk';
 import ShippingDetailsComponent from './ShippingDetailsComponent';
 import { Button, Typography } from '@mui/material';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
@@ -16,7 +16,6 @@ const SquarePaymentForm = ({ onPaymentProcess, shippingDetails, back }) => {
     };
 
 
-
     return (
         <div className='checkout-paymentForm-container'>
             <ShippingDetailsComponent
@@ -27,7 +26,7 @@ const SquarePaymentForm = ({ onPaymentProcess, shippingDetails, back }) => {
             <Typography mt={8} variant='h6' >
                 Payment:  </Typography>
             <Typography variant="body2" fontWeight={100} className='checkout-paymentForm-SQUARE'>
-                <span className='square-text'> All transactions are processed secured and encrypted by</span>    <img src="https://images.ctfassets.net/2d5q1td6cyxq/58rgox9CjnDZYQSxSwikxb/d9cae0bf4d3f53900820eac00b049528/PD04488_-_black_logo_on_white.png?w=1502&h=768&fm=avif&q=85&fit=scale" alt="square-logo" className='checkout-paymentForm-logo' loading='lazy' />
+                <span className='square-text'> All transactions are processed secured and encrypted by</span>    <img src="https://images.ctfassets.net/2d5q1td6cyxq/58rgox9CjnDZYQSxSwikxb/d9cae0bf4d3f53900820eac00b049528/PD04488_-_black_logo_on_white.png?w=1502&h=768&fm=avif&q=85&fit=scale" alt="square-logo" className='checkout-paymentForm-logo' />
             </Typography>
             <Typography variant='body2' fontWeight={100} className='square-form-text'>Square© Payment Form</Typography>
             <div className='checkout-payment-card-form'>
@@ -41,6 +40,7 @@ const SquarePaymentForm = ({ onPaymentProcess, shippingDetails, back }) => {
 
 
                     <CreditCard />
+                    {/* Google Pay button */}
 
 
                 </PaymentForm>

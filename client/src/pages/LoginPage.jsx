@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import jwtDecode from 'jwt-decode'; // Import jwt-decode
 import {
     Paper,
@@ -23,6 +23,14 @@ import ForgotPassword from '../components/ForgotPassword';
 import { useAuth } from '../components/Utilities/useAuth';
 
 const LoginPage = () => {
+    useEffect(() => {
+        document.title = "Login to Herba Naturals - Access Your CBD Products Account";
+        document.querySelector('meta[name="description"]').setAttribute("content", "Log in to your Herba Naturals account to access our premium CBD products, track orders, and manage your details.");
+    }, []);
+
+
+
+
     const [openSnackbar, setOpenSnackbar] = React.useState(false);
     //FORGOT PASSWORD LOGIC
     const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
@@ -169,6 +177,7 @@ const LoginPage = () => {
         <div
             style={containerStyles}
         >
+
             <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={() => setOpenSnackbar(false)}>
                 <Alert onClose={() => setOpenSnackbar(false)} severity="error" sx={{ width: '100%' }}>
                     {error}
@@ -182,7 +191,7 @@ const LoginPage = () => {
                     borderRadius: 2,
                 }}
             >
-                <Typography variant="h4" align="center">
+                <Typography variant="h4" component='h1' align="center">
                     Login
                 </Typography>
                 <Typography variant="subtitle1" align="center">

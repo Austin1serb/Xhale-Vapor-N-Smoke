@@ -9,7 +9,7 @@ const secretKey = process.env.JWT_SECRET_KEY; //
 const rateLimit = require('express-rate-limit');
 const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
-
+const bodyParser = require('body-parser');
 
 app.use(
     cors({
@@ -38,7 +38,6 @@ app.use(helmet({
 }));
 
 
-const staffRoutes = require('./routes/staffers.routes');
 const productRoutes = require('./routes/products.routes');
 const orderRoutes = require('./routes/orders.routes');
 const guestRoutes = require('./routes/guest.routes')
@@ -48,11 +47,12 @@ const { uploadToCloudinary } = require('./services/cloudinary');
 const suggestionsRoutes = require('./routes/suggestions.routes');
 const paymentRoutes = require('./routes/payment.routes');
 const passwordResetRoutes = require('./routes/passwordReset.routes')
+const contactRouter = require('./routes/contact.routes');
+
 
 app.use('/api', passwordResetRoutes);
 app.use("/api/", suggestionsRoutes);
 app.use('/api/payment', paymentRoutes);
-app.use("/api/staff", staffRoutes);
 app.use("/api/product", productRoutes);
 app.use("/api/order", orderRoutes);
 app.use('/api/guest', guestRoutes);
@@ -60,4 +60,10 @@ app.use("/api/customer", customerRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/upload", uploadToCloudinary);
 app.use('/api/shippo', shippoRoutes);
+app.use(bodyParser.json());
+app.use('/api/contact', contactRouter);
+
+
+
+
 app.listen(port, () => console.log(`Listening on port: ${port}`));

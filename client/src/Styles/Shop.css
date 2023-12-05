@@ -1,7 +1,6 @@
 .shop-img {
     transition: transform 0.3s ease-in-out;
     object-fit: cover;
-    height: 150px;
     z-index: 0;
 
 }

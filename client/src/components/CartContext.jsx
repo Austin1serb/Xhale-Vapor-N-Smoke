@@ -9,6 +9,8 @@ export const CartProvider = ({ children }) => {
     const [name, setName] = useState('')
 
     const [notes, setNotes] = useState('');
+
+
     const updateNotes = (newNotes) => {
         setNotes(newNotes);
     };
@@ -50,7 +52,7 @@ export const CartProvider = ({ children }) => {
     //confetti
 
     return (
-        <CartContext.Provider value={{ cart, addToCart, removeFromCart, adjustQuantity, notes, updateNotes, clearCart }}>
+        <CartContext.Provider value={{ cart, addToCart, removeFromCart, adjustQuantity, notes, updateNotes, clearCart, setNotes }}>
             {children}
 
 

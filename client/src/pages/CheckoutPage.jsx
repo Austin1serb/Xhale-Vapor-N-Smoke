@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Stepper, Step, StepLabel, Box, Snackbar, Alert, IconButton } from '@mui/material';
+import { Stepper, Step, StepLabel, Box, Snackbar, Alert, IconButton, CircularProgress } from '@mui/material';
 import InformationPage from '../components/InformationPage';
 import ShippingComponent from '../components/ShippingComponent';
 import CartSummaryComponent from '../components/CartSummaryComponent';
@@ -8,8 +8,15 @@ import { useNavigate, useParams, Link } from 'react-router-dom';
 import SquarePaymentForm from '../components/SquarePaymentForm';
 import LoadingModal from '../components/Common/LoadingModal';
 import { useAuth } from '../components/Utilities/useAuth';
+import ShippingDetailsComponent from '../components/ShippingDetailsComponent';
 
 const CheckoutPage = () => {
+    useEffect(() => {
+        document.title = "Checkout - Complete Your Herba Naturals Purchase";
+        document.querySelector('meta[name="description"]').setAttribute("content", "Secure checkout process for your Herba Naturals purchases. Complete your order of premium CBD products quickly and safely.");
+    }, []);
+
+
     const [isSquareSdkLoaded, setIsSquareSdkLoaded] = useState(false);
     const navigate = useNavigate();
     const { step } = useParams();
@@ -27,8 +34,10 @@ const CheckoutPage = () => {
     const [orderData, setOrderData] = useState({})
     const [estimatedShipping, setEstimatedShipping] = useState('')
     const [lastAddress, setLastAddress] = useState({});
-    const { isLoggedIn, customerId } = useAuth();
+    const { isLoggedIn } = useAuth();
     const [snackbarOpen, setSnackbarOpen] = useState(false);
+
+
 
     const handleOpenSnackbar = () => {
         setSnackbarOpen(true);
@@ -69,17 +78,17 @@ const CheckoutPage = () => {
 
 
     const loadSquareSdk = () => {
-        console.log("LOADING SQUARE SDK")
         setIsSquareSdkLoaded(false)
 
-
         const script = document.createElement('script');
-        script.src = "https://js.squareupsandbox.com";
+        // script.src = "https://js.squareupsandbox.com"; //URL for sandbox
+        script.src = "https://web.squarecdn.com/v1/square.js"; // URL for production
         script.type = "text/javascript";
         script.async = false;
         script.onload = () => setIsSquareSdkLoaded(true);
         document.body.appendChild(script);
     };
+
 
     useEffect(() => {
         if (activeStep === 3 && !isSquareSdkLoaded) {
@@ -95,9 +104,10 @@ const CheckoutPage = () => {
 
 
     const onPaymentProcess = (paymentToken) => {
-        console.log("Payment paymentToken received:", paymentToken);
+        //console.log("Payment paymentToken received:", paymentToken);
         finalizeOrderAndProcessPayment(paymentToken)
     };
+
 
 
     const finalizeOrderAndProcessPayment = async (paymentToken) => {
@@ -111,28 +121,28 @@ const CheckoutPage = () => {
             // First, process the payment with Square
             if (paymentToken) {
 
-                const paymentResponse = await fetch('http://localhost:8000/api/payment/process-payment', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        sourceId: 'cnon:card-nonce-ok', // or sourceId: paymentToken.token,
-                        amount: paymentAmount,
+                const trackingInfo = await createShippingLabelAsync(shippingDetails);
+                console.log("trackingInfo: ", trackingInfo)
+                orderData.shippingMethod = {
+                    ...orderData.shippingMethod,
+                    carrier: trackingInfo.rate.provider,
+                    trackingNumber: trackingInfo.tracking_number,
+                    trackingUrl: trackingInfo.tracking_url_provider,
+                    labelUrl: trackingInfo.label_url,
+                    estimatedShipping: estimatedShipping
+                };
 
-                        cost: fullCost,
-                        notes: notes,
-                        estimatedShipping: estimatedShipping,
-                        orderDetails: orderData,
-                        last4: paymentToken.details.card.last4
-                    }),
-                });
+                //MAKE PAYMENT
+                const paymentResult = await processPaymentAsync(paymentToken, paymentAmount, orderData)
 
-                const paymentResult = await paymentResponse.json();
+
 
                 // Check if payment was successful
-                if (paymentResponse.ok && paymentResult.success === true) {
+                if (paymentResult.success === true) {
                     orderData.transactionId = paymentResult.response.result.payment.id;
+                    orderData.paymentStatus = 'Paid';
+
+
                     if (isGuestUser()) {
                         orderData.createdBy = localStorage.getItem('customerId'); // ID of the guest user
                         orderData.createdByType = 'Guest';
@@ -141,6 +151,7 @@ const CheckoutPage = () => {
                         orderData.createdByType = 'Customer';
                     }
                     // Now, create the order in the database
+
                     const createdOrder = await createOrderAsync(orderData);
                     if (!isGuestUser()) {
                         // Update customer data for registered users
@@ -151,9 +162,10 @@ const CheckoutPage = () => {
                         const guestData = { orders: createdOrder._id };
                         await updateGuestDataAsync(localStorage.getItem('customerId'), guestData);
                         const isVerified = localStorage.getItem('isVerified')
-                        localStorage.clear()
+                        localStorage.clear();
                         localStorage.setItem('isVerified', isVerified)
                     }
+
                     clearCart()
                     // Navigate to success page after all processes are complete
                     navigate('/success', { state: { paymentDetails: paymentResult } });
@@ -188,7 +200,11 @@ const CheckoutPage = () => {
     }, [isLoggedIn, navigate]);
 
 
-
+    //create a useEffect to console.log shippingDetails
+    useEffect(() => {
+        console.log("shippingDetails", shippingDetails);
+    }
+        , [shippingDetails]);
 
 
 
@@ -199,6 +215,8 @@ const CheckoutPage = () => {
         setOrderData({
             customer: customerId,
             customerEmail: formData.email || customerEmail,
+            //customer phone 
+            customerPhone: shippingDetails.phone,
             products: cart.map(item => ({
                 name: item.product.name,
                 productId: item.product._id,
@@ -208,8 +226,12 @@ const CheckoutPage = () => {
             })),
             shippingMethod: {
                 provider: shippingOptions.provider,
+                carrierAccountId: shippingOptions.carrier_account,
+                serviceLevelToken: shippingOptions.servicelevel.token,
                 price: shippingOptions.amount,
+                amountCharged: shippingOptions.amount_local,
                 type: shippingOptions.servicelevel.name
+
             },
             totalAmount: fullCost,
             orderNotes: notes,
@@ -219,6 +241,39 @@ const CheckoutPage = () => {
         setIsLoading(false)
         handleNext();
     }
+    const processPaymentAsync = async (paymentToken, paymentAmount, orderData) => {
+        try {
+            const response = await fetch('http://localhost:8000/api/payment/process-payment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    sourceId: paymentToken.token, //'cnon:card-nonce-ok', // or sourceId: paymentToken.token,
+                    amount: paymentAmount,
+                    cost: fullCost, // Ensure 'fullCost' is defined in your context
+                    notes: notes, // Ensure 'notes' is defined in your context
+                    estimatedShipping: estimatedShipping, // Ensure 'estimatedShipping' is defined in your context
+                    orderDetails: orderData,
+                    last4: paymentToken.details.card.last4
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Payment processing failed: HTTP ${response.status} - ${await response.text()}`);
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('Error processing payment:', error);
+
+            return null; // Return null in case of error
+        }
+    };
+
+
+
+
 
 
     const createOrderAsync = async (orderData) => {
@@ -235,19 +290,42 @@ const CheckoutPage = () => {
             const createdOrder = await orderResponse.json();
             if (!createdOrder || orderResponse.status !== 200) {
                 console.error('Error creating order:', createdOrder.message);
-                setIsLoading(false)
+
                 return null; // Return null if order creation fails
             }
-
             return createdOrder; // Return the created order
-
         } catch (error) {
             console.error('Error creating order asynchronously:', error);
-            setIsLoading(false)
             return null; // Return null in case of error
         }
     };
 
+    const createShippingLabelAsync = async (shippingDetails) => {
+        try {
+            const backendUrl = 'http://localhost:8000/api/shippo/create';
+            const response = await fetch(backendUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ shippingDetails }),
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text(); // Or response.json() if the response is in JSON format
+                console.error(`HTTP Error: ${response.status} ${response.statusText}`, errorText);
+                throw new Error(`HTTP Error: ${response.status}`);
+            } else {
+                const result = await response.json();
+                console.log(result);
+                return result
+
+            }
+        } catch (error) {
+            console.error('Error creating shipping label:', error);
+
+        }
+    };
 
     const updateCustomerDataAsync = async (customerId, data) => {
         try {
@@ -259,14 +337,14 @@ const CheckoutPage = () => {
                 credentials: 'include',
                 body: JSON.stringify(data)
             });
-            setIsLoading(false);
             // Optionally handle the response or errors
         } catch (error) {
-            setIsLoading(false)
             console.error('Error updating customer data:', error);
             // Handle errors or log them, as per your application's needs
         }
     }
+
+
     const updateGuestDataAsync = async (customerId, data) => {
         try {
             await fetch(`http://localhost:8000/api/guest/${customerId}`, {
@@ -277,14 +355,21 @@ const CheckoutPage = () => {
                 credentials: 'include',
                 body: JSON.stringify(data)
             });
-            setIsLoading(false);
+
             // Optionally handle the response or errors
         } catch (error) {
-            setIsLoading(false)
+
             console.error('Error updating customer data:', error);
             // Handle errors or log them, as per your application's needs
         }
     }
+
+
+
+
+
+
+
 
     const handleFormChange = (name, value) => {
         setFormData(prevFormData => ({
@@ -305,8 +390,8 @@ const CheckoutPage = () => {
         setShippingDetails(details);
     };
 
-    const handleShippingOptions = (options) => {
-        setShippingOptions(options);
+    const handleShippingOptions = (options, info) => {
+        setShippingOptions(options, info);
 
     };
 
@@ -348,7 +433,7 @@ const CheckoutPage = () => {
 
     return (
         <div className='checkoutPage-container'>
-            <LoadingModal open={isLoading} message="Your payment is being processed" />
+            <LoadingModal open={isLoading} message="Your payment is being processed, Please do not leave or refresh this page" />
             <Box sx={{ display: 'flex', flexDirection: { xs: 'column-reverse', md: 'row' } }}>
                 <div style={{ flex: 1 }}>
 
@@ -401,6 +486,7 @@ const CheckoutPage = () => {
                                     length: item.product.shipping.dimensions.length,
                                     width: item.product.shipping.dimensions.width,
                                     height: item.product.shipping.dimensions.height,
+                                    quantity: item.quantity,
                                 }))}
                                 shippingDetails={shippingDetails}
                                 onShippingCostChange={handleShippingCostChange}
@@ -415,18 +501,28 @@ const CheckoutPage = () => {
                                 setLastAddress={setLastAddress}
                                 shipmentOptions={shipmentOptions}
                                 setShipmentOptions={setShipmentOptions}
+                                fullCost={fullCost}
+                                setShippingDetails={setShippingDetails}
                             />}
-                            {activeStep === 3 && isSquareSdkLoaded &&
-                                <SquarePaymentForm
-                                    onPaymentProcess={onPaymentProcess}
-                                    paymentForm={window.SqPaymentForm}
-                                    shippingDetails={shippingDetails}
-                                    back={handleBack}
+                            {activeStep === 3 && (
+                                isSquareSdkLoaded ? (
+                                    <SquarePaymentForm
+                                        onPaymentProcess={onPaymentProcess}
+                                        paymentForm={window.SqPaymentForm}
+                                        shippingDetails={shippingDetails}
+                                        back={handleBack}
 
+                                    />
+                                ) : (
+                                    <div style={{ margin: '20px' }}>
+                                        <ShippingDetailsComponent
+                                            shippingDetails={shippingDetails}
+                                            back={handleBack}
 
-                                />
-                            }
-
+                                        />
+                                        <CircularProgress />
+                                    </div>
+                                ))}
                         </div>
 
                     </div>
@@ -466,7 +562,7 @@ const CheckoutPage = () => {
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
             >
                 <Alert
-                    severity="info"
+
                     action={
                         <IconButton
                             aria-label="close"

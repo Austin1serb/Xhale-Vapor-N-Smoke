@@ -47,40 +47,62 @@
 }
 
 .brand-icon {
-    height: 60px;
-
+    height: 80px;
+    margin-left: -40px;
+    margin-right: -60px;
     margin-top: 10px;
 }
 
-.brand-icon:hover {
-    animation: wave 2s ease infinite;
-}
 
-@keyframes wave {
-    0% {
-        transform: translateY(0);
 
-    }
-
-    10% {}
-
-    50% {
-        filter: hue-rotate(180deg);
-        transform: scale(1.1);
-    }
-
-    100% {
-        transform: translateY(0);
-    }
-}
-
-@media (max-width: 385px) {
+@media (max-width: 450px) {
     .brand-icon {
 
-        margin-left: -20px;
-        width: 150px;
-        height: auto;
-        min-width: 80px;
+
+        height: 60px;
+    }
+}
+
+@media (max-width: 355px) {
+    .brand-icon {
+
+
+        margin-left: -60px;
+    }
+}
+
+
+
+@media (max-width: 315px) {
+    .brand-icon {
+        height: 50px;
+        margin-left: -40px;
+    }
+
+    .topbar-icon-container {
+        margin-right: -20px;
+    }
+
+    .nav-link {
+        margin-left: -10px;
+    }
+}
+
+@media(max-width:270px) {
+    .brand-icon {
+        display: none;
+    }
+
+    .brand-icon-small {
+        height: 80px;
+        margin-left: -30px;
+        margin-right: -30px;
+    }
+}
+
+@media(min-width:270px) {
+    .brand-icon-small {
+        display: none;
     }
 }
 
@@ -153,32 +175,57 @@
 }
 
 
+.brand-icon:hover {
+    animation: wave 2s ease infinite;
+}
+
+@keyframes wave {
+    0% {
+        transform: translateY(0);
+
+    }
+
+    10% {}
+
+    50% {
+        filter: hue-rotate(180deg);
+        transform: scale(1.1);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
+}
+
 .dropdown-box {
+    z-index: 9999999;
     opacity: 0;
     visibility: hidden;
     transform: translateY(20px);
     transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
     position: absolute;
     /* This is necessary to move it below the 'Shop' link */
-    top: 54px;
+    top: 53.5px;
     /* This positions it right below the 'Shop' link */
-    left: -195px;
+    left: -295px;
     width: 100vw;
     /* Full width of the screen */
 }
 
 .dropdown-separation {
-    transform: translate(160px);
-    height: 40px;
-    margin-top: -41.5px;
-    width: 280px;
+    z-index: 9999999;
     background-color: transparent;
+    transform: translate(190px);
+    height: 29px;
+    margin-top: -30.5px;
+    width: 280px;
+
 }
 
 @media (max-width:1000px) {
     .dropdown-box {
 
-        left: -165px;
+        left: -295px;
 
 
     }

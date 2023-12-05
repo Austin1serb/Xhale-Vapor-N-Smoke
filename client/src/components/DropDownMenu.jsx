@@ -55,27 +55,30 @@ const DropdownMenu = ({ isVisible, onLinkClick }) => {
     };
 
     useEffect(() => {
-        if (isVisible && featuredProducts.length === 0) {
-            fetchFeaturedProducts();
-        }
+        const handleResize = () => {
+            // Check if window width is greater than 900px
+            if (window.innerWidth > 900) {
+                if (isVisible && featuredProducts.length === 0) {
+                    fetchFeaturedProducts();
+                }
+            } else {
+                // Optionally, clear the featured products if the window is resized to less than 900px
+                setFeaturedProducts([]);
+            }
+        };
+
+        // Attach resize event listener
+        window.addEventListener('resize', handleResize);
+
+        // Initial check on component mount
+        handleResize();
+
+        // Cleanup function
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
     }, [isVisible, featuredProducts.length]);
 
-    const checkSize = throttle(() => {
-        if (window.innerWidth > 899) {
-            setOpenedSection(false);
-        }
-    }, 500); // Adjust the '100' to increase or decrease the throttle time
-
-    useEffect(() => {
-        window.addEventListener('resize', checkSize);
-        // Run initially to check the size on load
-        checkSize();
-        // Cleanup the event listener when the component is unmounted
-        return () => {
-            window.removeEventListener('resize', checkSize);
-
-        };
-    }, []);
 
     const handleToggleSection = (sectionName) => {
         if (openedSection === sectionName) {
@@ -134,7 +137,9 @@ const DropdownMenu = ({ isVisible, onLinkClick }) => {
                 <Box component='div' sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, width: '92%', }}>
                     <div className="dropdown-section">
                         <div className='list-header' onClick={() => handleToggleSection('SHOP_ALL_CBD')}>
-                            <span className="list-content">SHOP ALL CBD</span>
+                            <Link to='/shop' style={{ textDecoration: 'none' }}>
+                                <span className="list-content">SHOP ALL CBD</span>
+                            </Link>
                             <IconButton className='icon-button-dropdown' sx={{ display: { md: 'none' } }}>
 
                                 <svg height='40' className={`arrow-icon ${openedSection === 'SHOP_ALL_CBD' && 'rotate'}`} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 15.0006L7.75732 10.758L9.17154 9.34375L12 12.1722L14.8284 9.34375L16.2426 10.758L12 15.0006Z" /></svg>
@@ -200,10 +205,10 @@ const DropdownMenu = ({ isVisible, onLinkClick }) => {
 
                         )}
                     </div>
-                    {/* MORE CANNABINOIDS Section */}
+                    {/*Shroom gummies Section
                     <div className="dropdown-section">
                         <div className='list-header' onClick={() => handleToggleSection('MORE_CANNABINOIDS')}>
-                            <span className="list-content"> MORE CANNABINOIDS</span>
+                            <span className="list-content"> SHOP MUSHROOM GUMMIES</span>
                             <IconButton className='icon-button-dropdown' sx={{ display: { md: 'none' } }}>
 
 
@@ -226,7 +231,7 @@ const DropdownMenu = ({ isVisible, onLinkClick }) => {
                                 </ListItem>
                             </List>
                         )}
-                    </div>
+                    </div>*/}
 
                     {/* OTHER PRODUCTS Section */}
                     <div className="dropdown-section">
@@ -239,7 +244,7 @@ const DropdownMenu = ({ isVisible, onLinkClick }) => {
                             </IconButton>
                         </div>
                         {(openedSection === 'OTHER_PRODUCTS' || window.innerWidth > 900) && (
-                            <List className='list-container'>
+                            <List className='list-container' >
                                 <ListItem className="list-item" onClick={onLinkClick} component={Link} to="/shop?filter=pet">
                                     <span className="list-content">CBD for Pets</span>
                                 </ListItem>

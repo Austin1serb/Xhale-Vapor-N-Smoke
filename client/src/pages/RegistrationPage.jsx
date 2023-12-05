@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import '../Styles/PolicyPages.css';
 import {
@@ -24,6 +24,12 @@ import { useAuth } from '../components/Utilities/useAuth';
 
 
 const RegistrationPage = () => {
+    useEffect(() => {
+        document.title = "Create an Account - Join Herba Natural's Family";
+        document.querySelector('meta[name="description"]').setAttribute("content", "Join the Herba Naturals family. Register to start purchasing high-quality CBD products and receive updates on new arrivals and offers.");
+    }, []);
+
+
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [openSnackbar, setOpenSnackbar] = React.useState(false);
     const location = useLocation();
@@ -191,6 +197,7 @@ const RegistrationPage = () => {
                 const { accessToken } = responseData;
                 // Store the token securely (Consider more secure storage than localStorage)
                 localStorage.setItem('token', accessToken);
+
 
                 const decodedToken = jwtDecode(accessToken);
 

@@ -11,7 +11,9 @@ import '../../Styles/TopBar.css';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import BrandIcon from '../../assets/brandText.webp'
+import BrandIcon from '../../assets/cbdhorizontaltext.webp'
+import SmallBrandIcon from '../../assets/cbdicon.webp'
+import BrandText from '../../assets/cbdtextwicon.webp'
 import React, { useState, useEffect, useRef, Suspense, } from 'react';
 import { Link, } from 'react-router-dom';
 import { useCart } from '../../components/CartContext.jsx';
@@ -206,7 +208,7 @@ const TopBar = () => {
                         aria-label="show more"
                         onClick={handleMobileMenuToggle}
                         ref={menuIconRef}
-                        sx={{ mr: 2, display: { xs: 'flex', md: 'none' }, backgroundColor: 'white', }}
+                        sx={{ mr: 2, display: { xs: 'flex', md: 'none' }, backgroundColor: 'white' }}
                     >
 
 
@@ -243,12 +245,23 @@ const TopBar = () => {
                         </Suspense>
 
                     </Box>
-                    <Typography variant="h6" sx={{ flexGrow: 1 }}>
-                        {/*<Box component={Link} to="/" className="nav-link">
-                            <img 
-                            
-                            src={BrandIcon} alt="Brand Icon" className='brand-icon' ></img>
-                        </Box>*/}
+                    <Typography variant="h6" sx={{ flexGrow: 1, display: "flex", alignItems: 'center' }}>
+                        <Box component={Link} to="/" className="nav-link">
+                            <Box sx={{ display: { sm: 'none' } }}>
+                                <img
+                                    src={BrandIcon} alt="Brand Icon" className='brand-icon' />
+                            </Box>
+
+                            <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+                                <img src={BrandText} alt="brand-text" className='brand-icon' />
+                            </Box>
+                            <Box >
+                                <img src={SmallBrandIcon} alt="brand-icon-small" className='brand-icon-small' />
+                            </Box>
+                        </Box>
+                        <Box>
+
+                        </Box>
                     </Typography>
                     {!isMobile ? (
                         <Typography component='div' className='nav-typography' variant="body1" sx={{ flexGrow: 10, display: { sm: 'none', md: 'flex', }, }}  >
@@ -278,43 +291,45 @@ const TopBar = () => {
                             <Box component={Link} to="/about" className="nav-link" sx={{ marginRight: 2 }}>
                                 About Us
                             </Box>
-                            <Box component={Link} to="/support" className="nav-link" sx={{ marginRight: 2 }}>
-                                Support
+                            <Box component={Link} to="/contact" className="nav-link" sx={{ marginRight: 2 }}>
+                                Contact
                             </Box>
 
                         </Typography>
                     ) : null}
-                    <Box className="nav-link" onClick={() => setDrawerOpen(true)}>
-                        <IconButton
-                            id="cart"
-                            aria-label="cart-button"
-                            name='cart-button'
-                            sx={{ mr: -2, ml: { xs: 0, sm: 0 } }}
-                            color="inherit">
-                            <Badge badgeContent={totalItems} color="secondary" sx={{ '.MuiBadge-badge': { backgroundColor: 'rgba(40, 47, 72, 0.72)', color: 'white' } }}>
+                    <Box display={'flex'} alignItems={'center'} className='topbar-icon-container' >
+                        <Box className="nav-link" onClick={() => setDrawerOpen(true)}>
+                            <IconButton
+                                id="cart"
+                                aria-label="cart-button"
+                                name='cart-button'
+                                sx={{ mr: -2, ml: { xs: 0, sm: 0 } }}
+                                color="inherit">
+                                <Badge badgeContent={totalItems} color="secondary" sx={{ '.MuiBadge-badge': { backgroundColor: 'rgba(195, 26, 210, 0.72)', color: 'white' } }}>
 
-                                <svg xmlns="http://www.w3.org/2000/svg" fill='currentColor' className={shake ? 'shake-animation' : ''} width="28" height="28" viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 3c0 .55.45 1 1 1h1l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h11c.55 0 1-.45 1-1s-.45-1-1-1H7l1.1-2h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A.996.996 0 0 0 20.01 4H5.21l-.67-1.43a.993.993 0 0 0-.9-.57H2c-.55 0-1 .45-1 1zm16 15c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z" /></svg>
-                            </Badge>
-                        </IconButton>
-                    </Box>
-                    <Box className="nav-link">
-                        <IconButton
-                            size="large"
-                            edge="end"
-                            className="profile-icon"
-                            id='profile-icon-button'
-                            aria-label="account of current user"
-                            aria-controls={menuId}
-                            aria-haspopup="true"
-                            onClick={handleProfileMenuOpen}
-                            color="inherit"
-                            sx={{ mr: { xs: -2, sm: 0 } }}
-                        >
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill='currentColor' className={shake ? 'shake-animation' : ''} width="28" height="28" viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 3c0 .55.45 1 1 1h1l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h11c.55 0 1-.45 1-1s-.45-1-1-1H7l1.1-2h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A.996.996 0 0 0 20.01 4H5.21l-.67-1.43a.993.993 0 0 0-.9-.57H2c-.55 0-1 .45-1 1zm16 15c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z" /></svg>
+                                </Badge>
+                            </IconButton>
+                        </Box>
+                        <Box className="nav-link">
+                            <IconButton
+                                size="large"
+                                edge="end"
+                                className="profile-icon"
+                                id='profile-icon-button'
+                                aria-label="account of current user"
+                                aria-controls={menuId}
+                                aria-haspopup="true"
+                                onClick={handleProfileMenuOpen}
+                                color="inherit"
+                                sx={{ mr: { xs: -2, sm: 0 } }}
+                            >
 
-                            <svg fill='currentColor' xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm0 14c-2.03 0-4.43-.82-6.14-2.88a9.947 9.947 0 0 1 12.28 0C16.43 19.18 14.03 20 12 20z" /></svg>
+                                <svg fill='currentColor' xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm0 14c-2.03 0-4.43-.82-6.14-2.88a9.947 9.947 0 0 1 12.28 0C16.43 19.18 14.03 20 12 20z" /></svg>
 
 
-                        </IconButton>
+                            </IconButton>
+                        </Box>
                     </Box>
                     <Box>
                     </Box>

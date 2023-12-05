@@ -20,12 +20,16 @@ const RegistrationPage = React.lazy(() => import('./pages/RegistrationPage'));
 const LoginPage = React.lazy(() => import('./pages/LoginPage'));
 const AccountDetails = React.lazy(() => import('./pages/AccountDetails'));
 const Shop = React.lazy(() => import('./pages/Shop'));
-const ResetPassword = React.lazy(() => import('./components/ResetPassword'));
+const ResetPassword = React.lazy(() => import('./pages/ResetPassword'));
 const AboutUs = React.lazy(() => import('./pages/AboutUs'));
-const ShippingPolicy = React.lazy(() => import('./components/ShippingPolicy'));
+const ShippingPolicy = React.lazy(() => import('./pages/ShippingPolicy'));
 const Home = React.lazy(() => import('./pages/Home'));
 const Footer = React.lazy(() => import('./pages/Footer'));
 const AgeVerification = React.lazy(() => import('./pages/AgeVerification'))
+const Contact = React.lazy(() => import('./pages/Contact'));
+
+
+
 const App = () => {
 
 
@@ -50,6 +54,7 @@ const App = () => {
 
   return (
     <div>
+
       <AuthProvider>
         <CartProvider>
 
@@ -93,6 +98,7 @@ const App = () => {
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/shipping-policy" element={<ShippingPolicy />} />
                 <Route path="/success" element={<SuccessPage />} />
+                <Route path="/contact" element={<Contact />} />
               </Route>
             </Routes>
           </Suspense>

@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import '../Styles/Home.css'; // You can create a CSS file for styling
 import cdbImage from '../assets/cbd.webp'
 import { Box, Typography, List, ListItem, ListItemText, ListItemIcon, Button, CircularProgress } from '@mui/material';
@@ -10,6 +10,12 @@ const BestSellersSection = React.lazy(() => import('../components/BestSellersSec
 const ShopByBrand = React.lazy(() => import('../components/ShopByBrand.jsx'));
 
 const Home = () => {
+
+    useEffect(() => {
+        document.title = "Herba Naturals - Premium CBD Products in Kirkland | Home";
+        document.querySelector('meta[name="description"]').setAttribute("content", "Discover premium CBD products with Herba Naturals in Kirkland. Explore our range of Koi, Beezbee, and Wyld CBD oils, edibles, and topicals.");
+    }, []);
+
 
     const customFont = "freight-display-pro, serif";
     const listItemSx = {
@@ -24,6 +30,7 @@ const Home = () => {
     return (
 
         <div>
+
             <Box className="home-container">
                 <div className="left-content">
                     <div className='colored-square-content'>
