@@ -8,15 +8,26 @@ const PrivacyPolicy = () => {
         document.querySelector('meta[name="description"]').setAttribute("content", "Herba Naturals values your privacy. Learn how we collect, use, and protect your personal information in accordance with our privacy policy.");
     }, []);
 
+    const headingStyle = {
+        textAlign: 'center',
+    };
 
+    const sectionHeadingStyle = {
+        fontWeight: 'bold',
+    };
+
+    const paragraphStyle = {
+        margin: 0,
+        padding: 0,
+    };
 
     return (
         <div className="shipping-policy">
 
-            <h1>Privacy policy</h1>
+
 
             <div className="container">
-
+                <h1>Privacy policy</h1>
 
                 <h3>Herba Naturals Privacy Policy  </h3>
 
