@@ -248,7 +248,7 @@ const Shop = () => {
 
                                 <img
                                     className="shop-img"
-                                    src={`${product.imgSource[0].url.replace('/upload/', '/upload/c_scale,w_150,h_150,f_auto,q_auto,dpr_auto/')}`}
+                                    src={`${product.imgSource[0].url}`}
                                     alt={product.name}
                                     height="150"
                                     width="150"
