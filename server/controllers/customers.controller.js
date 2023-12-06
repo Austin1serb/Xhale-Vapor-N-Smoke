@@ -160,7 +160,7 @@ module.exports = {
                 // Set the new refresh token in an HTTP-Only cookie
                 res.cookie('refreshToken', newRefreshToken, {
                     httpOnly: true,
-                    secure: true, // Use secure in production
+                    secure: false, // Use secure in production
                     maxAge: 86600000, // Refresh token expiry in milliseconds
                     sameSite: 'Lax',
                 });
@@ -224,7 +224,7 @@ module.exports = {
             // Set refresh token in HTTP-Only cookie
             res.cookie('refreshToken', refreshToken, {
                 httpOnly: true,
-                secure: true, // use secure in production
+                secure: false, // use secure in production
                 maxAge: 43300000/* refresh token expiry in milliseconds */,
                 sameSite: 'Lax',
             });
@@ -283,7 +283,7 @@ module.exports = {
                 res.cookie('refreshToken', newRefreshToken, {
 
                     httpOnly: true,
-                    secure: true,
+                    secure: false,
                     maxAge: 43300000/* refresh token expiry in milliseconds */,
                     sameSite: 'Lax',
                 });

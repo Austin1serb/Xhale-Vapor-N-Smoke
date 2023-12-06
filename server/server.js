@@ -10,6 +10,7 @@ const rateLimit = require('express-rate-limit');
 const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const bodyParser = require('body-parser');
+const frontEndDomain = process.env.FRONTEND_DOMAIN
 
 app.use(
     cors({

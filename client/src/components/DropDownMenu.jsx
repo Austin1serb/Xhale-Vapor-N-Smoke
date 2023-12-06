@@ -136,7 +136,10 @@ const DropdownMenu = ({ isVisible, onLinkClick }) => {
             <Box className='dropdown-container'>
                 <Box component='div' sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, width: '92%', }}>
                     <div className="dropdown-section">
-                        <div className='list-header' onClick={() => handleToggleSection('SHOP_ALL_CBD')}>
+                        <div className='list-header' onClick={() => {
+                            handleToggleSection('SHOP_ALL_CBD');
+                            onLinkClick();
+                        }}>
                             <Link to='/shop' style={{ textDecoration: 'none' }}>
                                 <span className="list-content">SHOP ALL CBD</span>
                             </Link>
