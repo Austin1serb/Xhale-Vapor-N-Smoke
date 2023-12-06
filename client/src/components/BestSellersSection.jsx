@@ -105,7 +105,7 @@ const BestSellersSection = () => {
                             <div style={productStyles}>
 
                                 <img className="shop-img"
-                                    src={`${product.imgSource[0].url.split('/upload/').join('/upload/c_fill,h_150,w_150/f_auto,q_auto:eco/')}`}
+                                    src={`${product.imgSource[0].url}`}
 
                                     alt={product.name}
                                     height="150px" loading='lazy' />
