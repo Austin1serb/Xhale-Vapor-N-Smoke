@@ -1,5 +1,5 @@
 /* eslint-disable no-restricted-globals */
-const CACHE_NAME = 'my-app-v3'; // Change version to 'my-app-v2', 'my-app-v3', etc. when updating the app
+const CACHE_NAME = 'my-app-v4'; // Change version to 'my-app-v2', 'my-app-v3', etc. when updating the app
 const urlsToCache = [
     '/',
     '/static/css/main.chunk.css',  // Adjust this path to point to your main CSS bundle
@@ -77,9 +77,9 @@ const urlsToCache = [
     '/951.83591d21.chunk.js.map',
     '/955.3eab4b4e.chunk.js',
     '/955.3eab4b4e.chunk.js.map',
-    '/main.d63a381b.js',
-    '/main.d63a381b.js.LICENSE.txt',
-    '/main.d63a381b.js.map',
+    '/main.7b788b3e.js',
+    '/main.7b788b3e.js.LICENSE.txt',
+    '/main.7b788b3e.js.map',
     '/6.4ab26698.chunk.css',
     '/6.4ab26698.chunk.css.map',
     '/70.6ad7d7bd.chunk.css',
