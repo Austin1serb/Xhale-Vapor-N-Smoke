@@ -52,7 +52,7 @@ function ShippingPolicy() {
 
                 <h3>7. Contact Us:</h3>
                 <p>
-                    If you have any questions or concerns regarding our shipping policy or the status of your order, please don't hesitate to contact our customer support team at [Customer Support Email] or [Customer Support Phone Number]. We are here to assist you and ensure that your shopping experience with Herba Naturals is as pleasant as possible.
+                    If you have any questions or concerns regarding our shipping policy or the status of your order, please don't hesitate to contact our customer support team at customerservices@herbanaturalco.com. We are here to assist you and ensure that your shopping experience with Herba Naturals is as pleasant as possible.
                 </p>
             </div>
         </div>
