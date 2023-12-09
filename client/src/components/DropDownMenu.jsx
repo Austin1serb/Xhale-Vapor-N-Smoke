@@ -56,6 +56,7 @@ const DropdownMenu = ({ isVisible, onLinkClick }) => {
     };
 
     useEffect(() => {
+
         const handleResize = () => {
             // Check if window width is greater than 900px
             if (window.innerWidth > 900) {
@@ -238,7 +239,7 @@ const DropdownMenu = ({ isVisible, onLinkClick }) => {
                     </div>
 
                     {/* OTHER PRODUCTS Section */}
-                    <div className="dropdown-section">
+                    <div className="dropdown-section" style={{ display: `${window.innerWidth < 1050 ? 'none' : 'block'}` }}>
                         <div className='list-header' onClick={() => handleToggleSection('OTHER_PRODUCTS')}>
                             <span className="list-content">OTHER PRODUCTS</span>
                             <IconButton className='icon-button-dropdown' sx={{ display: { md: 'none' } }}>

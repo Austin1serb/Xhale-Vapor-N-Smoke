@@ -6,10 +6,11 @@ const urlsToCache = [
     '/favicon.ico',
     '/manifest.json',
     '/robots.txt',
-    '/staic/bundle.js',
-    '/icons/icon-64x64',
-    '/icons/icon-192x192',
-    '/icons/icon-512x512',
+
+    '/static/js/bundle.js',
+    '/icons/icon-64x64.ico',
+    '/icons/icon-192x192.png',
+    '/icons/icon-512x512.ong',
     '/icons/maskable_icon.png',
     '/static/css/6.4ab26698.chunk.css',
     '/static/css/6.4ab26698.chunk.css.map',
@@ -125,22 +126,47 @@ const urlsToCache = [
     '/static/js/main.c8860a37.js',
     '/static/js/main.c8860a37.js.LICENSE.txt',
     '/static/js/main.c8860a37.js.map',
-    'icons/Wyld.5f0883f6179123711efa.webp',
-    'icons/beezbee.a3b818d5fcb822c1e7ed.webp',
-    'icons/brandIconSmall.ea7db00256a430bb337f.webp',
-    'icons/cbd.946658447d6cdfd1e38f.webp',
-    'icons/cbdhorizontaltext.2a47c5ed31054df0b2d8.webp',
-    'icons/cbdiconsmall.5f3de9e79b79f7c2f6a4.webp',
-    'icons/cbdtextwicon.2c179c7d0aef61a9c2c2.webp',
-    'icons/koi-logo.e62038ab9e2020a7feae.webp',
+    'static/media/Wyld.5f0883f6179123711efa.webp',
+    'static/media/beezbee.a3b818d5fcb822c1e7ed.webp',
+    'static/media/brandIconSmall.ea7db00256a430bb337f.webp',
+    'static/media/cbd.946658447d6cdfd1e38f.webp',
+    'static/media/cbdhorizontaltext.2a47c5ed31054df0b2d8.webp',
+    'static/media/cbdiconsmall.5f3de9e79b79f7c2f6a4.webp',
+    'static/media/cbdtextwicon.2c179c7d0aef61a9c2c2.webp',
+    'static/media/koi-logo.e62038ab9e2020a7feae.webp',
+    '/static/js/vendors-node_modules_mui_material_ListItem_ListItem_js.chunk.js',
     '/static/js/vendors-node_modules_mui_material_Button_Button_js-node_modules_mui_material_utils_isMuiElement_js.chunk.js',
-    '/static/js/node_modules_mui_material_utils_requirePropFactory…odules_mui_material_utils_unsuppo-a1f2a5.chunk.js',
+    '/static/js/node_modules_mui_material_utils_requirePropFactory_js-node_modules_mui_material_utils_unsuppo-a1f2a5.chunk.js',
     '/static/img/Imagecbd.946658447d6cdfd1e38f.webp',
     '/static/img/cbd.946658447d6cdfd1e38f.webp',
     '/static/js/vendors-node_modules_mui_material_Skeleton_Skeleton_js.chunk.js',
     '/static/js/src_components_BestSellersSection_jsx-node_modules_mui_material_utils_requirePropFactory_js.chunk.js',
     '/static/js/src_components_ShopByBrand_jsx-node_modules_mui_material_utils_requirePropFactory_js.chunk.js',
     '/static/img/ImageWyld.5f0883f6179123711efa.webp',
+    '/static/js/vendors-node_modules_mui_material_Collapse_Collapse_js.chunk.js',
+    '/static/js/src_components_DropDownMenu_jsx.chunk.js',
+    '/static/js/vendors-node_modules_mui_material_utils_createSvgIcon_js-node_modules_mui_material_utils_useC-5daa6b.chunk.js',
+    '/static/js/vendors-node_modules_mui_icons-material_ThumbUp_js-node_modules_mui_material_Zoom_Zoom_js.chunk.js',
+    '/static/js/src_pages_AgeVerification_jsx.chunk.js',
+    '/static/js/src_pages_Home_jsx.chunk.js',
+    '/static/js/src_pages_Footer_jsx.chunk.js',
+    '',
+    '/static/js/vendors-node_modules_mui_material_FormControl_FormControl_js-node_modules_mui_material_InputL-0768e8.chunk.js',
+    '/static/js/vendors-node_modules_mui_material_Grid_Grid_js.chunk.js',
+    '/static/js/vendors-node_modules_mui_material_Tab_Tab_js-node_modules_mui_material_Tabs_Tabs_js.chunk.js',
+    '/static/js/src_components_QuickView_jsx.chunk.js',
+    '/static/js/vendors-node_modules_mui_material_TextField_TextField_js.chunk.js',
+    '/static/js/vendors-node_modules_axios_lib_axios_js.chunk.js',
+    '/static/js/src_pages_Shop_jsx.chunk.js',
+    '/static/js/node_modules_mui_material_utils_unsupportedProp_js.chunk.js',
+    '/static/js/vendors-node_modules_mui_material_Alert_Alert_js-node_modules_mui_material_InputAdornment_Inp-55dcda.chunk.js',
+    '/static/js/vendors-node_modules_mui_material_Checkbox_Checkbox_js.chunk.js',
+    '/static/js/vendors-node_modules_mui_icons-material_Visibility_js-node_modules_mui_icons-material_Visibil-15265d.chunk.js',
+    '/static/js/src_pages_LoginPage_jsx.chunk.js',
+    '/static/js/vendors-node_modules_mui_icons-material_Visibility_js-node_modules_mui_icons-material_Visibil-233c6f.chunk.js',
+    '/static/js/src_pages_RegistrationPage_jsx.chunk.js',
+    '/static/js/src_components_Cart_jsx.chunk.js',
+
 ];
 
 // Install a service worker
@@ -190,3 +216,59 @@ self.addEventListener('activate', event => {
         })
     );
 });
+
+self.addEventListener('fetch', event => {
+    const apiUrl = '/api/'; // Define your API endpoint here
+
+    if (event.request.url.includes(apiUrl)) {
+        event.respondWith(
+            caches.open(CACHE_NAME)
+                .then(async cache => {
+                    const response = await cache.match(event.request);
+                    return response || fetch(event.request)
+                        .then(fetchResponse => {
+                            cache.put(event.request, fetchResponse.clone());
+                            return fetchResponse;
+                        });
+                })
+        );
+    } else {
+        // Cache and serve all other requested resources
+        event.respondWith(
+            caches.open(CACHE_NAME)
+                .then(async cache => {
+                    const response = await cache.match(event.request);
+                    return response || fetch(event.request)
+                        .then(fetchResponse => {
+                            cache.put(event.request, fetchResponse.clone());
+                            return fetchResponse;
+                        });
+                })
+        );
+    }
+});
+const MAX_CACHE_SIZE = 100;
+
+self.addEventListener('fetch', event => {
+    event.respondWith(
+        caches.open(CACHE_NAME).then(async cache => {
+            // Check the cache size
+            const keys = await cache.keys();
+            if (keys.length > MAX_CACHE_SIZE) {
+                // Remove older entries if cache size exceeds the limit
+                await cache.delete(keys[0]);
+            }
+
+            // Fetch and cache the requested resource
+            const response = await cache.match(event.request);
+            if (response) {
+                return response;
+            }
+
+            const fetchResponse = await fetch(event.request);
+            cache.put(event.request, fetchResponse.clone());
+            return fetchResponse;
+        })
+    );
+});
+
