@@ -70,7 +70,7 @@ const Home = () => {
                         Our Carriers CBD is award-winning and tested for quality. We proudly offer products from the best CBD producers.
                     </Typography>
                 </div>
-                <Box className="list-container" >
+                <Box className="home-list-container" >
                     <List
                         sx={{
 
