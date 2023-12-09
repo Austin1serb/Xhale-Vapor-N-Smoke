@@ -325,7 +325,7 @@ const DropdownMenu = ({ isVisible, onLinkClick }) => {
 
                 {loading ?
                     <Box><CircularProgress /></Box> :
-                    <Box className='dropdown-featured'>
+                    <Box className='dropdown-featured' sx={{ ml: { ms: 0, lg: -10 } }}>
                         <legend className='dropdown-featured-header' >Featured Products</legend>
                         {featuredProducts.map((product) => (
                             <Box onClick={() => {
@@ -355,12 +355,14 @@ const DropdownMenu = ({ isVisible, onLinkClick }) => {
                 Exhale Vapor & Smoke
             </Box>
             <Suspense fallback={<CircularProgress />}>
+
                 <QuickView
                     productId={quickViewProduct}
                     open={quickViewOpen}
                     handleClose={() => setQuickViewOpen(false)}
                     products={featuredProducts}
                 />
+
             </Suspense>
         </Paper>
 
