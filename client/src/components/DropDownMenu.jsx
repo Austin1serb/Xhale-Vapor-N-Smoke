@@ -144,7 +144,7 @@ const DropdownMenu = ({ isVisible, onLinkClick }) => {
 
                         }}>
 
-                            <span className="list-content">SHOP ALL CBD</span>
+                            <span className="list-content">SHOP ALL</span>
 
                             <IconButton className='icon-button-dropdown' sx={{ display: { md: 'none' } }}>
 
@@ -250,11 +250,15 @@ const DropdownMenu = ({ isVisible, onLinkClick }) => {
                         </div>
                         <Collapse in={openedSection === 'OTHER_PRODUCTS' || window.innerWidth > 900}>
                             <List sx={paddingSmScreen} className='list-container' >
-                                <ListItem className="list-item" onClick={onLinkClick} component={Link} to="/shop?filter=pet">
-                                    <span className="list-content">CBD for Pets</span>
-                                </ListItem>
+
                                 <ListItem className="list-item" onClick={onLinkClick} component={Link} to="/shop?filter=mushrooms">
                                     <span className="list-content">Mushroom Gummies</span>
+                                </ListItem>
+                                <ListItem className="list-item" onClick={onLinkClick} component={Link} to="/shop?filter=kratom">
+                                    <span className="list-content">Kratom</span>
+                                </ListItem>
+                                <ListItem className="list-item" onClick={onLinkClick} component={Link} to="/shop?filter=pet">
+                                    <span className="list-content">CBD for Pets</span>
                                 </ListItem>
                             </List>
 

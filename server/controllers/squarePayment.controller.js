@@ -82,7 +82,7 @@ const processPayment = async (req, res) => {
         if (response && responseBody.payment && responseBody.payment.status === 'COMPLETED') {
 
 
-            emailReceiptUrl = responseBody.payment.receipt_url;
+            let emailReceiptUrl = responseBody.payment.receipt_url;
 
             try {
                 await sendReceiptEmail(cost, notes, estimatedShipping, orderDetails, last4, emailReceiptUrl);
@@ -203,49 +203,49 @@ async function sendReceiptEmail(cost, notes, estimatedShipping, orderDetails, la
 
 }
 
-////TEST EMAIL
-//sendReceiptEmail(cost = { subTotal: 0.01, grandTotal: 0.0111, tax: 0, shippingCost: 0 }, notes = 'ddeed', estimatedShipping = 'December 13th, 2023', orderDetails = {
-//    orderNotes: '',
-//    customer: "657349011e1c4358033745e6",
-//    customerEmail: 'austin.serb@icloud.com',
-//    customerPhone: '(208) 616-3408',
-//    products: [
-//        {
-//            name: 'CBD TERPENE TINCTURE 550MG 30ML',
-//            productId: "656ebd1c1908e127c9f87ca4",
-//            price: 0.01,
-//            quantity: 1,
-//            img: 'https://res.cloudinary.com/dmbofhpcg/image/upload/v1701756187/product_images/pqrkqi6m4gnix2kcthve.png',
-//            _id: "657367814c3ed23e9e31bdf5"
-//        }
-//    ],
-//    shippingMethod: {
-//        provider: 'USPS',
-//        carrierAccountId: '9ad8fceeca0f47c6a4e4e66f010b020d',
-//        serviceLevelToken: 'usps_ground_advantage',
-//        price: '3.99',
-//        amountCharged: '3.99',
-//        type: 'Ground Advantage',
-//        carrier: 'USPS',
-//        trackingNumber: '',
-//        trackingUrl: '',
-//        labelUrl: '',
-//        estimatedShipping: 'December 13th, 2023'
-//    },
-//    totalAmount: { subTotal: 0.01, grandTotal: 0.0111, tax: 0, shippingCost: 0 },
-//    address: 'Austin Serb, 330 4th st, krikland, wa, 98033, US',
-//    orderStatus: 'Pending',
-//    paymentStatus: 'Paid',
-//    transactionId: 'X9vx1fQbanq9SfRjyDZ7g3zva1OZY',
-//    createdBy: "657349011e1c4358033745e6",
-//    createdByType: 'Customer',
-//    _id: "657367814c3ed23e9e31bdf4",
-//    orderDate: '2023-12-08T18:59:13.366Z',
-//    orderNumber: '657367814c3ed23e9e31bdf4',
-//    createdAt: '2023-12-08T18:59:13.374Z',
-//    updatedAt: '2023-12-08T18:59:13.374Z',
-//    __v: 0
-//}, last4 = 9999, emailReceiptUrl = 'https://squareup.com/receipt/preview/X9vx1fQbanq9SfRjyDZ7g3zva1OZY',)
+//TEST EMAIL
+sendReceiptEmail(cost = { subTotal: 0.01, grandTotal: 0.0111, tax: 0, shippingCost: 0 }, notes = 'ddeed', estimatedShipping = 'December 13th, 2023', orderDetails = {
+    orderNotes: '',
+    customer: "657349011e1c4358033745e6",
+    customerEmail: 'austin.serb@icloud.com',
+    customerPhone: '(208) 616-3408',
+    products: [
+        {
+            name: 'CBD TERPENE TINCTURE 550MG 30ML',
+            productId: "656ebd1c1908e127c9f87ca4",
+            price: 0.01,
+            quantity: 1,
+            img: 'https://res.cloudinary.com/dmbofhpcg/image/upload/v1701756187/product_images/pqrkqi6m4gnix2kcthve.png',
+            _id: "657367814c3ed23e9e31bdf5"
+        }
+    ],
+    shippingMethod: {
+        provider: 'USPS',
+        carrierAccountId: '9ad8fceeca0f47c6a4e4e66f010b020d',
+        serviceLevelToken: 'usps_ground_advantage',
+        price: '3.99',
+        amountCharged: '3.99',
+        type: 'Ground Advantage',
+        carrier: 'USPS',
+        trackingNumber: '',
+        trackingUrl: '',
+        labelUrl: '',
+        estimatedShipping: 'December 13th, 2023'
+    },
+    totalAmount: { subTotal: 0.01, grandTotal: 0.0111, tax: 0, shippingCost: 0 },
+    address: 'Austin Serb, 330 4th st, krikland, wa, 98033, US',
+    orderStatus: 'Pending',
+    paymentStatus: 'Paid',
+    transactionId: 'X9vx1fQbanq9SfRjyDZ7g3zva1OZY',
+    createdBy: "657349011e1c4358033745e6",
+    createdByType: 'Customer',
+    _id: "657367814c3ed23e9e31bdf4",
+    orderDate: '2023-12-08T18:59:13.366Z',
+    orderNumber: '657367814c3ed23e9e31bdf4',
+    createdAt: '2023-12-08T18:59:13.374Z',
+    updatedAt: '2023-12-08T18:59:13.374Z',
+    __v: 0
+}, last4 = 9999, emailReceiptUrl = 'https://squareup.com/receipt/preview/X9vx1fQbanq9SfRjyDZ7g3zva1OZY',)
 module.exports = {
     processPayment
 };
