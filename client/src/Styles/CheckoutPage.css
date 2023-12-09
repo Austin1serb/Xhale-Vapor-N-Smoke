@@ -11,7 +11,7 @@
     border-left: 1px solid gray;
     border-bottom: 1px solid gray;
     border-radius: 5px;
-    padding-bottom: 2px;
+    padding-bottom: 4px;
 
 }
 
@@ -120,6 +120,22 @@
         display: none;
         margin-right: 0.5em;
     }
+}
+
+@media (max-width: 370px) {
+    .brand-icon-checkout {
+        position: fixed;
+        left: -10px;
+    }
+
+}
+
+@media (max-width: 290px) {
+    .brand-icon-checkout {
+        position: fixed;
+        left: -30px;
+    }
+
 }
 
 
@@ -253,6 +269,7 @@
 .checkout-paymentForm-SQUARE {
     display: flex;
     align-items: center;
+    margin-top: 18px;
 
 }
 
@@ -295,7 +312,12 @@
     margin-left: -40px;
 }
 
+@media(max-width:1000px) {
+    .checkout-paymentForm-SQUARE {
+        margin-top: -15px;
 
+    }
+}
 
 
 @media(max-width:400px) {

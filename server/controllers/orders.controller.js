@@ -3,19 +3,14 @@ const Product = require('../models/products.model')
 const moment = require('moment')
 const nodemailer = require('nodemailer');
 
-
+let transporter = nodemailer.createTransport({
+    host: "smtp.office365.com",
+    auth: {
+        user: process.env.EMAIL_USERNAME,
+        pass: process.env.EMAIL_PASSWORD
+    }
+});
 async function sendReceiptEmail(orderDetails) {
-    console.log("orderDetails In Email Functions: ", orderDetails)
-
-    let transporter = nodemailer.createTransport({
-        service: 'gmail', // or your email service provider
-        auth: {
-            user: process.env.EMAIL_USERNAME,
-            pass: process.env.EMAIL_PASSWORD
-
-        }
-    });
-
     // Construct the list of products with quantities and prices
     let productsHtml = '';
     if (orderDetails && Array.isArray(orderDetails.products)) {
@@ -25,18 +20,16 @@ async function sendReceiptEmail(orderDetails) {
             const price = product.price || 0;
             const img = product.img || ''; // URL of the product image
             return `
-                <div style="margin-bottom: 20px; margin-left:20px">
-                  
-                     <div style='display: flex; justify-content: center; align-items: center;'>
-                       <img src="${img}" alt="${name}" style="width: 100px; height: auto; margin-left: 10px; float: left;">
-                       <div>
-                        <strong>${name}</strong><br>
-                        Quantity: ${quantity}<br>
-                        Price: $${price}
-                        </div>
-                    </div>
-                    <div style="clear: both;"></div>
+            <div style="margin-bottom: 20px; display: flex; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+            <img src="${img}" alt="${name}" style="width: 80px; height: auto; margin-right: 10px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <div style="flex-grow: 1;">
+                <div style="font-size: 16px; font-weight: bold; margin-bottom: 5px;">${name}</div>
+                <div style="font-size: 14px; color: #555;">
+                    Quantity: ${quantity}<br>
+                    Price: $${price.toFixed(2)}
                 </div>
+            </div>
+        </div>
             `;
         }).join('');
     } else {
@@ -46,8 +39,8 @@ async function sendReceiptEmail(orderDetails) {
 
 
     let mailOptions2 = {
-        from: 'serbaustin@gmail.com', // Your email address
-        to: 'serbaustin@gmail.com', // Customer's email address
+        from: 'customerservices@herbanaturalco.com', // Your email address
+        to: 'genius.baar@gmail.com', // Owner's email address
         subject: 'New Order Notification',
         html: `
         <div style="font-family: Arial, sans-serif; color: #444; background-color: #f4f4f4; padding: 20px;">
@@ -104,8 +97,8 @@ async function sendReceiptEmail(orderDetails) {
     </div> `
     };
     // Send the email
-
     await transporter.sendMail(mailOptions2);
+
 }
 
 
@@ -114,7 +107,6 @@ module.exports = {
 
     createOne: async (req, res) => {
         try {
-            console.log("incoming Details: ", req.body)
 
             const newOrder = new Orders(req.body);
 
@@ -122,7 +114,7 @@ module.exports = {
             const savedOrder = await newOrder.save();
 
 
-            console.log("Created Order: ", savedOrder)
+
             try {
                 await sendReceiptEmail(savedOrder); // Await the email sending
             } catch (emailError) {

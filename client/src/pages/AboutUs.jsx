@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import '../Styles/AboutUs.css';
-import { Accordion, AccordionDetails, AccordionSummary, Button, CircularProgress } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Box, Button, CircularProgress } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import brandIcon from '../assets/brandIconSmall.webp'
 import { Link, useLocation } from 'react-router-dom';
@@ -148,7 +148,7 @@ const AboutUs = () => {
                     <div className="product-gallery">
                         <div className="product-display">
                             <div className='about-product-item'>
-                                <img src={bestSellers[currentProductIndex]?.imgSource[0].url.split('/upload/').join('/upload/c_fill,h_200,w_200/f_auto,q_auto:good/')}
+                                <img style={{ backgroundColor: 'white' }} src={bestSellers[currentProductIndex]?.imgSource[0].url}
 
                                     alt={bestSellers[currentProductIndex]?.name} />
                                 {/* ADD A BUTTON THAT OPENS THE QUICKVIEW OF THAT PRODUCT */}
@@ -158,25 +158,28 @@ const AboutUs = () => {
                                     setQuickViewOpen(true);
                                 }}>Quick View</Button>
                             </div>
-                            {bestSellers[currentProductIndex + 1] ? (<div className='about-product-item'>
-                                <img src={bestSellers[currentProductIndex + 1]?.imgSource[0].url.split('/upload/').join('/upload/c_fill,h_200,w_200/f_auto,q_auto:good/')}
-                                    alt={bestSellers[currentProductIndex + 1]?.name} />
-                                <Button variant='outlined' sx={buttonStyle} className='dropdown-featured-button' onClick={() => {
-                                    setQuickViewProduct(bestSellers[currentProductIndex + 1]?._id);
-                                    setQuickViewOpen(true);
-                                }}>Quick View</Button>
-                            </div>) : (null)}
-                            {bestSellers[currentProductIndex + 2] ? (<div className='about-product-item'>
-                                <div className='about-product-item'>
-                                    <img src={bestSellers[currentProductIndex + 2]?.imgSource[0].url.split('/upload/').join('/upload/c_fill,h_200,w_200/f_auto,q_auto:good/')}
-                                        alt={bestSellers[currentProductIndex + 2]?.name} />
+                            <Box display={{ xs: 'none', sm: 'flex' }}>
+                                {bestSellers[currentProductIndex + 1] ? (<div className='about-product-item'>
+                                    <img style={{ backgroundColor: 'white' }} src={bestSellers[currentProductIndex + 1]?.imgSource[0].url}
+                                        alt={bestSellers[currentProductIndex + 1]?.name} />
                                     <Button variant='outlined' sx={buttonStyle} className='dropdown-featured-button' onClick={() => {
-                                        setQuickViewProduct(bestSellers[currentProductIndex + 2]?._id);
+                                        setQuickViewProduct(bestSellers[currentProductIndex + 1]?._id);
                                         setQuickViewOpen(true);
                                     }}>Quick View</Button>
+                                </div>) : (null)}
+                                {bestSellers[currentProductIndex + 2] ? (<div className='about-product-item'>
+                                    <div className='about-product-item'>
+                                        <img style={{ backgroundColor: 'white' }} src={bestSellers[currentProductIndex + 2]?.imgSource[0].url}
+                                            alt={bestSellers[currentProductIndex + 2]?.name} />
+                                        <Button variant='outlined' sx={buttonStyle} className='dropdown-featured-button' onClick={() => {
+                                            setQuickViewProduct(bestSellers[currentProductIndex + 2]?._id);
+                                            setQuickViewOpen(true);
+                                        }}>Quick View</Button>
 
-                                </div>
-                            </div>) : (null)}
+                                    </div>
+
+                                </div>) : (null)}
+                            </Box>
                         </div>
                         <div className="gallery-controls">
                             <button onClick={previousProduct}>&lt;</button>

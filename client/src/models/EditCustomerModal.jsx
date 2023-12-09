@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Box, Typography, TextField, Button, Grid } from '@mui/material';
 
-const EditCustomerModal = ({ open, onClose, customer, updateCustomerList }) => {
+const EditCustomerModal = ({ open, onClose, customer, updateCustomerList, isViewOnly = false }) => {
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -76,6 +76,7 @@ const EditCustomerModal = ({ open, onClose, customer, updateCustomerList }) => {
                             onChange={handleInputChange}
                             fullWidth
                             margin="normal"
+                            disabled={isViewOnly}
                         />
                     </Grid>
                     <Grid item xs={12} sm={6}>
@@ -87,6 +88,7 @@ const EditCustomerModal = ({ open, onClose, customer, updateCustomerList }) => {
                             onChange={handleInputChange}
                             fullWidth
                             margin="normal"
+                            disabled={isViewOnly}
                         />
                     </Grid>
                     <Grid item xs={12} >
@@ -98,6 +100,7 @@ const EditCustomerModal = ({ open, onClose, customer, updateCustomerList }) => {
                             onChange={handleInputChange}
                             fullWidth
                             margin="normal"
+                            disabled={isViewOnly}
                         />
                     </Grid>
                     {/* Address Line 1 */}
@@ -109,6 +112,7 @@ const EditCustomerModal = ({ open, onClose, customer, updateCustomerList }) => {
                             autoComplete="address-line1"
                             value={formData.address || ''}
                             onChange={handleInputChange}
+                            disabled={isViewOnly}
                         />
                     </Grid>
 
@@ -121,6 +125,7 @@ const EditCustomerModal = ({ open, onClose, customer, updateCustomerList }) => {
                             name="address2"
                             value={formData.address2 || ''}
                             onChange={handleInputChange}
+                            disabled={isViewOnly}
                         />
                     </Grid>
 
@@ -133,6 +138,7 @@ const EditCustomerModal = ({ open, onClose, customer, updateCustomerList }) => {
                             autoComplete="address-level2"
                             value={formData.city || ''}
                             onChange={handleInputChange}
+                            disabled={isViewOnly}
                         />
                     </Grid>
 
@@ -145,6 +151,7 @@ const EditCustomerModal = ({ open, onClose, customer, updateCustomerList }) => {
                             autoComplete="address-level1"
                             value={formData.state || ''}
                             onChange={handleInputChange}
+                            disabled={isViewOnly}
                         />
                     </Grid>
 
@@ -157,6 +164,7 @@ const EditCustomerModal = ({ open, onClose, customer, updateCustomerList }) => {
                             autoComplete="postal-code"
                             value={formData.zip || ''}
                             onChange={handleInputChange}
+                            disabled={isViewOnly}
                         />
                     </Grid>
 
@@ -170,6 +178,7 @@ const EditCustomerModal = ({ open, onClose, customer, updateCustomerList }) => {
                             autoComplete="tel"
                             value={formData.phone || ''}
                             onChange={handleInputChange}
+                            disabled={isViewOnly}
                         />
                     </Grid>
 
@@ -182,6 +191,7 @@ const EditCustomerModal = ({ open, onClose, customer, updateCustomerList }) => {
                             name="country"
                             value={formData.country || ''}
                             onChange={handleInputChange}
+                            disabled={isViewOnly}
                         />
                     </Grid>
                     {/* Orders */}
@@ -212,6 +222,7 @@ const EditCustomerModal = ({ open, onClose, customer, updateCustomerList }) => {
                             variant="outlined"
                             color="primary"
                             sx={{ mt: 2 }}
+                            disabled={isViewOnly}
                         >
                             Save Changes
                         </Button>

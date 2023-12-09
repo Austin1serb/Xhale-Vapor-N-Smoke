@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Stepper, Step, StepLabel, Box, Snackbar, Alert, IconButton, CircularProgress } from '@mui/material';
+import { Stepper, Step, StepLabel, Box, Snackbar, Alert, IconButton, CircularProgress, Modal, Button } from '@mui/material';
 import InformationPage from '../components/InformationPage';
 import ShippingComponent from '../components/ShippingComponent';
 import CartSummaryComponent from '../components/CartSummaryComponent';
@@ -9,6 +9,8 @@ import SquarePaymentForm from '../components/SquarePaymentForm';
 import LoadingModal from '../components/Common/LoadingModal';
 import { useAuth } from '../components/Utilities/useAuth';
 import ShippingDetailsComponent from '../components/ShippingDetailsComponent';
+import BrandIcon from '../assets/cbdtextwicon.webp'
+import '../Styles/CheckoutPage.css'
 
 const CheckoutPage = () => {
     useEffect(() => {
@@ -36,7 +38,8 @@ const CheckoutPage = () => {
     const [lastAddress, setLastAddress] = useState({});
     const { isLoggedIn } = useAuth();
     const [snackbarOpen, setSnackbarOpen] = useState(false);
-
+    const [paymentError, setPaymentError] = useState('')
+    const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
 
 
     const handleOpenSnackbar = () => {
@@ -50,6 +53,16 @@ const CheckoutPage = () => {
         setSnackbarOpen(false);
     };
 
+    const handleBrandIconClick = () => {
+        setOpenConfirmDialog(true);
+    };
+    const handleConfirmNavigation = () => {
+        navigate('/'); // navigate to home
+    };
+
+    const handleCloseDialog = () => {
+        setOpenConfirmDialog(false);
+    };
 
 
 
@@ -78,33 +91,48 @@ const CheckoutPage = () => {
 
 
     const loadSquareSdk = () => {
-        setIsSquareSdkLoaded(false)
+        setIsSquareSdkLoaded(false);
 
         const script = document.createElement('script');
-        // script.src = "https://js.squareupsandbox.com"; //URL for sandbox
         script.src = "https://web.squarecdn.com/v1/square.js"; // URL for production
         script.type = "text/javascript";
         script.async = false;
         script.onload = () => setIsSquareSdkLoaded(true);
+        script.onerror = () => {
+            // Handle error loading the script
+            console.error('Failed to load Square SDK');
+            // Optionally, update the state to reflect the error
+        };
         document.body.appendChild(script);
     };
 
+    const cleanupSquareSdk = () => {
+        // Remove the Square SDK script from the DOM
+        const squareScript = document.querySelector('script[src="https://web.squarecdn.com/v1/square.js"]');
+        if (squareScript) {
+            document.body.removeChild(squareScript);
+        }
+
+        // Reset any related state variables if necessary
+        setIsSquareSdkLoaded(false);
+
+        // Additional cleanup tasks if required
+
+    };
 
     useEffect(() => {
         if (activeStep === 3 && !isSquareSdkLoaded) {
             loadSquareSdk();
+        } else if (activeStep !== 3) {
+            cleanupSquareSdk()
         }
-        if (activeStep === 0) {
-            if (isGuestUser()) {
-                handleOpenSnackbar();
-            }
+        if (activeStep === 0 && isGuestUser()) {
+            handleOpenSnackbar();
         }
-
     }, [activeStep, isSquareSdkLoaded]);
 
 
     const onPaymentProcess = (paymentToken) => {
-        //console.log("Payment paymentToken received:", paymentToken);
         finalizeOrderAndProcessPayment(paymentToken)
     };
 
@@ -122,7 +150,6 @@ const CheckoutPage = () => {
             if (paymentToken) {
 
                 const trackingInfo = await createShippingLabelAsync(shippingDetails);
-                console.log("trackingInfo: ", trackingInfo)
                 orderData.shippingMethod = {
                     ...orderData.shippingMethod,
                     carrier: trackingInfo.rate.provider,
@@ -168,18 +195,22 @@ const CheckoutPage = () => {
 
                     clearCart()
                     // Navigate to success page after all processes are complete
-                    navigate('/success', { state: { paymentDetails: paymentResult } });
+                    navigate('/success', { state: { paymentResult: paymentResult } });
                 } else {
                     // Handle payment processing failure
                     console.error('Payment processing failed:', paymentResult);
+
+
                 }
             } else {
+
                 console.error('Missing payment token');
             }
         } catch (error) {
             console.error('Error during finalizing order and payment:', error);
         } finally {
             setIsLoading(false); // Stop loading state after all processes are complete or an error occurs
+
         }
     };
 
@@ -200,11 +231,7 @@ const CheckoutPage = () => {
     }, [isLoggedIn, navigate]);
 
 
-    //create a useEffect to console.log shippingDetails
-    useEffect(() => {
-        console.log("shippingDetails", shippingDetails);
-    }
-        , [shippingDetails]);
+
 
 
 
@@ -235,12 +262,14 @@ const CheckoutPage = () => {
             },
             totalAmount: fullCost,
             orderNotes: notes,
-            address: `${shippingDetails.firstName} ${shippingDetails.lastName}, ${shippingDetails.address}, ${shippingDetails.city}, ${shippingDetails.state}, ${shippingDetails.zip}, ${shippingDetails.country}`,
+            address: `${shippingDetails.firstName} ${shippingDetails.lastName}, ${shippingDetails.address}, ${shippingDetails.address2 ? shippingDetails.address2 : ''}, ${shippingDetails.city}, ${shippingDetails.state}, ${shippingDetails.zip}, ${shippingDetails.country}`,
             createdBy: localStorage.getItem('customerId'),
         })
         setIsLoading(false)
         handleNext();
     }
+
+
     const processPaymentAsync = async (paymentToken, paymentAmount, orderData) => {
         try {
             const response = await fetch('http://localhost:8000/api/payment/process-payment', {
@@ -266,7 +295,7 @@ const CheckoutPage = () => {
             return await response.json();
         } catch (error) {
             console.error('Error processing payment:', error);
-
+            setPaymentError('There was a problem processing your payment')
             return null; // Return null in case of error
         }
     };
@@ -317,7 +346,7 @@ const CheckoutPage = () => {
                 throw new Error(`HTTP Error: ${response.status}`);
             } else {
                 const result = await response.json();
-                console.log(result);
+
                 return result
 
             }
@@ -421,7 +450,7 @@ const CheckoutPage = () => {
         position: { xs: 'fixed', sm: 'relative' }, // 'fixed' on xs screens, 'relative' otherwise
         top: { xs: 0, sm: 'auto' }, // Stick to the top on xs screens
         zIndex: { xs: 10000, sm: 'auto' }, // Ensure it's above other content
-        pt: { xs: 5, sm: 0 },
+        pt: { xs: 6, sm: 0 },
         pb: { xs: 1, sm: 0 },
         width: { xs: '100%' }, // Full width on xs screens
         bgcolor: { xs: 'background.paper' }, // Add background color for visibility
@@ -430,99 +459,148 @@ const CheckoutPage = () => {
     };
 
 
+    const brandIconStyles = {
+        position: 'fixed', // 'fixed' on xs screens, 'relative' otherwise
+        top: -40,
+        left: 35,
+        textAlign: 'center',
+        zIndex: { xs: 10001, sm: 'auto' }, // Ensure it's above other content
+        pt: { xs: 3.5, sm: 0 },
+        pb: { xs: 1, sm: 0 },
+
+        display: { xs: 'block', sm: 'none' },
+        minWidth: '350px',
+        cursor: 'pointer',
+    };
+    const modalStyle = {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: 300, // Adjust the width as needed
+        bgcolor: 'background.paper',
+        boxShadow: 24,
+        p: 4,
+        borderRadius: 2,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+    };
+
+    const textStyle = {
+        marginBottom: '20px',
+        textAlign: 'center',
+
+    };
+
+    const buttonStyle = {
+        marginTop: '10px',
+        width: '80%', // Adjust the width as needed
+    };
+
 
     return (
         <div className='checkoutPage-container'>
+
             <LoadingModal open={isLoading} message="Your payment is being processed, Please do not leave or refresh this page" />
             <Box sx={{ display: 'flex', flexDirection: { xs: 'column-reverse', md: 'row' } }}>
                 <div style={{ flex: 1 }}>
 
                     <div>
+
                         <div>
+                            <Box sx={brandIconStyles} className='brand-icon-checkout' onClick={handleBrandIconClick}>
+                                <img src={BrandIcon} alt="brand-con" width={'80%'} height={'auto'} />
+                            </Box>
 
                             <Stepper activeStep={activeStep} alternativeLabel sx={stepperStyles}>
                                 {steps.map((label) => (
                                     <Step key={label}>
-                                        <StepLabel>{label}</StepLabel>
+
+                                        <StepLabel >{label}</StepLabel>
                                     </Step>
                                 ))}
                             </Stepper>
-                            {activeStep === 0 &&
-                                <Box sx={{ pt: { xs: 0, sm: 2.5 }, borderTop: '0.1px solid black', mt: { xs: 0, sm: 1 } }}>
-                                    <CartSummaryComponent
-                                        cartItems={cart.map(item => ({
-                                            _id: item.product._id,
-                                            img: item.product.imgSource[0].url,
-                                            name: item.product.name,
-                                            quantity: item.quantity,
-                                            price: item.product.price,
-                                            specs: item.product.specs,
-                                        }))}
-                                        shippingCost={shippingCost}
-                                        tax={tax}
-                                        total={total}
-                                        removeFromCart={removeFromCart}
-                                        adjustQuantity={adjustQuantity}
-                                        next={handleNext}
-                                        step={activeStep}
-                                        setFullCost={setFullCost}
-
-                                    />
-                                </Box>
-                            }
-                            {activeStep === 1 && <InformationPage
-                                back={handleBack}
-                                next={handleNext}
-                                onShippingDetailsSubmit={handleShippingDetailsSubmit}
-                                formData={formData}
-                                onFormChange={handleFormChange}
-                            />}
-                            {activeStep === 2 && <ShippingComponent
-
-                                handleBack
-                                cartItems={cart.map(item => ({
-                                    _id: item.product._id,
-                                    weight: item.product.shipping.weight,
-                                    length: item.product.shipping.dimensions.length,
-                                    width: item.product.shipping.dimensions.width,
-                                    height: item.product.shipping.dimensions.height,
-                                    quantity: item.quantity,
-                                }))}
-                                shippingDetails={shippingDetails}
-                                onShippingCostChange={handleShippingCostChange}
-                                formData={formData}
-                                back={handleBack}
-                                next={handleNext}
-                                onShippingOptionsChange={handleShippingOptions}
-                                handleCheckout={handleCheckout}
-                                isLoading={isLoading}
-                                setEstimatedShipping={setEstimatedShipping}
-                                lastAddress={lastAddress}
-                                setLastAddress={setLastAddress}
-                                shipmentOptions={shipmentOptions}
-                                setShipmentOptions={setShipmentOptions}
-                                fullCost={fullCost}
-                                setShippingDetails={setShippingDetails}
-                            />}
-                            {activeStep === 3 && (
-                                isSquareSdkLoaded ? (
-                                    <SquarePaymentForm
-                                        onPaymentProcess={onPaymentProcess}
-                                        paymentForm={window.SqPaymentForm}
-                                        shippingDetails={shippingDetails}
-                                        back={handleBack}
-
-                                    />
-                                ) : (
-                                    <div style={{ margin: '20px' }}>
-                                        <ShippingDetailsComponent
-                                            shippingDetails={shippingDetails}
-                                            back={handleBack}
+                            <Box sx={{ mt: { xs: 5, sm: 0 } }}>
+                                {activeStep === 0 &&
+                                    <Box sx={{ pt: { xs: 0, sm: 2.5 }, borderTop: '0.1px solid black', mt: { xs: 0, sm: 1 } }}>
+                                        <CartSummaryComponent
+                                            cartItems={cart.map(item => ({
+                                                _id: item.product._id,
+                                                img: item.product.imgSource[0].url,
+                                                name: item.product.name,
+                                                quantity: item.quantity,
+                                                price: item.product.price,
+                                                specs: item.product.specs,
+                                            }))}
+                                            shippingCost={shippingCost}
+                                            tax={tax}
+                                            total={total}
+                                            removeFromCart={removeFromCart}
+                                            adjustQuantity={adjustQuantity}
+                                            next={handleNext}
+                                            step={activeStep}
+                                            setFullCost={setFullCost}
 
                                         />
-                                        <CircularProgress />
-                                    </div>
-                                ))}
+                                    </Box>
+                                }
+                                {activeStep === 1 && <InformationPage
+                                    back={handleBack}
+                                    next={handleNext}
+                                    onShippingDetailsSubmit={handleShippingDetailsSubmit}
+                                    formData={formData}
+                                    onFormChange={handleFormChange}
+                                />}
+                                {activeStep === 2 && <ShippingComponent
+
+                                    handleBack
+                                    cartItems={cart.map(item => ({
+                                        _id: item.product._id,
+                                        weight: item.product.shipping.weight,
+                                        length: item.product.shipping.dimensions.length,
+                                        width: item.product.shipping.dimensions.width,
+                                        height: item.product.shipping.dimensions.height,
+                                        quantity: item.quantity,
+                                    }))}
+                                    shippingDetails={shippingDetails}
+                                    onShippingCostChange={handleShippingCostChange}
+                                    formData={formData}
+                                    back={handleBack}
+                                    next={handleNext}
+                                    onShippingOptionsChange={handleShippingOptions}
+                                    handleCheckout={handleCheckout}
+                                    isLoading={isLoading}
+                                    setEstimatedShipping={setEstimatedShipping}
+                                    lastAddress={lastAddress}
+                                    setLastAddress={setLastAddress}
+                                    shipmentOptions={shipmentOptions}
+                                    setShipmentOptions={setShipmentOptions}
+                                    fullCost={fullCost}
+                                    setShippingDetails={setShippingDetails}
+                                />}
+                                {activeStep === 3 && (
+                                    isSquareSdkLoaded ? (
+                                        <SquarePaymentForm
+                                            onPaymentProcess={onPaymentProcess}
+                                            paymentForm={window.SqPaymentForm}
+                                            shippingDetails={shippingDetails}
+                                            back={handleBack}
+                                            errors={paymentError}
+                                            total={fullCost}
+
+                                        />
+                                    ) : (
+                                        <div style={{ margin: '20px' }}>
+                                            <ShippingDetailsComponent
+                                                shippingDetails={shippingDetails}
+                                                back={handleBack}
+
+                                            />
+                                            <CircularProgress />
+                                        </div>
+                                    ))}
+                            </Box>
                         </div>
 
                     </div>
@@ -579,6 +657,13 @@ const CheckoutPage = () => {
                     </Link>
                 </Alert>
             </Snackbar>
+            <Modal open={openConfirmDialog} onClose={handleCloseDialog}>
+                <Box sx={modalStyle}>
+                    <p style={textStyle}>Are you sure you want to leave the checkout process? Your progress may* be lost.</p>
+                    <Button color='error' style={buttonStyle} onClick={handleConfirmNavigation}>Yes, leave</Button>
+                    <Button style={buttonStyle} onClick={handleCloseDialog}>No, stay</Button>
+                </Box>
+            </Modal>
         </div>
     );
 };

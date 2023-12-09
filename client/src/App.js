@@ -1,5 +1,5 @@
 import React, { useEffect, useState, Suspense } from 'react'
-import { Route, Routes, useMatch } from 'react-router-dom';
+import { Route, Routes, useLocation, useMatch } from 'react-router-dom';
 import TopBar from './pages/global/TopBar'
 
 
@@ -31,11 +31,17 @@ const Contact = React.lazy(() => import('./pages/Contact'));
 
 
 const App = () => {
-
+  const location = useLocation();
 
   const [isAgeVerified, setIsAgeVerified] = useState(false);
 
   const isAdminDashboardRoute = !!useMatch('/api/customer/admin')
+  // Define paths where Age Verification should not be shown
+  const excludedRoutes = ['/privacy-policy', '/terms', '/shipping-policy', '/refund', '/api/customer/admin'];
+
+  // Check if the current route is one of the excluded ones
+  const isExcludedRoute = excludedRoutes.includes(location.pathname)
+
 
   const handleVerify = (verified) => {
     if (verified) {
@@ -59,11 +65,8 @@ const App = () => {
         <CartProvider>
 
           {(!isAdminDashboardRoute) && <TopBar />}
-          {!isAgeVerified &&
-            <Suspense fallback={
-              <CircularProgress />
-            }
-            >
+          {!isAgeVerified && !isExcludedRoute &&
+            <Suspense fallback={<CircularProgress />}>
               <AgeVerification onVerify={handleVerify} />
             </Suspense>
           }
@@ -96,9 +99,9 @@ const App = () => {
                 <Route path="/refund" element={<RefundPolicy />} />
                 <Route path="/terms" element={<TermAndConditions />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                <Route path="/shipping-policy" element={<ShippingPolicy />} />
                 <Route path="/success" element={<SuccessPage />} />
                 <Route path="/contact" element={<Contact />} />
+                <Route path="/shipping-policy" element={<ShippingPolicy />} />
               </Route>
             </Routes>
           </Suspense>

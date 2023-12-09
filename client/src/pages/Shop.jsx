@@ -52,7 +52,7 @@ const Shop = () => {
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
     const [loadingMore, setLoadingMore] = useState(false);
-    const pageSize = 9; // Adjust the number of products per page as needed
+    const pageSize = 12; // Adjust the number of products per page as needed
     const { addToCart } = useCart();
     const [totalProducts, setTotalProducts] = useState(0);
     const location = useLocation();
@@ -105,19 +105,19 @@ const Shop = () => {
 
 
     const handleScroll = useCallback(() => {
-        if (window.innerHeight + document.documentElement.scrollTop === document.documentElement.offsetHeight) {
-            // User has scrolled to the bottom
+        // Define a threshold (in pixels) from the bottom of the page
+        const threshold = 500; // for example, 200 pixels from the bottom
+
+        // Calculate the distance from the bottom
+        const distanceFromBottom = document.documentElement.offsetHeight - (window.innerHeight + document.documentElement.scrollTop);
+
+        if (distanceFromBottom < threshold) {
+            // User is within threshold from the bottom
             if (products.length < totalProducts && !loadingMore) {
                 setLoadingMore(true);
                 // Fetch the next page of products
-
-                axios
-                    .get(`http://localhost:8000/api/product/paginate/?page=${page}&pageSize=${pageSize}`,
-
-                    )
+                axios.get(`http://localhost:8000/api/product/paginate/?page=${page}&pageSize=${pageSize}`)
                     .then(response => {
-
-                        // Append the new products to the existing products array
                         setProducts(prevProducts => [...prevProducts, ...response.data.products]);
                         setPage(prevPage => prevPage + 1);
                         setLoadingMore(false);
@@ -126,10 +126,10 @@ const Shop = () => {
                         console.error("There was an error fetching more products:", error);
                         setLoadingMore(false);
                     });
-                fetchProducts();
             }
         }
     }, [loadingMore, page, pageSize, products.length, totalProducts]);
+
 
 
     const getRelatedProducts = (categories) => {
@@ -230,7 +230,7 @@ const Shop = () => {
 
                             </InputAdornment>
                     }}
-                    label="Search Products" variant="outlined" value={searchTerm} onChange={handleSearchChange} fullWidth />
+                    label={`Search ${!!filter ? filter.toUpperCase() : 'Products'}`} variant="outlined" value={searchTerm} onChange={handleSearchChange} fullWidth />
             </Box>
 
 
@@ -241,6 +241,11 @@ const Shop = () => {
                 </Grid>
             ) : ( // Render products when not loading
                 <Grid container spacing={3} >
+                    {filteredProducts.length === 0 ? ( // No products found
+
+                        <Typography ml={5} variant="h5">No products found</Typography>
+
+                    ) : (null)}
                     {filteredProducts.map((product, index) => (
 
                         <Grid item xs={12} sm={6} md={4} key={product._id} style={{ animationDelay: `${index * 0.2}s` }} className="product-slide-in-shop">

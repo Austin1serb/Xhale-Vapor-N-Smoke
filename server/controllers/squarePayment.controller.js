@@ -9,39 +9,9 @@ const client = new Client({
     environment: Environment.Production,
 
 });
+const { refundsApi } = client
 const paymentsApi = client.paymentsApi;
 
-
-//const { locationsApi } = client;
-
-//async function getLocations() {
-//    try {
-//        let listLocationsResponse = await locationsApi.listLocations();
-
-//        let locations = listLocationsResponse.result.locations;
-
-//        locations.forEach(function (location) {
-//            console.log(
-//                location.id + ": " +
-//                location.name + ", " +
-//                location.address.addressLine1 + ", " +
-//                location.address.locality
-//            );
-//        });
-//    } catch (error) {
-//        if (error instanceof ApiError) {
-//            error.result.errors.forEach(function (e) {
-//                console.log(e.category);
-//                console.log(e.code);
-//                console.log(e.detail);
-//            });
-//        } else {
-//            console.log("Unexpected error occurred: ", error);
-//        }
-//    }
-//};
-
-//getLocations();
 
 function convertBigIntToString(obj) {
     for (let key in obj) {
@@ -56,6 +26,24 @@ function convertBigIntToString(obj) {
 
 
 
+async function issueRefund(paymentId, amount) {
+    try {
+        const refund = {
+            idempotencyKey: uuidv4(), // Unique identifier for each refund request
+            paymentId: paymentId,
+            amountMoney: {
+                amount: amount, // Amount in cents
+                currency: 'USD'
+            }
+        };
+
+        const { result } = await refundsApi.refundPayment(refund);
+        return result;
+    } catch (error) {
+        console.error('Error occurred while issuing a refund:', error);
+        throw error; // Rethrow the error for further handling
+    }
+}
 
 
 const processPayment = async (req, res) => {
@@ -82,6 +70,7 @@ const processPayment = async (req, res) => {
 
         convertBigIntToString(response); // Convert BigInt values to strings
 
+
         let responseBody;
         if (typeof response.body === 'string') {
             responseBody = JSON.parse(response.body);
@@ -90,22 +79,29 @@ const processPayment = async (req, res) => {
         }
 
 
-
         if (response && responseBody.payment && responseBody.payment.status === 'COMPLETED') {
-            const emailReceiptUrl = responseBody.payment.receipt_url;
 
 
-            await sendReceiptEmail(cost, notes, estimatedShipping, orderDetails, last4, emailRecieptUrl);
+            emailReceiptUrl = responseBody.payment.receipt_url;
+
+            try {
+                await sendReceiptEmail(cost, notes, estimatedShipping, orderDetails, last4, emailReceiptUrl);
 
 
-            // If email sending is successful, send a success response
-            res.json({
-                success: true,
-                message: 'Payment processed successfully',
-                paymentId: responseBody.payment.id,
-                receiptUrl: emailReceiptUrl,
-                response: response
-            });
+                // If email sending is successful, send a success response
+                res.json({
+                    success: true,
+                    message: 'Payment processed successfully',
+                    paymentId: responseBody.payment.id,
+                    receiptUrl: emailReceiptUrl,
+                    response: response
+                });
+            } catch (emailError) {
+                console.error('Email sending error:', emailError);
+                await issueRefund(responseBody.payment.id, responseBody.payment.amount_money.amount);
+                console.log('Refund issued due to an error after payment');
+                res.status(500).json({ error: "Payment successful but failed to send receipt email." });
+            }
         } else {
             // Payment failed
             res.status(400).json({ message: 'Payment failed' });
@@ -121,17 +117,23 @@ const processPayment = async (req, res) => {
 
 
 
-async function sendReceiptEmail(cost, notes, estimatedShipping, orderDetails, last4, emailRecieptUrl) {
+async function sendReceiptEmail(cost, notes, estimatedShipping, orderDetails, last4, emailReceiptUrl) {
 
-
+    let trackingNumber = orderDetails.shippingMethod.trackingNumber ? orderDetails.shippingMethod.trackingNumber : 'Not avaliable yet.'
+    let trackingUrls = orderDetails.shippingMethod.trackingUrl ? orderDetails.shippingMethod.trackingUrl : 'Soon'
     let transporter = nodemailer.createTransport({
-        service: 'gmail', // or your email service provider
+        host: "smtp.office365.com",
+        port: 587,
+        secure: false,
         auth: {
             user: process.env.EMAIL_USERNAME,
             pass: process.env.EMAIL_PASSWORD
-
+        },
+        tls: {
+            ciphers: 'SSLv3'
         }
     });
+
 
     // Construct the list of products with quantities and prices
     let productsHtml = '';
@@ -142,18 +144,16 @@ async function sendReceiptEmail(cost, notes, estimatedShipping, orderDetails, la
             const price = product.price || 0;
             const img = product.img || ''; // URL of the product image
             return `
-                <div style="margin-bottom: 20px; margin-left:20px">
-                  
-                     <div style='display: flex; justify-content: center; align-items: center;'>
-                       <img src="${img}" alt="${name}" style="width: 100px; height: auto; margin-left: 10px; float: left;">
-                       <div>
-                        <strong>${name}</strong><br>
-                        Quantity: ${quantity}<br>
-                        Price: $${price}
-                        </div>
-                    </div>
-                    <div style="clear: both;"></div>
+            <div style="margin-bottom: 20px; display: flex; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+            <img src="${img}" alt="${name}" style="width: 80px; height: auto; margin-right: 10px; border-radius: 4px; ">
+            <div style="flex-grow: 1;">
+                <div style="font-size: 16px; font-weight: bold; margin-bottom: 5px;">${name}</div>
+                <div style="font-size: 14px; color: #555;">
+                    Quantity: ${quantity}<br>
+                    Price: $${price.toFixed(2)}
                 </div>
+            </div>
+        </div>
             `;
         }).join('');
     } else {
@@ -162,7 +162,7 @@ async function sendReceiptEmail(cost, notes, estimatedShipping, orderDetails, la
     }
 
     let mailOptions = {
-        from: 'serbaustin@gmail.com', // Your email address
+        from: 'customerservices@herbanaturalco.com', // Your email address
         to: `${orderDetails.customerEmail}`, // Customer's email address
         subject: 'Thank You for Your Purchase!',
         html: `
@@ -170,7 +170,7 @@ async function sendReceiptEmail(cost, notes, estimatedShipping, orderDetails, la
             <div style="max-width: 600px; margin: 0 auto; background-color: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 5px; box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);">
                 <h2 style="color: #0F75E0; text-align: center;">Thank You from Herba Naturals!</h2>
                 <div style="text-align: center;">
-                    <img src="https://i.imgur.com/3i30ftP.jpg" style="width: 200px;" alt="Herba Naturals Logo" onerror="this.style.display='none'"/>
+                    <img src="https://i.imgur.com/3i30ftP.jpg" style="width: 300px;" alt="Herba Naturals Logo" onerror="this.style.display='none'"/>
                 </div>
                 <p style="text-align: center;">We appreciate your order and are excited to share our products with you. Here are the details of your purchase:</p>
                 <ul>
@@ -185,12 +185,12 @@ async function sendReceiptEmail(cost, notes, estimatedShipping, orderDetails, la
                 </div>
                 <p><strong>Shipping To:</strong> ${orderDetails.address}</p>
                 <p><strong>Estimated Shipping Date:</strong> ${estimatedShipping ? estimatedShipping : 'Unavailable'}</p>
-                <p><strong>Notes:</strong> ${notes}</p>
-                <p>You can view your receipt and order details <a href="${emailReceiptUrl}" style="color: #0F75E0; text-decoration: none;">here</a>.</p>
-                <p><strong>Your tracking number is:</strong> ${orderDetails.shippingMethod.trackingNumber}</p>
-                <p>You can track your order <a href="${orderDetails.shippingMethod.trackingUrl}" style="color: #0F75E0; text-decoration: none;">here</a>.</p>
-                <p>If you have any questions or concerns about your order, please don't hesitate to contact us.</p>
-                <p style="text-align: center; color: #0F75E0;">Warm regards,<br>The Herba Naturals Team</p>
+                <p><strong>Notes:</strong> ${notes ? notes : 'No Order Notes'}</p>
+                <p>View your receipt and order details: <a href="${emailReceiptUrl}" style="color: #0F75E0; text-decoration: none;">${emailReceiptUrl}</a>.</p>
+                <p><strong>Your tracking number is:</strong> ${trackingNumber}</p>
+                <p>You can track your order: ${trackingUrls}</p>
+                <p>If you have any questions or concerns, please don't hesitate to contact us at customerservices@herbanaturalco.com</p>
+                <p style="text-align: center; color: #0fe09e;">Warm regards,The Herba Naturals Team</p>
             </div>
         </div>
     `
@@ -198,12 +198,60 @@ async function sendReceiptEmail(cost, notes, estimatedShipping, orderDetails, la
 
     // Send the email
     await transporter.sendMail(mailOptions);
-    //await transporter.sendMail(mailOptions2);
+
+
+
 }
 
+////TEST EMAIL
+//sendReceiptEmail(cost = { subTotal: 0.01, grandTotal: 0.0111, tax: 0, shippingCost: 0 }, notes = 'ddeed', estimatedShipping = 'December 13th, 2023', orderDetails = {
+//    orderNotes: '',
+//    customer: "657349011e1c4358033745e6",
+//    customerEmail: 'austin.serb@icloud.com',
+//    customerPhone: '(208) 616-3408',
+//    products: [
+//        {
+//            name: 'CBD TERPENE TINCTURE 550MG 30ML',
+//            productId: "656ebd1c1908e127c9f87ca4",
+//            price: 0.01,
+//            quantity: 1,
+//            img: 'https://res.cloudinary.com/dmbofhpcg/image/upload/v1701756187/product_images/pqrkqi6m4gnix2kcthve.png',
+//            _id: "657367814c3ed23e9e31bdf5"
+//        }
+//    ],
+//    shippingMethod: {
+//        provider: 'USPS',
+//        carrierAccountId: '9ad8fceeca0f47c6a4e4e66f010b020d',
+//        serviceLevelToken: 'usps_ground_advantage',
+//        price: '3.99',
+//        amountCharged: '3.99',
+//        type: 'Ground Advantage',
+//        carrier: 'USPS',
+//        trackingNumber: '',
+//        trackingUrl: '',
+//        labelUrl: '',
+//        estimatedShipping: 'December 13th, 2023'
+//    },
+//    totalAmount: { subTotal: 0.01, grandTotal: 0.0111, tax: 0, shippingCost: 0 },
+//    address: 'Austin Serb, 330 4th st, krikland, wa, 98033, US',
+//    orderStatus: 'Pending',
+//    paymentStatus: 'Paid',
+//    transactionId: 'X9vx1fQbanq9SfRjyDZ7g3zva1OZY',
+//    createdBy: "657349011e1c4358033745e6",
+//    createdByType: 'Customer',
+//    _id: "657367814c3ed23e9e31bdf4",
+//    orderDate: '2023-12-08T18:59:13.366Z',
+//    orderNumber: '657367814c3ed23e9e31bdf4',
+//    createdAt: '2023-12-08T18:59:13.374Z',
+//    updatedAt: '2023-12-08T18:59:13.374Z',
+//    __v: 0
+//}, last4 = 9999, emailReceiptUrl = 'https://squareup.com/receipt/preview/X9vx1fQbanq9SfRjyDZ7g3zva1OZY',)
 module.exports = {
     processPayment
 };
+
+
+
 
 
 

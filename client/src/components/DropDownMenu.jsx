@@ -2,6 +2,7 @@ import { Box, Button, CircularProgress, IconButton, List, ListItem, Paper, } fro
 import React, { Suspense, useEffect, useState } from 'react';
 import '../Styles/DropDownMenu.css';
 import { Link } from 'react-router-dom';
+import { Collapse } from '@mui/material';
 
 
 const QuickView = React.lazy(() => import('../components/QuickView'));
@@ -127,9 +128,10 @@ const DropdownMenu = ({ isVisible, onLinkClick }) => {
         borderRadius: '0px',
         marginRight: '10px',
         height: '26px'
+
     }
 
-
+    const paddingSmScreen = { pl: { xs: 5, md: 0 }, }
     return (
         <Paper elevation={0} className="dropdown" component='div' sx={{ boxShadow: '0 6px 6px rgba(0, 0, 0, 0.1)', }}
         >
@@ -138,19 +140,23 @@ const DropdownMenu = ({ isVisible, onLinkClick }) => {
                     <div className="dropdown-section">
                         <div className='list-header' onClick={() => {
                             handleToggleSection('SHOP_ALL_CBD');
-                            onLinkClick();
+
                         }}>
-                            <Link to='/shop' style={{ textDecoration: 'none' }}>
-                                <span className="list-content">SHOP ALL CBD</span>
-                            </Link>
+
+                            <span className="list-content">SHOP ALL CBD</span>
+
                             <IconButton className='icon-button-dropdown' sx={{ display: { md: 'none' } }}>
 
                                 <svg height='40' className={`arrow-icon ${openedSection === 'SHOP_ALL_CBD' && 'rotate'}`} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 15.0006L7.75732 10.758L9.17154 9.34375L12 12.1722L14.8284 9.34375L16.2426 10.758L12 15.0006Z" /></svg>
                             </IconButton>
 
                         </div>
-                        {(openedSection === 'SHOP_ALL_CBD' || window.innerWidth > 900) && (
-                            <List className='list-container' >
+
+                        <Collapse in={openedSection === 'SHOP_ALL_CBD' || window.innerWidth > 900}>
+                            <List sx={paddingSmScreen} className='list-container' >
+                                <ListItem className="list-item" component={Link} to="/shop" onClick={onLinkClick}>
+                                    <span className="list-content">Shop All A-Z</span>
+                                </ListItem>
                                 <ListItem className="list-item" component={Link} to="/shop?filter=best-sellers" onClick={onLinkClick}>
                                     <span className="list-content">Best Sellers</span>
                                 </ListItem>
@@ -163,11 +169,8 @@ const DropdownMenu = ({ isVisible, onLinkClick }) => {
                                 <ListItem className="list-item" component={Link} to="/shop?filter=featured" onClick={onLinkClick}>
                                     <span className="list-content">Featured </span>
                                 </ListItem>
-
                             </List>
-
-
-                        )}
+                        </Collapse>
                     </div>
 
                     {/* SHOP BY CATEGORY Section */}
@@ -179,8 +182,8 @@ const DropdownMenu = ({ isVisible, onLinkClick }) => {
                                 <svg height='40' className={`arrow-icon ${openedSection === 'SHOP_BY_CATEGORY' && 'rotate'}`} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 15.0006L7.75732 10.758L9.17154 9.34375L12 12.1722L14.8284 9.34375L16.2426 10.758L12 15.0006Z" /></svg>
                             </IconButton>
                         </div>
-                        {(openedSection === 'SHOP_BY_CATEGORY' || window.innerWidth > 900) && (
-                            <List className='list-container'>
+                        <Collapse in={openedSection === 'SHOP_BY_CATEGORY' || window.innerWidth > 900}>
+                            <List sx={paddingSmScreen} className='list-container'>
                                 <ListItem className="list-item" component={Link} to="/shop?filter=gummies" onClick={onLinkClick}>
                                     <span className="list-content">CBD Gummies</span>
                                 </ListItem>
@@ -202,16 +205,14 @@ const DropdownMenu = ({ isVisible, onLinkClick }) => {
                                 <ListItem className="list-item" component={Link} to="/shop?filter=cbd" onClick={onLinkClick}>
                                     <span className="list-content">THC-Free CBD</span>
                                 </ListItem>
-
-
                             </List>
+                        </Collapse>
 
-                        )}
                     </div>
-                    {/*Shroom gummies Section
+                    {/*MORE CANNABINOIDS Section*/}
                     <div className="dropdown-section">
                         <div className='list-header' onClick={() => handleToggleSection('MORE_CANNABINOIDS')}>
-                            <span className="list-content"> SHOP MUSHROOM GUMMIES</span>
+                            <span className="list-content"> MORE CANNABINOIDS</span>
                             <IconButton className='icon-button-dropdown' sx={{ display: { md: 'none' } }}>
 
 
@@ -219,22 +220,22 @@ const DropdownMenu = ({ isVisible, onLinkClick }) => {
                             </IconButton>
                         </div>
                         {(openedSection === 'MORE_CANNABINOIDS' || window.innerWidth > 900) && (
-                            <List className='list-container'>
-                                <ListItem className="list-item" component={Link} to="/" onClick={onLinkClick}>
+                            <List sx={paddingSmScreen} className='list-container'>
+                                <ListItem className="list-item" component={Link} to="/shop?filter=cbn" onClick={onLinkClick}>
                                     <span className="list-content">CBN</span>
                                 </ListItem>
-                                <ListItem className="list-item" component={Link} to="/" onClick={onLinkClick}>
+                                <ListItem className="list-item" component={Link} to="/shop?filter=cbg" onClick={onLinkClick}>
                                     <span className="list-content">CBG</span>
                                 </ListItem>
-                                <ListItem className="list-item" component={Link} to="/" onClick={onLinkClick}>
+                                <ListItem className="list-item" component={Link} to="/shop?filter=CBDa" onClick={onLinkClick}>
                                     <span className="list-content">CBDa</span>
                                 </ListItem>
-                                <ListItem className="list-item" component={Link} to="/" onClick={onLinkClick}>
+                                <ListItem className="list-item" component={Link} to="/shop?filter=delta 9" onClick={onLinkClick}>
                                     <span className="list-content">Delta 9</span>
                                 </ListItem>
                             </List>
                         )}
-                    </div>*/}
+                    </div>
 
                     {/* OTHER PRODUCTS Section */}
                     <div className="dropdown-section">
@@ -246,17 +247,17 @@ const DropdownMenu = ({ isVisible, onLinkClick }) => {
                                 <svg height='40' className={`arrow-icon ${openedSection === 'OTHER_PRODUCTS' && 'rotate'}`} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 15.0006L7.75732 10.758L9.17154 9.34375L12 12.1722L14.8284 9.34375L16.2426 10.758L12 15.0006Z" /></svg>
                             </IconButton>
                         </div>
-                        {(openedSection === 'OTHER_PRODUCTS' || window.innerWidth > 900) && (
-                            <List className='list-container' >
+                        <Collapse in={openedSection === 'OTHER_PRODUCTS' || window.innerWidth > 900}>
+                            <List sx={paddingSmScreen} className='list-container' >
                                 <ListItem className="list-item" onClick={onLinkClick} component={Link} to="/shop?filter=pet">
                                     <span className="list-content">CBD for Pets</span>
                                 </ListItem>
-                                <ListItem className="list-item" onClick={onLinkClick} component={Link} to="/shop?filter=pet">
-                                    <span className="list-content">CBD for Horses</span>
+                                <ListItem className="list-item" onClick={onLinkClick} component={Link} to="/shop?filter=mushrooms">
+                                    <span className="list-content">Mushroom Gummies</span>
                                 </ListItem>
                             </List>
 
-                        )}
+                        </Collapse>
                     </div>
                     {/* "Join Us" Section */}
                     <Box className="dropdown-section" sx={{ display: { sm: 'block', md: 'none' } }}>
@@ -268,14 +269,15 @@ const DropdownMenu = ({ isVisible, onLinkClick }) => {
                                 <svg height='40' className={`arrow-icon ${openedSection === 'JOIN_US' && 'rotate'}`} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 15.0006L7.75732 10.758L9.17154 9.34375L12 12.1722L14.8284 9.34375L16.2426 10.758L12 15.0006Z" /></svg>
                             </IconButton>
                         </div>
-                        {(openedSection === 'JOIN_US' || window.innerWidth > 900) && (
-                            <List className='list-container'>
+                        <Collapse in={openedSection === 'JOIN_US' || window.innerWidth > 900}>
+
+                            <List sx={paddingSmScreen} className='list-container'>
                                 <ListItem className="list-item" component={Link} to="/registration" onClick={onLinkClick}>
                                     <span className="list-content">Sign Up</span>
                                 </ListItem>
                                 {/* Add more list items if necessary */}
                             </List>
-                        )}
+                        </Collapse>
                     </Box>
 
                     {/* "About Us" Section */}
@@ -289,14 +291,14 @@ const DropdownMenu = ({ isVisible, onLinkClick }) => {
                                 <svg height='40' className={`arrow-icon ${openedSection === 'ABOUT_US' && 'rotate'}`} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 15.0006L7.75732 10.758L9.17154 9.34375L12 12.1722L14.8284 9.34375L16.2426 10.758L12 15.0006Z" /></svg>
                             </IconButton>
                         </div>
-                        {(openedSection === 'ABOUT_US' || window.innerWidth > 900) && (
-                            <List className='list-container'>
-                                <ListItem className="list-item" component={Link} to="/" onClick={onLinkClick}>
+                        <Collapse in={openedSection === 'ABOUT_US' || window.innerWidth > 900}>
+                            <List sx={paddingSmScreen} className='list-container'>
+                                <ListItem className="list-item" component={Link} to="/about" onClick={onLinkClick}>
                                     <span className="list-content">Our Story</span>
                                 </ListItem>
                                 {/* Add more list items if necessary */}
                             </List>
-                        )}
+                        </Collapse>
                     </Box>
 
                     {/* "Support" Section */}
@@ -309,14 +311,14 @@ const DropdownMenu = ({ isVisible, onLinkClick }) => {
                                 <svg height='40' className={`arrow-icon ${openedSection === 'SUPPORT' && 'rotate'}`} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 15.0006L7.75732 10.758L9.17154 9.34375L12 12.1722L14.8284 9.34375L16.2426 10.758L12 15.0006Z" /></svg>
                             </IconButton>
                         </div>
-                        {(openedSection === 'SUPPORT' || window.innerWidth > 900) && (
-                            <List className='list-container'>
-                                <ListItem className="list-item" component={Link} to="/" onClick={onLinkClick}>
+                        <Collapse in={openedSection === 'SUPPORT' || window.innerWidth > 900}>
+                            <List sx={paddingSmScreen} className='list-container'>
+                                <ListItem className="list-item" component={Link} to="/contact" onClick={onLinkClick}>
                                     <span className="list-content">Customer Service</span>
                                 </ListItem>
 
                             </List>
-                        )}
+                        </Collapse>
                     </Box>
                 </Box>
 
@@ -329,7 +331,7 @@ const DropdownMenu = ({ isVisible, onLinkClick }) => {
                                 setQuickViewProduct(product._id);
                                 setQuickViewOpen(true);
                             }} className='drowdown-featured-container' key={product._id}> {/* Use `_id` or appropriate key property */}
-                                <img className='dropdown-featured-img' alt='featured' src={product.imgSource[0].url.split('/upload/').join('/upload/c_fill,h_50,w_50/f_auto,q_auto:good/')}
+                                <img className='dropdown-featured-img' alt='featured' src={product.imgSource[0].url}
                                     loading='lazy' />
                                 <Box>
 

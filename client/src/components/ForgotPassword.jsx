@@ -77,7 +77,7 @@ const ForgotPassword = ({ close, type, resetEmail, startCountdown, countdown, is
         left: '50%',
         transform: 'translate(-50%, -50%)',
         width: '300px',
-        height: '400px',
+        height: '410px',
         backgroundColor: 'white',
         bgcolor: 'background.paper',
 
@@ -121,6 +121,7 @@ const ForgotPassword = ({ close, type, resetEmail, startCountdown, countdown, is
                     helperText={errors.email || ''}
                     name="email"
                 />
+                {message && <h3 style={{ textAlign: 'center', color: '#30842E', marginTop: '5px' }}>{message}!</h3>}
                 <Button
                     variant="outlined"
                     color="secondary"
@@ -139,7 +140,7 @@ const ForgotPassword = ({ close, type, resetEmail, startCountdown, countdown, is
                     )}
                 </Button>
 
-                {message && <p style={{ textAlign: 'center', color: '#30842E', marginTop: '5px' }}>{message}</p>}
+
             </div>
         </div>
 

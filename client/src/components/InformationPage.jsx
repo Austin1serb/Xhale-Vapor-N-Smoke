@@ -4,6 +4,7 @@ import AddressAutocomplete from './AddressAutocomplete';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import jwtDecode from 'jwt-decode';
 import { useAuth } from './Utilities/useAuth';
+import '../Styles/CheckoutPage.css'
 const InformationComponent = ({ next, back, onShippingDetailsSubmit, formData }) => {
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
@@ -219,6 +220,7 @@ const InformationComponent = ({ next, back, onShippingDetailsSubmit, formData })
                     // Send a POST (for new guest) or PUT (for existing guest) request
                     response = await fetch(url, {
                         method: method,
+                        credentials: 'include',
                         headers: {
                             'Content-Type': 'application/json',
                         },
@@ -243,6 +245,7 @@ const InformationComponent = ({ next, back, onShippingDetailsSubmit, formData })
                 const { email, firstName, lastName, ...dataToSend } = data;
                 response = await fetch(`http://localhost:8000/api/customer/${localStorage.getItem('customerId')}`, {
                     method: 'PUT', // Use POST for creating or PUT for updating
+
                     headers: {
                         'Content-Type': 'application/json',
                         // Include authentication token if required
@@ -421,7 +424,7 @@ const InformationComponent = ({ next, back, onShippingDetailsSubmit, formData })
                     Shipping Information
                 </Typography>
                 <Grid container spacing={1}>
-                    <Grid item xs={12} sm={6} pr={2}>
+                    <Grid item xs={12} sm={6} >
                         <TextField
                             fullWidth
                             required
@@ -582,7 +585,7 @@ const InformationComponent = ({ next, back, onShippingDetailsSubmit, formData })
                     <Grid item xs={12} className='information-buttons'>
 
                         <Button onClick={back} variant="outlined" sx={{ height: 55, m: 1, letterSpacing: 2, color: '#283047', backgroundColor: 'white', borderColor: '#283047', borderWidth: 1.5, '&:hover': { backgroundColor: '#0F75E0', color: 'white', } }}>
-                            <ArrowBackIosNewIcon sx={{ fontSize: 18, mr: 1 }} />
+                            <ArrowBackIosNewIcon sx={{ fontSize: 18, mr: 1, display: { xs: 'none', sm: 'block' } }} />
                             Back to cart</Button>
 
 

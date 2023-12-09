@@ -13,12 +13,12 @@ exports.forgotPassword = async (req, res) => {
     try {
         const user = await User.findOne({ email });
         if (user) {
-            const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, { expiresIn: '10min' });
-            const resetLink = `${fontendDomain}reset-password/${token}`;
+            const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, { expiresIn: '5min' });
+            const resetLink = `${fontendDomain}/reset-password/${token}`;
 
             // Email logic
-            const transporter = nodemailer.createTransport({
-                service: 'gmail', // Or your email service provider
+            let transporter = nodemailer.createTransport({
+                host: "smtp.office365.com",
                 auth: {
                     user: process.env.EMAIL_USERNAME,
                     pass: process.env.EMAIL_PASSWORD
@@ -29,7 +29,16 @@ exports.forgotPassword = async (req, res) => {
                 from: process.env.EMAIL_USERNAME,
                 to: email,
                 subject: 'Password Reset Link-Herba Naturals',
-                html: `<p>Please use the following link to reset your password: <a href="${resetLink}">${resetLink}</a></p>`
+                html: `
+        <div style="font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; color: #333; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <h2 style="color: #0F75E0; text-align: center;">Reset Your Password</h2>
+            <p style="text-align: center; font-size: 16px;">You requested a password reset for your Herba Naturals account.</p>
+            <div style="text-align: center; margin: 25px 0;">
+                <a href="${resetLink}" style="background-color: #0F75E0; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-size: 18px;">Reset Password</a>
+            </div>
+            <p style="font-size: 14px; color: #555; text-align: center;">If you did not request a password reset, please ignore this email.</p>
+        </div>
+    `
             };
 
             transporter.sendMail(mailOptions, (error, info) => {

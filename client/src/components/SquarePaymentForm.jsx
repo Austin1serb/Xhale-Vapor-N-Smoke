@@ -3,7 +3,8 @@ import { PaymentForm, CreditCard, } from 'react-square-web-payments-sdk';
 import ShippingDetailsComponent from './ShippingDetailsComponent';
 import { Button, Typography } from '@mui/material';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-const SquarePaymentForm = ({ onPaymentProcess, shippingDetails, back }) => {
+import '../Styles/CheckoutPage.css'
+const SquarePaymentForm = ({ onPaymentProcess, shippingDetails, back, errors, total }) => {
 
 
     const applicationId = process.env.REACT_APP_SQUARE_APPLICATION_ID_SANDBOX;
@@ -30,15 +31,15 @@ const SquarePaymentForm = ({ onPaymentProcess, shippingDetails, back }) => {
             </Typography>
             <Typography variant='body2' fontWeight={100} className='square-form-text'>Square© Payment Form</Typography>
             <div className='checkout-payment-card-form'>
+                <Typography color='error' variant="body2" fontWeight={100} className='checkout-paymentForm-SQUARE'>
+                    {errors}
+                </Typography>
                 <PaymentForm
                     applicationId={applicationId}
                     locationId={locationId}
                     cardTokenizeResponseReceived={handleTokenRecieved}
-
-
                 >
-
-
+                    <Typography color={'primary'}>Will be Charged: ${total.grandTotal.toFixed(2)}</Typography>
                     <CreditCard />
                     {/* Google Pay button */}
 

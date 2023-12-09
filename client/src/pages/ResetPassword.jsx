@@ -13,6 +13,7 @@ const ResetPassword = () => {
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState({});
+    const [success, setSuccess] = useState(false)
     const token = useParams().token; // Retrieve token from URL
     const navigate = useNavigate();
     const handleSubmit = async (e) => {
@@ -22,9 +23,11 @@ const ResetPassword = () => {
         // Password length and strength validation
         if (password.length < 8) {
             setErrors(errors => ({ ...errors, password: 'Password must be at least 8 characters long' }));
+            return
 
         } else if (!/[A-Z]/.test(password) || !/[0-9]/.test(password)) {
             setErrors(errors => ({ ...errors, password: 'Password must contain at least one uppercase letter, and one number' }));
+            return
 
         }
 
@@ -34,6 +37,7 @@ const ResetPassword = () => {
         }
 
         try {
+
             setLoading(true);
             const response = await fetch('http://localhost:8000/api/reset-password', {
                 method: 'POST',
@@ -46,15 +50,16 @@ const ResetPassword = () => {
             setLoading(false);
             if (response.ok) {
                 setMessage('Password has been reset successfully!');
-
+                setSuccess(true)
                 setTimeout(() => navigate('/login'), 2000); // 2 seconds delay
             } else {
                 setErrors({ password: data.message || 'Error occurred' })
                 throw new Error(data.message || 'Error occurred');
-
+                setSuccess(false)
             }
         } catch (error) {
             setLoading(false);
+            setSuccess(false)
             setErrors({ password: error.message || 'Error occurred' })
         }
     };
@@ -106,7 +111,7 @@ const ResetPassword = () => {
                     color="primary"
                     fullWidth
                     type="submit"
-                    disabled={loading}
+                    disabled={loading || !!success}
                     sx={{ mt: 2, height: '50px' }}
                 >
                     {loading ? <CircularProgress size={24} /> : 'Reset Password'}

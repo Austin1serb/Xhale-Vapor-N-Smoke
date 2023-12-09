@@ -122,6 +122,7 @@ const OrderList = () => {
             // Send a PUT request to update the order status
             fetch(`http://localhost:8000/api/order/${orderId}`, {
                 method: 'PUT',
+                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
                 },

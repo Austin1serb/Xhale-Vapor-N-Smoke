@@ -49,7 +49,7 @@ const Cart = ({ setDrawerOpen }) => {
                             <svg xmlns="http://www.w3.org/2000/svg" fill='white' height="30" width="30"><path d="m10.458 31.458-1.916-1.916 9.5-9.542-9.5-9.542 1.916-1.916 9.542 9.5 9.542-9.5 1.916 1.916-9.5 9.542 9.5 9.542-1.916 1.916-9.542-9.5Z" /></svg>
                         </IconButton>
                     </Box>
-                    <Box sx={{ maxHeight: { xs: '200px', sm: '415px' }, overflowY: 'auto', }}>
+                    <Box sx={{ maxHeight: '415px', overflowY: 'auto', }}>
                         {cart.length === 0 ? (
                             // This section renders when the cart is empty
                             <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: "center", height: { xs: 200, sm: 300 } }}>
@@ -77,7 +77,7 @@ const Cart = ({ setDrawerOpen }) => {
                                         }}>
                                             <Badge badgeContent={item.quantity} sx={{ '.MuiBadge-badge': { backgroundColor: 'rgba(195, 26, 210, 0.72)', color: 'white' } }}
                                             >
-                                                <img className='cart-img1' src={item.product.imgSource[0].url.split('/upload/').join('/upload/c_fill,h_100,w_100/f_auto,q_auto:good/')}
+                                                <img className='cart-img1' src={item.product.imgSource[0].url}
 
                                                     alt={item.product.name} width={100} height={100} loading='lazy' />
                                             </Badge>
@@ -133,7 +133,7 @@ const Cart = ({ setDrawerOpen }) => {
                     <Box sx={{
 
                         boxShadow: ' 1px -4px 6px -1px rgba(0, 0, 0, 0.2)',
-                        display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: { xs: '50vh', sm: '30vh' },
+                        display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '30vh',
 
                     }}>
                         <Box sx={{ borderTop: 0.5, display: 'flex', flexDirection: 'column', alignItems: 'center' }} className="ajax-cart--checkout-add-note">

@@ -39,7 +39,7 @@ exports.createAddress = (req, res) => {
             res.json(shipmentResponse);
         })
         .catch(err => {
-            console.log('Shipment data being sent:', shipment);
+
             console.error('Error creating shipment with Shippo:', err);
             res.status(500).send(err.message);
         });

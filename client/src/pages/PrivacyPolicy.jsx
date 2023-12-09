@@ -8,21 +8,10 @@ const PrivacyPolicy = () => {
         document.querySelector('meta[name="description"]').setAttribute("content", "Herba Naturals values your privacy. Learn how we collect, use, and protect your personal information in accordance with our privacy policy.");
     }, []);
 
-    const headingStyle = {
-        textAlign: 'center',
-    };
 
-    const sectionHeadingStyle = {
-        fontWeight: 'bold',
-    };
-
-    const paragraphStyle = {
-        margin: 0,
-        padding: 0,
-    };
 
     return (
-        <div className="shipping-policy">
+        <div className="policy-pages">
 
 
 
@@ -254,13 +243,13 @@ const PrivacyPolicy = () => {
 
                 <h3>Contact Us</h3>
 
-                <p> For any concerns or queries regarding handling and protecting your personal data, you can request contact with our Data Controller Representative at customerservices@herbanaturals.com.</p>
+                <p> For any concerns or queries regarding handling and protecting your personal data, you can request contact with our Data Controller Representative at customerservices@herbanaturalco.com.</p>
 
                 <p> If you have any general questions about this Privacy Policy, You can contact us:</p>
 
                 <ul>
 
-                    <li>By sending us an email: <a href="mailto:customerservices@herbanaturals.com">customerservices@herbanaturals.com</a></li>
+                    <li>By sending us an email: <a href="mailto:customerservices@herbanaturalco.com">customerservices@herbanaturalco.com</a></li>
                 </ul>
 
                 <p>   Our Privacy Policy was last updated on November 19, 2023.</p>
