@@ -142,8 +142,9 @@ module.exports = {
 
     getAll: (req, res) => {
         Products.find() // Find all products
+            .sort({ name: 1 }) // Sort products by 'name' field in ascending order (A to Z)
             .then(products => {
-                // Return the list of products as a JSON response
+                // Return the sorted list of products as a JSON response
                 res.json(products);
             })
             .catch(err => {
@@ -152,6 +153,7 @@ module.exports = {
                 res.status(500).json({ message: 'Internal server error' });
             });
     },
+
 
     getOne: (req, res) => {
         Products.findOne({ _id: req.params.id })

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Typography, List, ListItem, ListItemText, Divider, Paper, Box, IconButton, Button, Badge } from '@mui/material';
+import { Typography, List, ListItem, ListItemText, Box, IconButton, Button, Badge } from '@mui/material';
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
 import Tooltip from '@mui/material/Tooltip';
@@ -7,7 +7,6 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import { Link } from 'react-router-dom';
 import '../Styles/CheckoutPage.css'
-
 const CartSummaryComponent = ({ cartItems, shippingCost, total, removeFromCart, adjustQuantity, next, step, setFullCost }) => {
     // Helper function to format cost display
     const formatCost = (cost) => {
@@ -58,6 +57,7 @@ const CartSummaryComponent = ({ cartItems, shippingCost, total, removeFromCart, 
 
             <List disablePadding >
                 <Box ref={boxRef} sx={{ maxHeight: '60vh', minHeight: '65vh', overflow: 'auto', mt: { xs: 1, sm: -2.5 }, mb: -1.25, }}>
+
                     <Typography variant="h1" component="h1" sx={{ borderBottom: .1, my: 2, textAlign: 'center', fontSize: 'h5.fontSize' }} gutterBottom>
 
                         Order Summary
@@ -80,7 +80,7 @@ const CartSummaryComponent = ({ cartItems, shippingCost, total, removeFromCart, 
                         cartItems.map((item, index) => (
                             <Box key={'product:' + index} sx={{ display: 'flex', mx: { xs: 2, sm: 5 }, my: 2 }}>
                                 <Badge badgeContent={item.quantity} color="secondary" sx={{ '.MuiBadge-badge': { backgroundColor: 'rgba(195, 26, 210, 0.72)', color: 'white' } }}>
-                                    <img className='cart-img' src={item.img.split('/upload/').join('/upload/c_fill,h_200,w_200/f_auto,q_auto:good/')}
+                                    <img className='cart-img' src={item.img}
                                         alt={item.name} width={80} height={80} loading='lazy' />
                                 </Badge>
                                 <Box >
@@ -153,7 +153,7 @@ const CartSummaryComponent = ({ cartItems, shippingCost, total, removeFromCart, 
                             <ListItem style={{ padding: '10px 0' }}>
                                 <ListItemText primary="Shipping" />
                                 <Typography variant="body2">
-                                    {formatCost(shippingCost)}
+                                    {shippingCost === 0.00 ? 'Free!' : formatCost(shippingCost)}
                                 </Typography>
                             </ListItem>
 

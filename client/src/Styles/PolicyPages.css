@@ -1,5 +1,5 @@
 /* ShippingPolicy.css */
-.shipping-policy {
+.policy-pages {
     font-family: Arial, sans-serif;
     margin-top: 80px;
     padding: 20px;
@@ -8,27 +8,84 @@
 }
 
 
-.shipping-policy h1 {
+.policy-pages h1 {
     font-size: 24px;
     text-align: center;
 }
 
-.container {
+.policy-pages .container {
     max-width: 800px;
+    border-radius: 10px;
     margin: 20px auto;
     padding: 40px;
-
-
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+    color: #333;
     background-color: #fff;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
 }
 
-.shipping-policy h2 {
+.policy-pages h2 {
     font-size: 20px;
     margin-top: 20px;
 }
 
-.shipping-policy p {
+.policy-pages p {
     font-size: 16px;
     line-height: 1.5;
+}
+
+.policy-pages .container {
+    padding: 20px;
+    max-width: 800px;
+    margin: auto;
+
+}
+
+.policy-pages h1,
+.policy-pages h3,
+.policy-pages h5 {
+    margin-top: 20px;
+}
+
+.policy-pages h1 {
+    font-size: 28px;
+    color: #4a7c59;
+    text-align: center;
+}
+
+.policy-pages h3 {
+    font-size: 22px;
+    color: #37644b;
+}
+
+.policy-pages h5 {
+    font-size: 18px;
+    color: #2e5035;
+}
+
+.policy-pages p,
+.policy-pages li {
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.policy-pages ul,
+.policy-pages ol {
+    padding-left: 20px;
+}
+
+.policy-pages a {
+    color: #1a7da8;
+    text-decoration: none;
+}
+
+.policy-pages a:hover {
+    text-decoration: underline;
+}
+
+@media screen and (max-width: 768px) {
+    .policy-pages .container {
+        padding: 10px;
+    }
 }

@@ -11,12 +11,12 @@ const TermAndConditions = () => {
 
 
     return (
-        <div className="shipping-policy">
+        <div className="policy-pages">
 
-            <h1>Terms of service</h1>
+
 
             <div className="container">
-
+                <h1>Terms of service</h1>
 
                 <h3>Overview</h3>
 

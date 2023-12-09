@@ -12,12 +12,14 @@ const modalStyle = {
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: { xs: '90%', sm: '600px', md: '800px' }, // Responsive width
-    maxHeight: '90vh', // Adjust height for mobile
+    maxHeight: { xs: '70vh', sm: '90vh' }, // Adjust height for mobile
     overflowY: 'auto',
     bgcolor: 'background.paper',
-    boxShadow: 24,
+    boxShadow: '2px -2px 23px 0',
+    border: '5px solid #ccc',
+
     p: 4,
-    borderRadius: 1
+    borderRadius: 2
 };
 
 
@@ -179,7 +181,7 @@ const QuickView = ({ productId, open, handleClose, products }) => {
                                                     key={'image'}
 
                                                     className='quickview-thumbnail'
-                                                    src={`${image.url.split('/upload/').join('/upload/c_fill,h_75,w_75/f_auto,q_auto:eco/')}`}
+                                                    src={`${image.url}`}
                                                     alt={`${productDetails.name} thumbnail ${i}`}
                                                     onClick={() => handleThumbnailClick(image.url)}
 
@@ -284,7 +286,7 @@ const QuickView = ({ productId, open, handleClose, products }) => {
                                 <TabPanel value={selectedTab} index={1}>
                                     {relatedProducts.map((product) => (
                                         <Box onClick={() => setProductDetails(product)} className='quickview-related-container' key={product._id}> {/* Use `_id` or appropriate key property */}
-                                            <img className='quickview-related-img' alt='related' src={`${product.imgSource[0].url.split('/upload/').join('/upload/c_fill,h_50,w_50/f_auto,q_auto:eco/')}`} />
+                                            <img className='quickview-related-img' alt='related' src={`${product.imgSource[0].url}`} />
                                             <Box variant='button'>
 
                                                 <Box className='quickview-related-name'>{product.name}</Box>

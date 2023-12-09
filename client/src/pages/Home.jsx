@@ -21,8 +21,18 @@ const Home = () => {
     const listItemSx = {
         pt: 2,
         pb: 3,
-        borderBottom: '0.1px solid gray', // Add the border-bottom property here
-        '@media (min-width: 200px)': {
+
+        borderBottom: '0.1px solid gray',
+        '@media (max-width: 380px)': {
+
+            minWidth: '320px',
+            maxWidth: '320px',
+
+        },
+        '@media (max-width: 600px)': {
+
+            minWidth: '320px',
+            maxWidth: '320px',
 
         }
 
@@ -31,7 +41,7 @@ const Home = () => {
 
         <div>
 
-            <Box className="home-container">
+            <Box sx={{ ml: { xs: -1.25, sm: 0 } }} className="home-container">
                 <div className="left-content">
                     <div className='colored-square-content'>
                         <div className="colored-square">
@@ -53,10 +63,13 @@ const Home = () => {
                     />
                 </div>
             </Box>
-            <Box component='div' py={{ xs: 5, sm: 16 }} sx={{ width: '70%', height: 'auto', alignItems: 'center', justifyContent: 'center', margin: '0 auto', textAlign: 'center', mt: { xs: -30, sm: -40, md: 0 } }}>
-                <Typography style={{ fontFamily: customFont, fontSize: '30px' }}>
-                    Our Carriers CBD is award-winning and tested for quality. We proudly offer products from the best CBD producers.
-                </Typography>
+            <Box component='div' py={{ xs: 5, sm: 16 }} sx={{ width: { xs: '320px', sm: '70%' }, height: 'auto', alignItems: 'center', justifyContent: 'center', margin: '0 auto', textAlign: 'center', mt: { xs: -30, sm: -40, md: 0 } }}>
+                <div >
+                    <Typography style={{ fontFamily: customFont, fontSize: '30px' }}>
+
+                        Our Carriers CBD is award-winning and tested for quality. We proudly offer products from the best CBD producers.
+                    </Typography>
+                </div>
                 <Box className="list-container" >
                     <List
                         sx={{
@@ -75,6 +88,7 @@ const Home = () => {
                             '@media (max-width: 360px)': {
                                 width: '220px'
                             },
+                            ml: 2
                         }}
                     >
                         <ListItem sx={listItemSx} className="ListItem1">
@@ -127,7 +141,7 @@ const Home = () => {
                     </List>
                 </Box>
 
-                <Box className="bottom-box" >
+                <Box className="bottom-box" sx={{}}>
                     <Box className='bottom-box-button1' component={Link} to="/shop?filter=best-sellers">
                         <Button >SHOP CBD BESTSELLERS</Button>
                     </Box>

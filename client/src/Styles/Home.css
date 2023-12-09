@@ -156,6 +156,7 @@
 
     .list-container {
         margin-left: -15px;
+        min-width: 400px;
     }
 }
 
@@ -169,17 +170,6 @@
 @media (max-width: 380px) {
     .right-content {
         margin-left: 10px;
-    }
-
-
-    .bottom-box button {
-        margin-left: -5px;
-        width: 200px;
-    }
-
-    .list-container {
-        margin-left: 20px;
-        width: 200px;
     }
 
 }

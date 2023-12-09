@@ -28,9 +28,8 @@ const Contact = () => {
         setIsLoading(true);
         try {
             // Send a POST request to the server
-            const response = await axios.post('http://localhost:8000/api/contact', formData);
+            await axios.post('http://localhost:8000/api/contact', formData);
             // Handle response here
-            console.log(response.data);
             setSubmitStatus('Message sent successfully.');
             // Reset form
             setFormData({
@@ -101,10 +100,10 @@ const Contact = () => {
                     disabled={submitStatus !== ''} // Disable button if submitStatus is not empty}
 
                 >
-                    {isLoading ? <CircularProgress /> : "Submit"}
+                    {isLoading ? <CircularProgress color='secondary' /> : "Submit"}
                 </Button>
 
-                <p style={{ marginTop: '5px', color: 'green' }}>{submitStatus}</p>
+                <h2 style={{ marginTop: '5px', color: 'green', fontWeight: 200 }}>{submitStatus}</h2>
             </form>
             <Typography variant="body1" style={{ marginTop: '20px' }}>
                 <Link to="/about" state={{ scrollToBottom: true }} >

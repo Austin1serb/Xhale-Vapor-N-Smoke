@@ -10,7 +10,7 @@ router.get('/:id', guestController.getGuestById);
 
 router.put('/:id', guestController.updateGuest);
 
-//router.use(verifyToken, isAdmin);
+router.use(verifyToken, isAdmin);
 router.get('/', guestController.getAllGuests);
 router.delete('/:id', guestController.deleteGuest);
 

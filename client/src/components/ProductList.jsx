@@ -126,7 +126,7 @@ const ProductList = () => {
     };
 
     return (
-        <Box sx={{ p: 2 }}>
+        <Box sx={{ p: 2, m: 2 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', py: 2 }} >
                 <Typography variant="h6">Product Management</Typography>
                 <Button variant="outlined" color="success" onClick={handleOpenAddProductModal}>

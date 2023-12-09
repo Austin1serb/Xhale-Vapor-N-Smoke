@@ -145,14 +145,6 @@ const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, b
         setButtonDisabled(new Array(shippingOptions.length).fill(false));
     }, [shippingOptions]);
 
-
-
-
-
-
-
-
-
     const handleSelectShippingOption = (cost, index) => {
         const formattedShipping = currentItems.map((option,) => (calculateShippingDate(option.estimated_days)))
         // Check if the selected option is free
@@ -238,7 +230,7 @@ const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, b
                             {currentItems.map((option, index) => (
                                 <ListItem
                                     key={index}
-                                    sx={{
+                                    style={{
                                         backgroundColor: buttonDisabled[index] ? 'rgba(15, 117, 224, 0.1)' : '',
                                         borderColor: checkoutError ? '#D23030' : ''
 

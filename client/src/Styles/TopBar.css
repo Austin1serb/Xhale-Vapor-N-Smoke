@@ -61,13 +61,21 @@
 
         height: 60px;
     }
+
+    .topbar-icon-container {
+        margin-right: 20px;
+    }
 }
 
 @media (max-width: 355px) {
     .brand-icon {
 
 
-        margin-left: -60px;
+        margin-left: -55px;
+    }
+
+    .topbar-icon-container {
+        margin-right: -10px;
     }
 }
 
@@ -198,10 +206,11 @@
 }
 
 .dropdown-box {
+    height: 10px;
     z-index: 9999999;
     opacity: 0;
     visibility: hidden;
-    transform: translateY(20px);
+    transform: translateY(240px);
     transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
     position: absolute;
     /* This is necessary to move it below the 'Shop' link */
@@ -238,13 +247,14 @@
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
+
 }
 
 
 .dropdown-box-mobile {
     opacity: 0;
     visibility: hidden;
-    transform: translateY(10px);
+    transform: translateY(60px);
     /* Adjust if needed */
     transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
     position: absolute;

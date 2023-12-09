@@ -14,9 +14,10 @@ const frontEndDomain = process.env.FRONTEND_DOMAIN
 
 app.use(
     cors({
-        origin: 'http://localhost:3000', // Replace with your front-end's origin
+        origin: frontEndDomain,
         credentials: true,
     }),
+
     express.json({ limit: "50mb" }),
     express.urlencoded({ limit: "50mb", extended: true }),
     (cookieParser()),
@@ -26,12 +27,12 @@ app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             defaultSrc: ["'self'"],
-            scriptSrc: ["'self'", 'https://maps.googleapis.com', 'https://js.squareup.com'],
+            scriptSrc: ["'self'", 'https://maps.googleapis.com', 'https://web.squarecdn.com'],
             styleSrc: ["'self'", 'https://fonts.googleapis.com', "'unsafe-inline'"],
             fontSrc: ["'self'", 'https://fonts.gstatic.com'],
             imgSrc: ["'self'", 'https://res.cloudinary.com'],
-            connectSrc: ["'self'", 'https://connect.squareup.com'],
-            frameSrc: ["'self'"], // If you use iframes
+            connectSrc: ["'self'", 'https://connect.squareup.com', 'http://localhost:8000'],
+            frameSrc: ["'self'"],
             objectSrc: ["'none'"],
             // Add other directives as needed
         },
@@ -58,7 +59,6 @@ app.use("/api/product", productRoutes);
 app.use("/api/order", orderRoutes);
 app.use('/api/guest', guestRoutes);
 app.use("/api/customer", customerRoutes);
-app.use("/api/payment", paymentRoutes);
 app.use("/api/upload", uploadToCloudinary);
 app.use('/api/shippo', shippoRoutes);
 app.use(bodyParser.json());

@@ -6,8 +6,8 @@ const rateLimit = require('express-rate-limit');
 //  Rate limiting for the registration route
 const contactLimiter = rateLimit({
     windowMs: 60 * 60 * 1000, // 1 hour window
-    max: 5, // start blocking after 10 requests
-    message: "Too many accounts created from this IP, please try again after an hour"
+    max: 5, // start blocking after 5 requests
+    message: "Too many messages created from this IP, please try again after an hour"
 });
 
 

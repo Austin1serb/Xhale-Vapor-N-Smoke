@@ -5,7 +5,6 @@ const { verifyToken, isAdmin } = require('../verifyToken'); // Import your verif
 
 router.route('/featured').get(ProductsController.getFeatured);
 router.route('/bestsellers').get(ProductsController.getBestSellers);
-router.route("/test").get(ProductsController.test);
 router.route('/paginate/').get(ProductsController.getAllPaginate);
 router.route('/').get(ProductsController.getAll);
 router.route('/:id').get(ProductsController.getOne);

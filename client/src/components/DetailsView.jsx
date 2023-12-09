@@ -41,7 +41,7 @@ const DetailsView = ({ open, product, onClose }) => {
                                     <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>Images:</Typography>
                                 </TableCell>
                                 <TableCell>    {product.imgSource && product.imgSource.map((image, index) => (
-                                    <img key={index} src={image.url.split('/upload/').join('/upload/c_fill,h_100,w_100/f_auto,q_auto:good/')}
+                                    <img key={index} src={image.url}
                                         alt={`${product.name} ${index}`} style={{ width: '100px', height: '100px', marginBottom: '1rem' }} loading='lazy' />
                                 ))}
 

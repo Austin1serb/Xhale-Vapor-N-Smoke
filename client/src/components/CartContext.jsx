@@ -49,7 +49,8 @@ export const CartProvider = ({ children }) => {
 
 
 
-    //confetti
+    const truncatedName = name.length > 30 ? name.slice(0, 30) + '...' : name;
+
 
     return (
         <CartContext.Provider value={{ cart, addToCart, removeFromCart, adjustQuantity, notes, updateNotes, clearCart, setNotes }}>
@@ -62,14 +63,14 @@ export const CartProvider = ({ children }) => {
                     '& .MuiSnackbarContent-root': {
                         backgroundColor: '#282F48', // Background color of the snackbar
                         color: 'white',            // Text color of the snackbar
+                    },
 
-                    }
 
                 }}
                 open={openSnackbar}
-                autoHideDuration={20000} // Snackbar will close after 6 seconds
+                autoHideDuration={2000} // Snackbar will close after 2 seconds
                 onClose={() => setOpenSnackbar(false)}
-                message={`${name} - has been successfully added to the cart.`}
+                message={`${truncatedName} - has been added to the cart.`}
                 action={<React.Fragment>
                     <Box>
                         <svg height='24' version="1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" enableBackground="new 0 0 48 48">
