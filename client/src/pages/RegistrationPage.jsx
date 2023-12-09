@@ -17,7 +17,7 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import ReCAPTCHA from 'react-google-recaptcha';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
-import jwtDecode from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import GuestCheckoutPage from '../components/GuestCheckout';
 import { useAuth } from '../components/Utilities/useAuth';
 
