@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { TextField, Button, Grid, Typography, FormControl, InputAdornment, Tooltip, IconButton } from '@mui/material';
 import AddressAutocomplete from './AddressAutocomplete';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import jwtDecode from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import { useAuth } from './Utilities/useAuth';
 import '../Styles/CheckoutPage.css'
 const InformationComponent = ({ next, back, onShippingDetailsSubmit, formData }) => {

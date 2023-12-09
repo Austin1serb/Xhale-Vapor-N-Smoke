@@ -219,12 +219,15 @@ const SalesOverview = () => {
         height: 500, // Adjust the height to fit your layout
         sx: {
             [`.${axisClasses.left} .${axisClasses.label}`]: {
-                transform: 'translate(40px, -190px) ',
-                fontSize: '18px'
+                transform: 'translate(50px, -190px) ',
+                //rotate 90 degress
+
+
+
             },
             // Styling for Y-axis labels
             [`.${axisClasses.bottom} .${axisClasses.tickLabel}`]: {
-                fontSize: '16px',
+                fontSize: '26px',
             },
         },
         xAxis: [
