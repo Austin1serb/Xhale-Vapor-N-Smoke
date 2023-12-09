@@ -1,5 +1,5 @@
 /* eslint-disable no-restricted-globals */
-const CACHE_NAME = 'my-app-v1'; // Change version to 'my-app-v2', 'my-app-v3', etc. when updating the app
+const CACHE_NAME = 'my-app-v10'; // Change version to 'my-app-v2', 'my-app-v3', etc. when updating the app
 const urlsToCache = [
     '/',
     '/index.html',
@@ -10,7 +10,7 @@ const urlsToCache = [
     '/static/js/bundle.js',
     '/icons/icon-64x64.ico',
     '/icons/icon-192x192.png',
-    '/icons/icon-512x512.ong',
+    '/icons/icon-512x512.png',
     '/icons/maskable_icon.png',
     '/static/css/6.4ab26698.chunk.css',
     '/static/css/6.4ab26698.chunk.css.map',
@@ -179,27 +179,30 @@ self.addEventListener('install', event => {
             })
     );
 });
-
 // Cache and return requests
 self.addEventListener('fetch', event => {
-    if (event.request.mode === 'navigate') {
-        // Respond with the cached index.html for navigational requests
-        event.respondWith(
-            caches.match('/').then(response => {
-                return response || fetch(event.request);
-            })
-        );
+    const apiUrl = '/api/';
+
+    if (event.request.url.includes(apiUrl)) {
+        // For API requests, fetch from network every time (no caching)
+        event.respondWith(fetch(event.request));
     } else {
-        // For non-navigation requests, try to serve from cache first, then network as fallback
+        // For non-API requests, try to serve from cache, then network as fallback
         event.respondWith(
             caches.match(event.request)
                 .then(response => {
-                    return response || fetch(event.request);
+                    return response || fetch(event.request)
+                        .then(fetchResponse => {
+                            return caches.open(CACHE_NAME)
+                                .then(cache => {
+                                    cache.put(event.request, fetchResponse.clone());
+                                    return fetchResponse;
+                                });
+                        });
                 })
         );
     }
 });
-
 
 // Update a service worker
 self.addEventListener('activate', event => {
@@ -208,7 +211,7 @@ self.addEventListener('activate', event => {
         caches.keys().then(cacheNames => {
             return Promise.all(
                 cacheNames.map(cacheName => {
-                    if (cacheWhitelist.indexOf(cacheName) === -1) {
+                    if (!cacheWhitelist.includes(cacheName)) {
                         return caches.delete(cacheName);
                     }
                 })
@@ -216,59 +219,3 @@ self.addEventListener('activate', event => {
         })
     );
 });
-
-self.addEventListener('fetch', event => {
-    const apiUrl = '/api/'; // Define your API endpoint here
-
-    if (event.request.url.includes(apiUrl)) {
-        event.respondWith(
-            caches.open(CACHE_NAME)
-                .then(async cache => {
-                    const response = await cache.match(event.request);
-                    return response || fetch(event.request)
-                        .then(fetchResponse => {
-                            cache.put(event.request, fetchResponse.clone());
-                            return fetchResponse;
-                        });
-                })
-        );
-    } else {
-        // Cache and serve all other requested resources
-        event.respondWith(
-            caches.open(CACHE_NAME)
-                .then(async cache => {
-                    const response = await cache.match(event.request);
-                    return response || fetch(event.request)
-                        .then(fetchResponse => {
-                            cache.put(event.request, fetchResponse.clone());
-                            return fetchResponse;
-                        });
-                })
-        );
-    }
-});
-const MAX_CACHE_SIZE = 100;
-
-self.addEventListener('fetch', event => {
-    event.respondWith(
-        caches.open(CACHE_NAME).then(async cache => {
-            // Check the cache size
-            const keys = await cache.keys();
-            if (keys.length > MAX_CACHE_SIZE) {
-                // Remove older entries if cache size exceeds the limit
-                await cache.delete(keys[0]);
-            }
-
-            // Fetch and cache the requested resource
-            const response = await cache.match(event.request);
-            if (response) {
-                return response;
-            }
-
-            const fetchResponse = await fetch(event.request);
-            cache.put(event.request, fetchResponse.clone());
-            return fetchResponse;
-        })
-    );
-});
-
