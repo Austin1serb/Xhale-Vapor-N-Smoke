@@ -202,7 +202,7 @@ const AdminDashboard = () => {
                             <Link style={{ textDecoration: 'none', color: 'black' }} to={'/'}>Home</Link>
                         </MenuItem>
                         <MenuItem key="admin" onClick={handleMenuClose}>
-                            <Link style={{ textDecoration: 'none', color: 'black' }} to={'/api/customer/admin'}>Admin</Link>
+                            <Link style={{ textDecoration: 'none', color: 'black' }} to={'/customer/admin'}>Admin</Link>
                         </MenuItem>
 
                         <MenuItem key="account" onClick={handleMenuClose}>

@@ -35,9 +35,9 @@ const App = () => {
 
   const [isAgeVerified, setIsAgeVerified] = useState(false);
 
-  const isAdminDashboardRoute = !!useMatch('/api/customer/admin')
+  const isAdminDashboardRoute = !!useMatch('/customer/admin')
   // Define paths where Age Verification should not be shown
-  const excludedRoutes = ['/privacy-policy', '/terms', '/shipping-policy', '/refund', '/api/customer/admin'];
+  const excludedRoutes = ['/privacy-policy', '/terms', '/shipping-policy', '/refund', '/customer/admin'];
 
   // Check if the current route is one of the excluded ones
   const isExcludedRoute = excludedRoutes.includes(location.pathname)
@@ -81,7 +81,7 @@ const App = () => {
 
                 {/* PROTECTED/LAZY LOADED ADMINDASHBOARD */}
                 <Route
-                  path="/api/customer/admin"
+                  path="/customer/admin"
                   element={
                     <ProtectedRoute>
                       <AdminDashboard />

@@ -120,7 +120,7 @@ const LoginPage = () => {
                 setIsLoggedIn(true);
                 if (decodedToken.isAdmin === true) {
                     // Redirect to admin dashboard
-                    navigate('/api/customer/admin');
+                    navigate('/customer/admin');
                 } else {
                     // Redirect to the home page or other user-specific page
                     navigate(returnUrl);
