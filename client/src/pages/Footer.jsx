@@ -9,8 +9,8 @@ const Footer = () => {
         backgroundColor: '#282F48',
         color: '#FFFFFF',
         padding: '20px',
-        height: '165px',
-
+        height: 'auto',
+        paddingBottom: '20px',
         maxWidth: '100%'
 
     };

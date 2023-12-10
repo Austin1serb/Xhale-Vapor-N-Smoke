@@ -249,11 +249,11 @@ const TopBar = () => {
                         <Box component={Link} to="/" className="nav-link">
                             <Box sx={{ display: { sm: 'none' } }}>
                                 <img
-                                    src={BrandIcon} height='auto' width='auto' alt="Brand Icon" className='brand-icon' />
+                                    src={BrandIcon} alt="Brand Icon" className='brand-icon' />
                             </Box>
 
                             <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-                                <img src={BrandText} alt="brand-text" className='brand-icon' />
+                                <img src={BrandText} height='80px' width='320px' alt="brand-text" className='brand-icon' />
                             </Box>
                             <Box >
                                 <img src={SmallBrandIcon} height='auto' width='auto' alt="brand-icon-small" className='brand-icon-small' />

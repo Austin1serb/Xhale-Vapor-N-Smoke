@@ -52,15 +52,15 @@ const CategoryInput = ({ category, onAddCategory, onRemoveCategory, error }) => 
                     borderColor: localError ? (theme) => theme.palette.error.main : '#1776D1',
                     '& .form-label-sx': {
                         color: localError ? (theme) => theme.palette.error.main : '#1776D1',
-                        fontSize: '14px',
-                        transition: 'color 0.4s, font-size 0.4s',
+
+                        transition: 'color 0.4s, ',
                     },
                 },
                 '&:not(:hover)': {
                     '& .form-label-sx': {
                         color: localError ? (theme) => theme.palette.error.main : 'initial',
-                        fontSize: 'initial',
-                        transition: 'color 0.4s, font-size 0.4s',
+
+                        transition: 'color 0.4s, ',
                     },
                 },
             }}
@@ -84,6 +84,7 @@ const CategoryInput = ({ category, onAddCategory, onRemoveCategory, error }) => 
                 <TextField
                     name='categories'
                     spellCheck={true}
+                    autoCorrect='false'
                     label="Categories*"
                     value={newCategory}
                     error={Boolean(localError)}

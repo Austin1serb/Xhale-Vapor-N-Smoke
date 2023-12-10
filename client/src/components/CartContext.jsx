@@ -1,14 +1,32 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 import { Box, Snackbar } from '@mui/material';
 
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-    const [cart, setCart] = useState([]);
+    // Load cart from local storage
+    const loadCartFromLocal = () => {
+        const savedCart = localStorage.getItem('cart');
+        return savedCart ? JSON.parse(savedCart) : [];
+    };
+    const [cart, setCart] = useState(loadCartFromLocal());
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [name, setName] = useState('')
-
     const [notes, setNotes] = useState('');
+
+
+
+    // Save cart to local storage
+    const saveCartToLocal = (cartItems) => {
+        localStorage.setItem('cart', JSON.stringify(cartItems));
+    };
+    useEffect(() => {
+        saveCartToLocal(cart);
+    }, [cart]);
+
+
+
+
 
 
     const updateNotes = (newNotes) => {
@@ -29,6 +47,7 @@ export const CartProvider = ({ children }) => {
         } else {
             setCart(prevCart => [...prevCart, { product, quantity }]);
         }
+
     };
 
     const removeFromCart = (productId) => {
