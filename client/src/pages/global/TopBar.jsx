@@ -142,7 +142,7 @@ const TopBar = () => {
             >
                 {isLoggedIn ? [
                     !!isAdmin ? (<MenuItem key="admin" onClick={handleMenuClose}>
-                        <Link id='link-admin' style={{ textDecoration: 'none', color: 'black' }} to={'/api/customer/admin'}>Admin</Link>
+                        <Link id='link-admin' style={{ textDecoration: 'none', color: 'black' }} to={'/customer/admin'}>Admin</Link>
                     </MenuItem>) : (null),
                     <MenuItem id='link-account' key="account" onClick={handleMenuClose}>
                         <Link style={{ textDecoration: 'none', color: 'black' }} to={'/details'}>Account</Link>
