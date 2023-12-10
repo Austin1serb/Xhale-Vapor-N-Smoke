@@ -193,12 +193,10 @@ self.addEventListener('fetch', event => {
             caches.match(event.request)
                 .then(response => {
                     return response || fetch(event.request)
-                        .then(fetchResponse => {
-                            return caches.open(CACHE_NAME)
-                                .then(cache => {
-                                    cache.put(event.request, fetchResponse.clone());
-                                    return fetchResponse;
-                                });
+                        .then(async fetchResponse => {
+                            const cache = await caches.open(CACHE_NAME);
+                            cache.put(event.request, fetchResponse.clone());
+                            return fetchResponse;
                         });
                 })
         );
@@ -219,4 +217,6 @@ self.addEventListener('activate', event => {
             );
         })
     );
+    // Ensure the new service worker becomes active immediately
+    self.clients.claim();
 });
