@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Box, Typography, Button, List, ListItem, IconButton, Badge, } from '@mui/material';
 import { useCart } from './CartContext';  // Adjust the path based on your file structure
 import { Link } from 'react-router-dom';
@@ -63,7 +63,7 @@ const Cart = ({ setDrawerOpen }) => {
                                 </svg>
                                 <Button onClick={() => {
                                     setDrawerOpen(false); // Close the drawer
-                                }} to="/shop" component={Link} sx={{ border: 1, width: '90%', height: 50, borderRadius: 0, letterSpacing: 2, color: '#283047', backgroundColor: 'white', borderColor: '#283047', borderWidth: 1.5, height: 55, '&:hover': { backgroundColor: '#0F75E0', color: 'white' } }} > Start Shopping</Button>
+                                }} to="/shop" component={Link} sx={{ border: 1, width: '90%', borderRadius: 0, letterSpacing: 2, color: '#283047', backgroundColor: 'white', borderColor: '#283047', borderWidth: 1.5, height: 55, '&:hover': { backgroundColor: '#0F75E0', color: 'white' } }} > Start Shopping</Button>
                             </Box>
                         ) : (
                             <List>

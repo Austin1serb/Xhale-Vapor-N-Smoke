@@ -1,5 +1,4 @@
 .home-container {
-
     font-family: 'Playfair Display', serif;
     display: flex;
     justify-content: center;
@@ -9,6 +8,7 @@
 }
 
 .left-content {
+
     z-index: 1;
     flex: 1;
     background-color: #EDF8FE;
@@ -164,6 +164,8 @@
     .left-content {
         animation: slideInFromTopMobile 1.5s forwards;
         width: 70%;
+        margin-left: 40px;
+
     }
 }
 
@@ -260,7 +262,7 @@
 
     100% {
         transform: translateY(-500px);
-        opacity: 1;
+        opacity: 0.95;
     }
 }
 
@@ -272,7 +274,7 @@
 
     100% {
         transform: translateY(-110%);
-        opacity: 1;
+        opacity: 0.95;
     }
 }
 

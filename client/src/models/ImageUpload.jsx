@@ -66,16 +66,16 @@ const ImageUpload = ({
                     '& .MuiFormLabel-root': {
                         // Apply MUI error color to title when there is an error
                         color: error['imgSource'] ? theme => theme.palette.error.main : '#1776D1',
-                        fontSize: '14px',
-                        transition: 'color 0.4s, font-size 0.4s',
+
+                        transition: 'color 0.4s, ',
                     },
                 },
                 ' &:not(:hover)': {
                     '& .MuiFormLabel-root': {
                         // Apply MUI error color to title when there is an error
                         color: error['imgSource'] ? theme => theme.palette.error.main : 'initial',
-                        fontSize: 'inital',
-                        transition: 'color 0.4s, font-size 0.4s',
+
+                        transition: 'color 0.4s, ',
                     },
                 },
             }}

@@ -14,27 +14,6 @@ const DropdownMenu = ({ isVisible, onLinkClick }) => {
     const [quickViewOpen, setQuickViewOpen] = useState(false);
     const [quickViewProduct, setQuickViewProduct] = useState(null);
 
-    const throttle = (func, limit) => {
-        let lastFunc;
-        let lastRan;
-        return function () {
-            const context = this;
-            const args = arguments;
-            if (!lastRan) {
-                func.apply(context, args);
-                lastRan = Date.now();
-            } else {
-                clearTimeout(lastFunc);
-                lastFunc = setTimeout(function () {
-                    if ((Date.now() - lastRan) >= limit) {
-                        func.apply(context, args);
-                        lastRan = Date.now();
-                    }
-                }, limit - (Date.now() - lastRan));
-            }
-        }
-    };
-
 
 
     const fetchFeaturedProducts = async () => {
@@ -197,8 +176,8 @@ const DropdownMenu = ({ isVisible, onLinkClick }) => {
                                 <ListItem className="list-item" component={Link} to="/shop?filter=topicals" onClick={onLinkClick}>
                                     <span className="list-content">CBD Topicals</span>
                                 </ListItem>
-                                <ListItem className="list-item" component={Link} to="/shop?filter=smokables" onClick={onLinkClick}>
-                                    <span className="list-content">CBD Smokables</span>
+                                <ListItem className="list-item" component={Link} to="/shop?filter=tinctures" onClick={onLinkClick}>
+                                    <span className="list-content">CBD Tinctures</span>
                                 </ListItem>
                                 <ListItem className="list-item" component={Link} to="/shop?filter=edibles" onClick={onLinkClick}>
                                     <span className="list-content">CBD Edibles</span>

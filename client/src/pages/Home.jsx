@@ -1,6 +1,6 @@
 import React, { Suspense, useEffect } from 'react';
 import '../Styles/Home.css'; // You can create a CSS file for styling
-import cdbImage from '../assets/cbd.webp'
+
 import { Box, Typography, List, ListItem, ListItemText, ListItemIcon, Button, CircularProgress } from '@mui/material';
 
 
@@ -55,7 +55,7 @@ const Home = () => {
                 </div>
                 <div className="right-content animated-left slide-in">
                     <img
-                        src={cdbImage}
+                        src={'/cbd.webp'}
                         alt="cbd"
                         height='400px'
                         width='400px'

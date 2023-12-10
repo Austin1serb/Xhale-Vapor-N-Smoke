@@ -36,16 +36,16 @@ const SeoKeywordsInput = ({ seoKeywords, onAddKeyword, onRemoveKeyword }) => {
                     borderColor: 'black',
                     '& .form-label-sx1': {
                         color: '#1776D1',
-                        fontSize: '14px',
-                        transition: 'color 0.4s, font-size 0.4s',
+
+                        transition: 'color 0.4s, ',
 
                     },
                 },
                 ' &:not(:hover)': {
                     '& .form-label-sx1': {
                         color: 'initial', // Return the text color to its original state
-                        fontSize: 'inital',
-                        transition: 'color 0.4s, font-size 0.4s',
+
+                        transition: 'color 0.4s,',
                     },
                 },
             }}
