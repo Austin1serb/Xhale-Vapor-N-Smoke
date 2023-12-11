@@ -7,12 +7,11 @@ const urlsToCache = [
     '/favicon.ico',
     '/manifest.json',
     '/robots.txt',
-    '/static/js/bundle.js',
     '/icons/icon-64x64.ico',
     '/icons/icon-192x192.png',
     '/icons/icon-512x512.png',
     '/icons/maskable_icon.png',
-    '/static/',
+
 
 
 
