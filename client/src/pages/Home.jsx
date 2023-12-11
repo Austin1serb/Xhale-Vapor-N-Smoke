@@ -14,7 +14,18 @@ const Home = () => {
     useEffect(() => {
         document.title = "Herba Naturals - Premium CBD Products in Kirkland | Home";
         document.querySelector('meta[name="description"]').setAttribute("content", "Discover premium CBD products with Herba Naturals in Kirkland. Explore our range of Koi, Beezbee, and Wyld CBD oils, edibles, and topicals.");
+        const preloadLink = document.createElement("link");
+        preloadLink.href = `https://herbanaturalco.com/cbd.webp`; // Use PUBLIC_URL here
+        preloadLink.rel = "preload";
+        preloadLink.as = "image";
+        document.head.appendChild(preloadLink);
+
+        // Cleanup function to remove the preload link when the component unmounts
+        return () => {
+            document.head.removeChild(preloadLink);
+        };
     }, []);
+
 
 
     const customFont = "freight-display-pro, serif";
@@ -141,12 +152,12 @@ const Home = () => {
                     </List>
                 </Box>
 
-                <Box className="bottom-box" sx={{}}>
-                    <Box className='bottom-box-button1' component={Link} to="/shop?filter=best-sellers">
-                        <Button >SHOP CBD BESTSELLERS</Button>
-                    </Box>
+                <Box className="bottom-box">
+                    <Link className='bottom-box-button1' to="/shop?filter=best-sellers">
+                        <button >SHOP CBD BESTSELLERS</button>
+                    </Link>
                     <Box className='bottom-box-button2'>
-                        <Button onClick={() => window.open('https://projectcbd.org/#CBD-explained')} >LEARN MORE ABOUT CBD</Button>
+                        <button onClick={() => window.open('https://projectcbd.org/#CBD-explained')} >LEARN MORE ABOUT CBD</button>
                     </Box>
                 </Box>
             </Box>

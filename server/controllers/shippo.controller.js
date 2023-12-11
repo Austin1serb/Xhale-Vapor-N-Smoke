@@ -26,7 +26,7 @@ exports.createAddress = (req, res) => {
             "state": "Wa",
             "zip": "98033",
             "country": "US", // iso2 country code
-            "phone": "+1 425 285 9173",
+            "phone": "+1 206 717 4141",
             "email": "genius.baar@gmail.com",
         },
 
@@ -58,7 +58,7 @@ exports.createShippoLabel = async (req, res) => {
         "state": "Wa",
         "zip": "98033",
         "country": "US", // iso2 country code
-        "phone": "+1 425 285 9173",
+        "phone": "+1 206 717 4141",
         "email": "genius.baar@gmail.com",
     }
 

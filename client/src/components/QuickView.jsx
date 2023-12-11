@@ -41,6 +41,7 @@ const QuickView = ({ productId, open, handleClose, products }) => {
             document.title = productDetails.seo.title || productDetails.name; // Use SEO title if available, else product name
         }
     }, [productDetails]);
+
     useEffect(() => {
         if (productDetails) {
             const metaKeywords = document.querySelector('meta[name="keywords"]');
@@ -49,6 +50,7 @@ const QuickView = ({ productId, open, handleClose, products }) => {
             }
         }
     }, [productDetails]);
+
     useEffect(() => {
         if (!open) {
             setProductDetails(null);
@@ -94,6 +96,10 @@ const QuickView = ({ productId, open, handleClose, products }) => {
 
     useEffect(() => {
         if (productDetails) {
+            const firstFlavor = productDetails.flavor.split(',')[0].trim();
+
+            // Set the first flavor as the default selection
+            setFlavor(firstFlavor);
             const related = products.filter(product =>
                 product._id !== productDetails._id && // This ensures the current product is not included
                 product.category.some(category =>
@@ -255,7 +261,7 @@ const QuickView = ({ productId, open, handleClose, products }) => {
                                 <div style={{ marginRight: '-30px' }}>
                                     <Typography sx={{ width: '100%', fontSize: { xs: 18, sm: 22 }, ml: { xs: 5, sm: 3, md: 0 }, fontFamily: customFont, fontWeight: 600 }} variant="h6" className='quickview-title'>{productDetails.name}</Typography>
                                 </div>
-                                <IconButton className='quickview-close-button' onClick={handleClose}>
+                                <IconButton sx={{ p: { sm: 2, md: 2 }, m: 2 }} className='quickview-close-button' onClick={handleClose}>
 
                                     <svg height='45' width='45' fill='#282F48' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
                                         <path fill='#282F48' d="M880 112H144c-17.7 0-32 14.3-32 32v736c0 17.7 14.3 32 32 32h736c17.7 0 32-14.3 32-32V144c0-17.7-14.3-32-32-32zm-40 728H184V184h656v656z" />
@@ -334,7 +340,8 @@ const QuickView = ({ productId, open, handleClose, products }) => {
                                         id="flavor-select"
                                         name='flavor-select'
                                         sx={{ borderRadius: 0 }}
-                                        value={flavor ? productDetails.flavor : flavor}
+                                        value={flavor}
+
                                         onChange={(e) => setFlavor(e.target.value)}
                                         label="Flavor"
 

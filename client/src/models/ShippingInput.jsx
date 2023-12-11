@@ -56,6 +56,7 @@ const ShippingInput = ({ weight, length, width, height, handleChange }) => {
                     fullWidth
                     value={weight}
                     onChange={handleChange}
+                    onWheel={(e) => e.target.blur()}
                 />
                 <TextField
                     sx={{ my: 2 }}
@@ -65,6 +66,7 @@ const ShippingInput = ({ weight, length, width, height, handleChange }) => {
                     fullWidth
                     value={length}
                     onChange={handleChange}
+                    onWheel={(e) => e.target.blur()}
                 />
                 <TextField
                     sx={{ my: 2 }}
@@ -74,6 +76,7 @@ const ShippingInput = ({ weight, length, width, height, handleChange }) => {
                     fullWidth
                     value={width}
                     onChange={handleChange}
+                    onWheel={(e) => e.target.blur()}
                 />
                 <TextField
                     sx={{ my: 2 }}
@@ -83,6 +86,7 @@ const ShippingInput = ({ weight, length, width, height, handleChange }) => {
                     fullWidth
                     value={height}
                     onChange={handleChange}
+                    onWheel={(e) => e.target.blur()}
                 />
             </Box>
         </FormControl>

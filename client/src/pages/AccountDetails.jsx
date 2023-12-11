@@ -15,6 +15,7 @@ import {
     DialogContentText,
     DialogActions,
     Modal,
+    Divider,
 } from '@mui/material';
 import { useAuth } from '../components/Utilities/useAuth';
 import ForgotPassword from '../components/ForgotPassword';
@@ -73,25 +74,39 @@ const AccountDetails = () => {
     }, [navigate]);
 
 
-    const fetchCustomerData = (userId) => {
-        setLoadingPage(true);
-        fetch(`http://localhost:8000/api/customer/${userId}`, {
-            credentials: 'include'
-        })
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then((data) => {
-                setCustomer(data);
-                setLoadingPage(false);
-            })
-            .catch((error) => {
-                console.error('Error fetching customer data:', error);
-            });
+    const fetchOrders = async (orderIds) => {
+        const orders = await Promise.all(orderIds.map(orderId =>
+            fetch(`http://localhost:8000/api/order/${orderId}`, { credentials: 'include' })
+                .then(response => response.json())
+                .catch(error => {
+                    console.error('Error fetching order:', orderId, error)
+
+                })
+        ));
+        return orders.filter(order => order != null); // Filter out any failed requests
     };
+
+    const fetchCustomerData = async (userId) => {
+        setLoadingPage(true);
+        try {
+            const response = await fetch(`http://localhost:8000/api/customer/${userId}`, { credentials: 'include' });
+            if (!response.ok) throw new Error('Network response was not ok');
+
+            const customerData = await response.json();
+            setCustomer(customerData);
+
+            // Fetch orders if they exist
+            if (customerData.orders && customerData.orders.length > 0) {
+                const orders = await fetchOrders(customerData.orders);
+                setCustomer(prev => ({ ...prev, orders })); // Append orders to customer state
+            }
+        } catch (error) {
+            console.error('Error fetching customer data:', error);
+        } finally {
+            setLoadingPage(false);
+        }
+    };
+
 
 
     const handleChange = (e) => {
@@ -183,7 +198,48 @@ const AccountDetails = () => {
         setOpenDialog(false);
     };
 
+    const renderOrderItem = (item) => (
+        <Grid container key={item} spacing={1} sx={{ marginBottom: 1 }}>
+            <Grid item xs={3}>
+                <img src={item.img} alt={item.name} style={{ width: '100%', height: 'auto' }} />
+            </Grid>
+            <Grid item xs={9}>
+                <Typography variant="subtitle2">{item.name}</Typography>
+                <Typography variant="body2">Price: ${item.price ? item.price.toFixed(2) : 'N/A'}</Typography>
+                <Typography variant="body2">Quantity: {item.quantity || 'N/A'}</Typography>
+            </Grid>
+        </Grid>
+    );
 
+    const renderOrders = () => {
+        return customer && customer.orders && customer.orders.length > 0 ? (
+            customer.orders.map((order, index) => (
+                <Paper key={index} sx={{ padding: 2, marginBottom: 3 }}>
+                    <Typography variant="h6">Order #{order.orderNumber}</Typography>
+                    <Typography variant="body2">Order Date: {order.orderDate ? new Date(order.orderDate).toLocaleDateString() : 'N/A'}</Typography>
+                    <Typography variant="body2">Total Amount: ${order.totalAmount ? order.totalAmount.grandTotal.toFixed(2) : 'N/A'}</Typography>
+                    <Typography variant="body2">Order Status: {order.orderStatus || 'Unknown'}</Typography>
+                    <Typography variant="body2">Payment Status: {order.paymentStatus || 'N/A'}</Typography>
+                    <Divider sx={{ my: 2 }} />
+                    {order.products && order.products.length > 0 ? (
+                        order.products.map((item, idx) => renderOrderItem(item))
+                    ) : (
+                        <Typography variant="body2">No products in this order.</Typography>
+                    )}
+                    <Divider sx={{ my: 2 }} />
+                    {order.shippingMethod && (
+                        <Typography variant="body2">Shipping Method: {order.shippingMethod.name}</Typography>
+                    )}
+                    <Typography variant="body2">Address: {order.address || 'N/A'}</Typography>
+                    {order.orderNotes && (
+                        <Typography variant="body2">Notes: {order.orderNotes}</Typography>
+                    )}
+                </Paper>
+            ))
+        ) : (
+            <Typography variant="body2">You have no orders.</Typography>
+        );
+    };
 
 
 
@@ -369,6 +425,7 @@ const AccountDetails = () => {
                             </div>
                         </Modal>
                     </Grid>
+                    {renderOrders()}
                 </Grid>
                 <Box sx={{ marginTop: 2, height: '90px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexDirection: { xs: 'column', sm: 'row' } }}>
                     <Button

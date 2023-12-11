@@ -73,9 +73,17 @@ const OrderDetails = ({ order, open, onClose }) => {
                             </Card>
                         </Grid>
 
-
+                        {/* Shipping Address */}
+                        <Grid item xs={12} md={6} lg={3}>
+                            <Card>
+                                <CardContent>
+                                    <Typography variant="body1" gutterBottom><strong>Ship to:</strong></Typography>
+                                    <Typography variant="body2">{order.address}</Typography>
+                                </CardContent>
+                            </Card>
+                        </Grid>
                         {/* Products in the Order */}
-                        <Grid item xs={12} md={6} lg={6}>
+                        <Grid item xs={12} md={6} lg={4}>
                             <Card>
                                 <CardContent>
                                     <Typography variant="body1" gutterBottom>Products Ordered:</Typography>
@@ -103,15 +111,7 @@ const OrderDetails = ({ order, open, onClose }) => {
                                 </CardContent>
                             </Card>
                         </Grid>
-                        {/* Shipping Address */}
-                        <Grid item xs={12} md={6} lg={3}>
-                            <Card>
-                                <CardContent>
-                                    <Typography variant="body1" gutterBottom><strong>Ship to:</strong></Typography>
-                                    <Typography variant="body2">{order.address}</Typography>
-                                </CardContent>
-                            </Card>
-                        </Grid>
+
 
 
                         <Grid sx={{ display: 'flex', justifyContent: 'end' }} item xs={12} md={12} lg={12}>

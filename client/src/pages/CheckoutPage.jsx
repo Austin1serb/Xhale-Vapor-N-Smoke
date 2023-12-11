@@ -628,6 +628,7 @@ const CheckoutPage = () => {
                             adjustQuantity={adjustQuantity}
                             setFullCost={setFullCost}
                             handleCheckout={handleCheckout}
+                            step={activeStep}
                         />
                     </div>
                     : null}

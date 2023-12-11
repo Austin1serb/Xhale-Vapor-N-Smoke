@@ -147,7 +147,7 @@ const Cart = ({ setDrawerOpen }) => {
                         <Box className="ajax-cart--bottom-wrapper" sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                             <Typography sx={{ fontWeight: 500, letterSpacing: 2 }}>SUBTOTAL </Typography>
                             <Typography sx={{ fontSize: { xs: 22, sm: 32 }, fontWeight: 100, }}>${total.toFixed(2)}</Typography>
-                            <Typography sx={{ fontSize: 14, fontWeight: 100, textAlign: 'center' }} >Taxes and <Link to='/shipping-policy' style={{ color: 'inherit' }}>shipping</Link> calculated at checkout</Typography>
+                            <Typography sx={{ fontSize: 14, fontWeight: 100, textAlign: 'center' }} >Taxes and <Link to='/shipping-policy' onClick={() => setDrawerOpen(false)} style={{ color: 'inherit' }}>shipping</Link> calculated at checkout</Typography>
 
                             {cart.length > 0 && (
                                 <>

@@ -406,7 +406,8 @@ const AddProductModal = ({ open, onClose, onAddProduct, selectedProduct, onUpdat
                         helperText={error.price}
                         value={productData.price}
                         onChange={handleChange}
-                        autoComplete='true'
+                        autoComplete='false'
+                        onWheel={(e) => e.target.blur()}
                     />
                     {/* Specs */}
                     <TextField
