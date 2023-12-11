@@ -104,7 +104,7 @@ const CartSummaryComponent = ({ cartItems, shippingCost, total, removeFromCart, 
                                         <Typography sx={{ fontWeight: 100, color: 'gray', ml: 1, }}>${item.price.toFixed(2) * item.quantity}</Typography>
                                         {/* Quantity Controls */}
                                         <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: "center" }}>
-                                            <Box sx={{ border: 1, width: 100, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                            <Box sx={{ border: 1, width: 100, display: step > 1 ? 'none' : 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                                 <IconButton onClick={() => adjustQuantity(item._id, item.quantity - 1)}>
                                                     <RemoveIcon sx={{ fontSize: 10 }} />
                                                 </IconButton>

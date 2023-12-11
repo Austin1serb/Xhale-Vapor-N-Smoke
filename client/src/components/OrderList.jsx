@@ -308,7 +308,6 @@ const OrderList = () => {
                                 defaultValue='All Orders'>
                                 <MenuItem value="">All Orders</MenuItem>
                                 <MenuItem value="Pending">Pending</MenuItem>
-                                <MenuItem value="Processing">Processing</MenuItem>
                                 <MenuItem value="Shipped">Shipped</MenuItem>
                                 <MenuItem value="Delivered">Delivered</MenuItem>
                                 <MenuItem value="Cancelled">Cancelled</MenuItem>

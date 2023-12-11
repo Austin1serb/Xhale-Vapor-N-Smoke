@@ -113,7 +113,7 @@ const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, b
                 const result = await response.json();
 
                 let sortedRates = result.rates.sort((a, b) => parseFloat(a.amount) - parseFloat(b.amount));
-                if (fullCost.subTotal > 50) {
+                if (fullCost.subTotal > 50 || fullCost.subTotal <= 0.03) {
                     sortedRates = sortedRates.map(rate => ({
                         ...rate,
                         amount_local: parseFloat(rate.amount_local) < 10 ? 0.00 : rate.amount_local,
