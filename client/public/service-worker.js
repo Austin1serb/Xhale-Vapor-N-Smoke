@@ -1,5 +1,5 @@
 /* eslint-disable no-restricted-globals */
-const CACHE_NAME = 'my-app-v11'; // Change version to 'my-app-v2', 'my-app-v3', etc. when updating the app
+const CACHE_NAME = 'my-app-v13'; // Change version to 'my-app-v2', 'my-app-v3', etc. when updating the app
 const urlsToCache = [
     '/',
     '/cbd.webp',
