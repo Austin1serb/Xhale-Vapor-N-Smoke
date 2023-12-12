@@ -1,10 +1,13 @@
-# https://HerbaNaturalCo.com
+# [HerbaNaturalCo.com](https://HerbaNaturalCo.com)
 
-Welcome to the official repository of HerbaNaturalco, an innovative e-commerce platform offering a curated selection of CBD products for a local small business.
-## Project Preview
+Welcome to the official repository of HerbaNaturalCo, an innovative e-commerce platform offering a curated selection of CBD products for a local small business.
+
+
+Project Preview
+
 
 ### Light House Score - Desktop
-<img src="https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/65c3c186-74b7-4258-bda8-8f99ee9f0632" width="400px" alt="Light House Score - Desktop">
+![Light House Score - Desktop](https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/65c3c186-74b7-4258-bda8-8f99ee9f0632.jpeg) _Desktop performance metrics showcasing optimization and user experience._
 
 ### Light House Score - Mobile
 <img src="https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/043971fe-afd2-4e44-b47a-0d9a1d1528f5" width="400px" alt="Light House Score - Mobile">
@@ -31,69 +34,10 @@ Welcome to the official repository of HerbaNaturalco, an innovative e-commerce p
 <img src="https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/952a4080-c0c9-40c7-92e5-cd4f61d8f56c" width="800" alt="Admin Dashboard Product List">
 
 ### Google Places API Address AutoCorrect & Checkout Page
-<img width="800" alt="Screenshot 2023-12-11 at 4 30 42 PM" src="https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/15918a5b-6ee3-4b19-a27f-922e57433876">
-
-### Shippo API Calculate Shipping Costs - Also Creates and emails shipping label to Owner upon order completion
-<img width="580" alt="Screenshot 2023-12-11 at 4 32 27 PM" src="https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/f3945e49-6af5-4b47-994f-1baf0d407add">
+![Google Places API Address AutoCorrect & Checkout Page](https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/15918a5b-6ee3-4b19-a27f-922e57433876.jpeg) _Integration of Google Places API for seamless address input._
 
 
-## Prerequisites
+### Shippo API Calculate Shipping Costs & Label Creation
+![Shippo API Calculate Shipping Costs](https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/f3945e49-6af5-4b47-994f-1baf0d407add.jpeg) _Automated shipping cost calculation and label creation using Shippo API._
 
-Before you begin, ensure you have the following installed:
-- Node.js
-- npm (Node Package Manager)
-- MongoDB
-
-## Installation and Usage
-
-To set up your development environment, follow these steps:
-
-1. **Clone the Repository:**
-   ```
-   git clone https://github.com/Austin1serb/Xhale-Vapor-N-Smoke.git
-   ```
-2. Navigate to the Project Directory:
-```
-cd Xhale-Vapor-N-Smoke
-```
-4. Navigate to the server:
-```
-cd server
-```
-5. Install server-side Dependencies:
-```
-npm install
-```
-6. Start the back-end server:
-```
-nodemon server.js
-```
-7. Navigate to the client:
-```
-cd ..
-cd client
-```
-8. install client-Side Dependencies:
-```
-npm install
-```
-
-9. Navigate to the Client Directory:
-```
-cd client
-```
-
-10. Install Client-Side Dependencies:
-```
-npm install
-```
-
-11. Start the Development Server:
-```
-npm start
-```
-Access the Application:
-Open http://localhost:3000 in your browser.
-
-
-
+Visit the website now and place an order at [HerbaNaturalCo](https://herbanaturalco.com)!
