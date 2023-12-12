@@ -1,9 +1,13 @@
 # Xhale Vapor N Smoke
 
 Welcome to the official repository of Xhale Vapor N Smoke, an innovative e-commerce platform offering a curated selection of CBD products for a local small business.
-scheduled to be completed Nov 18th
 ## Project Preview
-### Home Page
+### Light House Score - Desktop
+<img src="https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/65c3c186-74b7-4258-bda8-8f99ee9f0632" width="400px" alt="Light House Score - Desktop">
+
+### Light House Score - Mobile
+<img src="https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/043971fe-afd2-4e44-b47a-0d9a1d1528f5" width="400px" alt="Light House Score - Mobile">
+
 <img src="https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/136e07e2-fcd4-4abf-95b2-b8ae827b46f9" width="800" alt="Home Page">
 
 ### Shop Button Dropdown (on hover)
