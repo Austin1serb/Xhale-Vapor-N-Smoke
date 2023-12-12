@@ -2,12 +2,14 @@
 
 Welcome to the official repository of Xhale Vapor N Smoke, an innovative e-commerce platform offering a curated selection of CBD products for a local small business.
 ## Project Preview
+
 ### Light House Score - Desktop
 <img src="https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/65c3c186-74b7-4258-bda8-8f99ee9f0632" width="400px" alt="Light House Score - Desktop">
 
 ### Light House Score - Mobile
 <img src="https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/043971fe-afd2-4e44-b47a-0d9a1d1528f5" width="400px" alt="Light House Score - Mobile">
 
+### Home Page
 <img src="https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/136e07e2-fcd4-4abf-95b2-b8ae827b46f9" width="800" alt="Home Page">
 
 ### Shop Button Dropdown (on hover)
@@ -28,11 +30,11 @@ Welcome to the official repository of Xhale Vapor N Smoke, an innovative e-comme
 ### Admin Dashboard Product List (with full CRUD)
 <img src="https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/952a4080-c0c9-40c7-92e5-cd4f61d8f56c" width="800" alt="Admin Dashboard Product List">
 
-### Google Places API Address AutoCorrect (Styling In Progress)
-<img src="https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/f6a39eee-22db-4ad6-810f-0129f3314bd8" width="800" alt="Google Places API Address AutoCorrect">
+### Google Places API Address AutoCorrect & Checkout Page
+<img width="800" alt="Screenshot 2023-12-11 at 4 30 42 PM" src="https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/15918a5b-6ee3-4b19-a27f-922e57433876">
 
-### Shippo API Calculate Shipping Costs (Styling In Progress)
-<img src="https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/672ba6b6-9410-42c5-9dbe-1741a22183ef" width="800" alt="Shippo API Calculate Shipping Costs">
+### Shippo API Calculate Shipping Costs - Also Creates and emails shipping label to Owner upon order completion
+<img width="580" alt="Screenshot 2023-12-11 at 4 32 27 PM" src="https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/f3945e49-6af5-4b47-994f-1baf0d407add">
 
 
 ## Prerequisites
