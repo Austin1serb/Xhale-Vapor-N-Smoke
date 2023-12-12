@@ -1,6 +1,6 @@
-# Xhale Vapor N Smoke
+# https://HerbaNaturalCo.com
 
-Welcome to the official repository of Xhale Vapor N Smoke, an innovative e-commerce platform offering a curated selection of CBD products for a local small business.
+Welcome to the official repository of HerbaNaturalco, an innovative e-commerce platform offering a curated selection of CBD products for a local small business.
 ## Project Preview
 
 ### Light House Score - Desktop
