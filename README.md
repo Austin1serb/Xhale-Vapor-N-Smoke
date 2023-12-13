@@ -7,7 +7,8 @@ Project Preview
 
 
 ### Light House Score - Desktop
-![Light House Score - Desktop](https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/65c3c186-74b7-4258-bda8-8f99ee9f0632.jpeg) _Desktop performance metrics showcasing optimization and user experience._
+<!-- Light House Score - Desktop -->
+<img src="https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/65c3c186-74b7-4258-bda8-8f99ee9f0632.jpeg"  width="400px" alt="Light House Score - Desktop"> _Desktop performance metrics showcasing optimization and user experience._
 
 ### Light House Score - Mobile
 <img src="https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/043971fe-afd2-4e44-b47a-0d9a1d1528f5" width="400px" alt="Light House Score - Mobile">
@@ -34,10 +35,11 @@ Project Preview
 <img src="https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/952a4080-c0c9-40c7-92e5-cd4f61d8f56c" width="800" alt="Admin Dashboard Product List">
 
 ### Google Places API Address AutoCorrect & Checkout Page
-![Google Places API Address AutoCorrect & Checkout Page](https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/15918a5b-6ee3-4b19-a27f-922e57433876.jpeg) _Integration of Google Places API for seamless address input._
+<img src="https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/15918a5b-6ee3-4b19-a27f-922e57433876.jpeg"  alt="Google Places API Address AutoCorrect & Checkout Page"> _Integration of Google Places API for seamless address input._
 
 
 ### Shippo API Calculate Shipping Costs & Label Creation
-![Shippo API Calculate Shipping Costs](https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/f3945e49-6af5-4b47-994f-1baf0d407add.jpeg) _Automated shipping cost calculation and label creation using Shippo API._
+<img src="https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/f3945e49-6af5-4b47-994f-1baf0d407add.jpeg" width="800" alt="Shippo API Calculate Shipping Costs">
+ _Automated shipping cost calculation and label creation using Shippo API._
 
 Visit the website now and place an order at [HerbaNaturalCo](https://herbanaturalco.com)!
