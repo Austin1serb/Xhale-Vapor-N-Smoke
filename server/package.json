@@ -1,9 +1,9 @@
 {
   "dependencies": {
-    "axios": "^1.6.1",
+    "axios": "^1.6.3",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
-    "cloudinary": "^1.41.0",
+    "cloudinary": "^1.41.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
@@ -11,13 +11,13 @@
     "express-rate-limit": "^7.1.4",
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
-    "moment": "^2.29.4",
+    "moment": "^2.30.0",
     "mongoose": "^8.0.3",
     "multer": "^2.0.0-rc.4",
     "node-fetch": "^3.3.2",
     "nodemailer": "^6.9.7",
     "shippo": "^1.7.1",
-    "square": "^33.0.0",
+    "square": "^33.1.0",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
