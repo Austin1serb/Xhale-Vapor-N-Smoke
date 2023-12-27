@@ -66,6 +66,8 @@ const CheckoutPage = () => {
 
 
 
+
+
     const [formData, setFormData] = useState({
         email: '',
         firstName: '',
@@ -523,7 +525,7 @@ const CheckoutPage = () => {
                             </Stepper>
                             <Box sx={{ mt: { xs: 5, sm: 0 } }}>
                                 {activeStep === 0 &&
-                                    <Box sx={{ pt: { xs: 0, sm: 2.5 }, borderTop: '0.1px solid black', mt: { xs: 0, sm: 1 } }}>
+                                    <Box sx={{ pt: { xs: 0, sm: 2.5 }, borderTop: {xs:'none' ,sm:'0.1px solid black}', },  }} className='cartSummary-component-box'>
                                         <CartSummaryComponent
                                             cartItems={cart.map(item => ({
                                                 _id: item.product._id,
@@ -633,7 +635,7 @@ const CheckoutPage = () => {
                     </div>
                     : null}
             </Box>
-            ;
+            
             <Snackbar
                 open={snackbarOpen}
                 autoHideDuration={null}

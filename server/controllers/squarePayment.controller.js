@@ -170,7 +170,7 @@ async function sendReceiptEmail(cost, notes, estimatedShipping, orderDetails, la
             <div style="max-width: 600px; margin: 0 auto; background-color: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 5px; box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);">
                 <h2 style="color: #0F75E0; text-align: center;">Thank You from Herba Naturals!</h2>
                 <div style="text-align: center;">
-                    <img src="https://i.imgur.com/3i30ftP.jpg" style="width: 300px;" alt="Herba Naturals Logo" onerror="this.style.display='none'"/>
+                    <img src="https://i.imgur.com/4cTMTOA.png" style="width: 300px;" alt="Herba Naturals Logo" onerror="this.style.display='none'"/>
                 </div>
                 <p style="text-align: center;">We appreciate your order and are excited to share our products with you. Here are the details of your purchase:</p>
                 <ul>

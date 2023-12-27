@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { PaymentForm, CreditCard, } from 'react-square-web-payments-sdk';
 import ShippingDetailsComponent from './ShippingDetailsComponent';
 import { Button, Typography } from '@mui/material';
@@ -15,7 +15,13 @@ const SquarePaymentForm = ({ onPaymentProcess, shippingDetails, back, errors, to
         // Call your onPaymentProcess function with the paymentToken
         onPaymentProcess(paymentToken);
     };
-
+    const scrollToTop = () => {
+        window.scrollTo(0, 0);
+      };
+      // Scroll to the top when the component mounts
+      useEffect(() => {
+        scrollToTop();
+      }, []);
 
     return (
         <div className='checkout-paymentForm-container'>
@@ -24,7 +30,7 @@ const SquarePaymentForm = ({ onPaymentProcess, shippingDetails, back, errors, to
                 back={back}
 
             />
-            <Typography mt={8} variant='h6' >
+            <Typography mt={8} sx={{mb:{xs:2, sm:0}}} variant='h6'  >
                 Payment:  </Typography>
             <Typography variant="body2" fontWeight={100} className='checkout-paymentForm-SQUARE'>
                 <span className='square-text'> All transactions are processed secured and encrypted by</span>    <img src="https://images.ctfassets.net/2d5q1td6cyxq/58rgox9CjnDZYQSxSwikxb/d9cae0bf4d3f53900820eac00b049528/PD04488_-_black_logo_on_white.png?w=1502&h=768&fm=avif&q=85&fit=scale" alt="square-logo" className='checkout-paymentForm-logo' />

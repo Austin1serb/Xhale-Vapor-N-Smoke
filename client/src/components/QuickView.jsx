@@ -32,7 +32,7 @@ const QuickView = ({ productId, open, handleClose, products }) => {
     const [quantity, setQuantity] = useState(1); // State for the selected quantity
     const [flavor, setFlavor] = useState(''); // State for the selected flavor
     const [loading, setLoading] = useState(false);
-    const { addToCart } = useCart();
+    const { addToCart, cart } = useCart();
     const [relatedProducts, setRelatedProducts] = useState([]);
 
 
@@ -310,6 +310,7 @@ const QuickView = ({ productId, open, handleClose, products }) => {
                             </Box>
                             <Box className='quickview-price'>
                                 Price: ${productDetails.price}
+
                             </Box>
                             {/* Quantity Selector */}
                             <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'start', flexDirection: { xs: 'column', sm: 'row' } }}>

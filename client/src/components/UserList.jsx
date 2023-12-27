@@ -3,14 +3,17 @@ import { Button, Dialog, DialogActions, DialogContent, DialogContentText, Dialog
 import { DataGrid } from '@mui/x-data-grid';
 import EditCustomerModal from '../models/EditCustomerModal';
 
+
 const UserList = () => {
     const [editCustomerModalOpen, setEditCustomerModalOpen] = useState(false);
     const [selectedCustomer, setSelectedCustomer] = useState(null);
-    const [customers, setCustomers] = useState([]);
-    const [guests, setGuests] = useState([]);
+    const [users, setUsers] = useState({ customers: [], guests: [] });
+    const [error, setError] = useState(null);
     const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
     const [userToDelete, setUserToDelete] = useState(null);
     const [userTypeToDelete, setUserTypeToDelete] = useState(null); // 'customer' or 'guest'
+    const [viewMode, setViewMode] = useState(false)
+
 
 
     const handleDeleteUser = (userId, userType) => {
@@ -21,32 +24,25 @@ const UserList = () => {
 
 
     const confirmDeleteUser = () => {
+
         const url = userTypeToDelete === 'customer'
             ? `http://localhost:8000/api/customer/${userToDelete}`
             : `http://localhost:8000/api/guest/${userToDelete}`;
 
-        fetch(url, {
-            method: 'DELETE',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
-            .then(response => {
-                if (response.ok) {
-                    // Update the state to remove the user from the list
-                    if (userTypeToDelete === 'customer') {
-                        setCustomers(prevCustomers => prevCustomers.filter(customer => customer._id !== userToDelete));
-                    } else {
-                        setGuests(prevGuests => prevGuests.filter(guest => guest._id !== userToDelete));
-                    }
-                    alert('User successfully deleted');
-                } else {
-                    console.error('Deletion failed:', response.status);
-                }
+        fetchData(url, { method: 'DELETE' })
+            .then(() => {
+                setUsers(prevUsers => {
+                    const updatedType = userTypeToDelete === 'customer' ? 'customers' : 'guests';
+                    return {
+                        ...prevUsers,
+                        [updatedType]: prevUsers[updatedType].filter(user => user._id !== userToDelete)
+                    };
+                });
+                alert('User successfully deleted');
             })
             .catch(error => {
                 console.error('Error:', error);
+                setError('An Error occured while deleting the user');
             })
             .finally(() => {
                 setDeleteConfirmationOpen(false);
@@ -55,127 +51,134 @@ const UserList = () => {
 
 
 
-    const fetchGuests = () => {
-        fetch('http://localhost:8000/api/guest/', {
-            method: 'GET',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        })
-            .then(response => response.json())
-            .then(data => {
-                setGuests(data); // Set the fetched data
-            })
-            .catch(error => {
-                console.error('Error fetching guest data:', error);
+    // Reusable fetch function
+    const fetchData = async (url, options = {}) => {
+        setError(null);
+        try {
+            const response = await fetch(url, {
+                ...options,
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json', ...options.headers }
             });
-    };
-    const fetchCustomers = () => {
-        fetch('http://localhost:8000/api/customer', {
-            method: 'GET',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json',
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
             }
-        })
-            .then(response => response.json())
-            .then(data => {
-                setCustomers(data); // Set the fetched data
-            })
-            .catch(error => {
-                console.error('Error fetching customer data:', error);
-            });
+
+            return await response.json();
+        } catch (error) {
+            console.error('Fetch Error:', error);
+            setError('An error occurred while fetching data');
+        }
     };
 
+    // Combined fetch function for customers and guests
+    const fetchUsers = async () => {
+
+        try {
+            const [customers, guests] = await Promise.all([
+                fetchData('http://localhost:8000/api/customer'),
+                fetchData('http://localhost:8000/api/guest')
+            ]);
+
+            setUsers({ customers, guests });
+        } catch (error) {
+            console.error('Error fetching users:', error);
+
+        }
+    };
 
     useEffect(() => {
-        fetchCustomers();
-        fetchGuests()
+        fetchUsers();
     }, []);
 
 
 
-    // Filter customers to separate admins and non-admins
-    const admins = customers.filter(customer => customer.isAdmin);
-    const nonAdmins = customers.filter(customer => !customer.isAdmin);
-
     const handleMakeAdmin = (customerId) => {
-
-        // Send request to backend to update the isAdmin flag
-        fetch(`http://localhost:8000/api/customer/${customerId}`, {
-            method: 'PUT', // or the appropriate method used in your backend
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+        fetchData(`http://localhost:8000/api/customer/${customerId}`, {
+            method: 'PUT',
             body: JSON.stringify({ isAdmin: true })
         })
-            .then((response) => {
-                if (response.status === 200) {
-                    // Update the customers list in state
-                    setCustomers((customers) =>
-                        customers.map((customer) =>
-                            customer._id === customerId ? { ...customer, isAdmin: true } : customer
-                        )
-                    );
-                    return response.json();
-                } else {
-                    throw new Error('Failed to make the user admin');
-                }
-            })
             .then((updatedCustomer) => {
-
+                setUsers(prevUsers => ({
+                    ...prevUsers,
+                    customers: prevUsers.customers.map(customer =>
+                        customer._id === customerId ? { ...customer, isAdmin: true } : customer
+                    )
+                }));
             })
-            .catch((error) => {
+            .catch(error => {
                 console.error('Error:', error);
+                setError('An Error occured while making admin');
             });
     };
-
-
 
     const handleRemoveFromAdmin = (adminId) => {
         if (admins.length <= 1) {
-            // Do not allow removing the last admin
             alert("You cannot remove the last admin.");
             return;
         }
+        if (adminId === localStorage.getItem('customerId')) {
+            alert("You cannot remove yourself as an admin.");
+            return;
+        }
 
-        // Send request to backend to update the isAdmin flag
-        fetch(`http://localhost:8000/api/customer/${adminId}`, {
-            method: 'PUT', // or the appropriate method used in your backend
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+        fetchData(`http://localhost:8000/api/customer/${adminId}`, {
+            method: 'PUT',
             body: JSON.stringify({ isAdmin: false })
-        })
-            .then((response) => response.json())
+        }
+        )
             .then(() => {
-                // Update the customers list in state
-                setCustomers(customers.map(customer =>
-                    customer._id === adminId ? { ...customer, isAdmin: false } : customer
-                ));
+                setUsers(prevUsers => {
+                    if (!prevUsers || !prevUsers.customers) {
+                        console.error("Customers data is undefined");
+                        return prevUsers; // Early return if customers data is undefined
+                    }
+
+                    return {
+                        ...prevUsers,
+                        customers: prevUsers.customers.map(customer =>
+                            customer._id === adminId ? { ...customer, isAdmin: false } : customer
+                        )
+                    };
+                });
             })
-            .catch((error) => {
+            .catch(error => {
                 console.error('Error:', error);
+                setError('An Error occured while removing admin');
             });
     };
 
+
+
     const updateCustomerInList = (updatedCustomer) => {
-        setCustomers(customers.map(customer =>
-            customer._id === updatedCustomer._id ? updatedCustomer : customer
-        ));
+        setUsers(prevUsers => ({
+            ...prevUsers,
+            customers: prevUsers.customers.map(customer =>
+                customer._id === updatedCustomer._id ? updatedCustomer : customer
+            )
+        }));
     };
+
 
     const handleEditCustomer = (customer) => {
         setSelectedCustomer(customer);
         setEditCustomerModalOpen(true);
+        setViewMode(false)
     };
     const handleViewGuestDetails = (guest) => {
         setSelectedCustomer(guest);
         setEditCustomerModalOpen(true);
+        setViewMode(true)
     };
+
+
+    // Filter customers to separate admins and non-admins
+    const admins = users.customers.filter(customer => customer.isAdmin);
+    const nonAdmins = users.customers.filter(customer => !customer.isAdmin);
+
+
+
 
     const buttonStyles = {
         fontSize: '10px',
@@ -184,6 +187,25 @@ const UserList = () => {
 
     return (
         <div style={{ padding: 20, margin: 20 }}>
+            <Dialog
+                open={deleteConfirmationOpen}
+                onClose={() => setDeleteConfirmationOpen(false)}
+            >
+                <DialogTitle>Confirm Deletion</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Are you sure you want to delete this user?
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setDeleteConfirmationOpen(false)} color="primary">
+                        Cancel
+                    </Button>
+                    <Button onClick={confirmDeleteUser} color="error">
+                        Delete
+                    </Button>
+                </DialogActions>
+            </Dialog>
             <h2 style={{ margin: 10 }}>Admin List</h2>
             <DataGrid
 
@@ -226,25 +248,7 @@ const UserList = () => {
                                     Remove Admin
                                 </Button>
 
-                                <Dialog
-                                    open={deleteConfirmationOpen}
-                                    onClose={() => setDeleteConfirmationOpen(false)}
-                                >
-                                    <DialogTitle>Confirm Deletion</DialogTitle>
-                                    <DialogContent>
-                                        <DialogContentText>
-                                            Are you sure you want to delete this user?
-                                        </DialogContentText>
-                                    </DialogContent>
-                                    <DialogActions>
-                                        <Button onClick={() => setDeleteConfirmationOpen(false)} color="primary">
-                                            Cancel
-                                        </Button>
-                                        <Button onClick={confirmDeleteUser} color="error">
-                                            Delete
-                                        </Button>
-                                    </DialogActions>
-                                </Dialog>
+
                             </div>
                         ),
                     },
@@ -253,6 +257,12 @@ const UserList = () => {
                 disableSelectionOnClick
                 getRowId={(row) => row._id}
             />
+            {/* error ui */}
+            {!error && (
+                <div style={{ color: 'red', margin: 10 }}>
+                    {error}
+                </div>
+            )}
             <h2 style={{ margin: 10 }}>Customer List</h2>
             <DataGrid
                 rows={nonAdmins}
@@ -313,7 +323,7 @@ const UserList = () => {
             <div>
                 <h2 style={{ margin: 10 }}>Guest User List</h2>
                 <DataGrid
-                    rows={guests}
+                    rows={users.guests}
                     columns={[
                         {
                             field: 'fullName',
@@ -366,7 +376,7 @@ const UserList = () => {
                     onClose={() => setEditCustomerModalOpen(false)}
                     customer={selectedCustomer}
                     updateCustomerList={updateCustomerInList}
-                    isViewOnly={true} // Add this line
+                    isViewOnly={viewMode} // Add this line
                 />
             )}
 

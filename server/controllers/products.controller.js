@@ -162,6 +162,66 @@ module.exports = {
             }).catch(err => res.json(err))
     },
 
+
+    // Search products based on the search term and filter
+    searchProducts: async (req, res) => {
+
+        try {
+            console.log(req.query)
+
+            const searchTerm = req.query.term;
+            const pageSize = parseInt(req.query.pageSize) || 10; // Default page size
+            const filter = req.query.filter || '';
+            const page = parseInt(req.query.page) || 1;
+            const skip = (page - 1) * pageSize;
+
+            // Create a regex for case-insensitive partial matching
+            const searchRegex = new RegExp(searchTerm, 'i');
+
+            let query = {
+                $and: [
+                    {
+                        $or: [
+                            { name: { $regex: searchRegex } },
+                            { brand: { $regex: searchRegex } },
+                            { specs: { $regex: searchRegex } },
+                            { flavor: { $regex: searchRegex } },
+                            { strength: { $regex: searchRegex } },
+                            { category: { $elemMatch: { $regex: searchRegex } } }
+                        ]
+                    }
+                ]
+            };
+
+            // Add filter logic
+            if (filter === 'best-sellers') {
+                query.$and.push({ totalSold: { $exists: true } }); // Modify this condition based on your schema
+            } else if (filter === 'new-products') {
+                query.$and.push({ createdAt: { $exists: true } }); // Modify this condition based on your schema
+            } else if (filter === 'featured') {
+                query.$and.push({ isFeatured: true });
+            } else if (filter.includes('brand-')) {
+                const brand = filter.split('brand-')[1];
+                query.$and.push({ brand: new RegExp(`^${brand}$`, 'i') });
+            } else if (filter === 'high-potency') {
+                query.$and.push({ strength: 'high' });
+            } else if (filter) {
+                query.$and.push({ category: new RegExp(filter, 'i') });
+            }
+
+
+            const totalProducts = await Products.countDocuments(query);
+            const products = await Products.find(query).limit(pageSize).skip(skip);
+            console.log(products)
+            res.json({ products, totalProducts, currentPage: page, totalPages: Math.ceil(totalProducts / pageSize) });
+        } catch (error) {
+            res.status(500).send("Error occurred while fetching products.");
+        }
+    },
+
+
+
+
     getBestSellers: async (req, res) => {
 
         const limit = parseInt(req.query.limit) || 3; // Default to 3 if limit is not provided or invalid
