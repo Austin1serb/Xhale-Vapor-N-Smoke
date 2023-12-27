@@ -2,9 +2,20 @@
 
 .checkoutPage-container {
     padding-top: 20px;
+
 }
 
 /* CART SUMMARY COMPONENT */
+
+.cartSummary-component-box{
+    margin-top: 10px;
+    
+        }
+
+
+
+
+
 .cartSummary-container {
 
     background-color: rgba(15, 117, 224, 0.1);
@@ -116,6 +127,10 @@
 
     }
 
+    .cartSummary-component-box{
+margin-top: -30px;
+
+    }
     .cartSummary-checkout-text {
         display: none;
         margin-right: 0.5em;
@@ -329,10 +344,11 @@
 
     .square-text {
         transform: translate(0, 20px);
+        z-index: 1;
     }
 
     .checkout-paymentForm-logo {
-
+margin-top: 20px;
         width: 200px;
         margin-left: 0px;
 

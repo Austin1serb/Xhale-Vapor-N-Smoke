@@ -1,5 +1,5 @@
 /* eslint-disable no-restricted-globals */
-const CACHE_NAME = 'my-app-v13'; // Change version to 'my-app-v2', 'my-app-v3', etc. when updating the app
+const CACHE_NAME = 'my-app-v14'; // Change version to 'my-app-v2', 'my-app-v3', etc. when updating the app
 const urlsToCache = [
     '/',
     '/cbd.webp',
@@ -7,10 +7,15 @@ const urlsToCache = [
     '/favicon.ico',
     '/manifest.json',
     '/robots.txt',
+    '/icons/icon-16x16.ico',
+    '/icons/icon-32x32.ico',
+    '/icons/icon-48x48.ico',
     '/icons/icon-64x64.ico',
     '/icons/icon-192x192.png',
     '/icons/icon-512x512.png',
     '/icons/maskable_icon.png',
+    '/icons/facebook-logo-1200x630.png',
+    '/icons/apple-touch-icon.png'
 
 
 

@@ -199,7 +199,7 @@ const DropdownMenu = ({ isVisible, onLinkClick }) => {
                                 <svg height='40' className={`arrow-icon ${openedSection === 'MORE_CANNABINOIDS' && 'rotate'}`} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 15.0006L7.75732 10.758L9.17154 9.34375L12 12.1722L14.8284 9.34375L16.2426 10.758L12 15.0006Z" /></svg>
                             </IconButton>
                         </div>
-                        {(openedSection === 'MORE_CANNABINOIDS' || window.innerWidth > 900) && (
+                        <Collapse in={openedSection === 'MORE_CANNABINOIDS' || window.innerWidth > 900}>
                             <List sx={paddingSmScreen} className='list-container'>
                                 <ListItem className="list-item" component={Link} to="/shop?filter=cbn" onClick={onLinkClick}>
                                     <span className="list-content">CBN</span>
@@ -214,11 +214,12 @@ const DropdownMenu = ({ isVisible, onLinkClick }) => {
                                     <span className="list-content">Delta 9</span>
                                 </ListItem>
                             </List>
-                        )}
+                        </Collapse>
                     </div>
 
                     {/* OTHER PRODUCTS Section */}
-                    <div className="dropdown-section" style={{ display: `${window.innerWidth < 1050 ? 'none' : 'block'}` }}>
+                    <div className="dropdown-section" style={{ display: `${window.innerWidth >= 900 && window.innerWidth <= 1050 ? 'none' : 'block'}` }}>
+
                         <div className='list-header' onClick={() => handleToggleSection('OTHER_PRODUCTS')}>
                             <span className="list-content">OTHER PRODUCTS</span>
                             <IconButton className='icon-button-dropdown' sx={{ display: { md: 'none' } }}>
@@ -335,7 +336,7 @@ const DropdownMenu = ({ isVisible, onLinkClick }) => {
 
             </Box>
             <Box sx={{ textAlign: 'center', mt: 5, borderBottom: .5 }}>
-                Exhale Vapor & Smoke
+                Herba Natural Co
             </Box>
             <Suspense fallback={<CircularProgress />}>
 

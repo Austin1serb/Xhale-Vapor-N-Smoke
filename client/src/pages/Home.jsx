@@ -1,7 +1,7 @@
 import React, { Suspense, useEffect } from 'react';
 import '../Styles/Home.css'; // You can create a CSS file for styling
 
-import { Box, Typography, List, ListItem, ListItemText, ListItemIcon, Button, CircularProgress } from '@mui/material';
+import { Box, Typography, List, ListItem, ListItemText, ListItemIcon, CircularProgress } from '@mui/material';
 
 
 import { Link } from 'react-router-dom';
@@ -10,7 +10,6 @@ const BestSellersSection = React.lazy(() => import('../components/BestSellersSec
 const ShopByBrand = React.lazy(() => import('../components/ShopByBrand.jsx'));
 
 const Home = () => {
-
     useEffect(() => {
         document.title = "Herba Naturals - Premium CBD Products in Kirkland | Home";
         document.querySelector('meta[name="description"]').setAttribute("content", "Discover premium CBD products with Herba Naturals in Kirkland. Explore our range of Koi, Beezbee, and Wyld CBD oils, edibles, and topicals.");
@@ -56,9 +55,9 @@ const Home = () => {
                 <div className="left-content">
                     <div className='colored-square-content'>
                         <div className="colored-square">
-                            <h1>Clean & Premium CBD</h1>
+                            <h1> Premium Herbal Products</h1>
                             <Link to='/shop' >
-                                <button className='colored-square-button'>SHOP CBD</button>
+                                <button className='colored-square-button'>SHOP All</button>
                             </Link>
 
                         </div>
@@ -77,8 +76,7 @@ const Home = () => {
             <Box component='div' py={{ xs: 5, sm: 16 }} sx={{ width: { xs: '320px', sm: '70%' }, height: 'auto', alignItems: 'center', justifyContent: 'center', margin: '0 auto', textAlign: 'center', mt: { xs: -30, sm: -40, md: 0 } }}>
                 <div >
                     <Typography style={{ fontFamily: customFont, fontSize: '30px' }}>
-
-                        Our Carriers CBD is award-winning and tested for quality. We proudly offer products from the best CBD producers.
+                        Our Carriers' Products are award-winning and tested for quality. We proudly offer products from the best herbal producers.
                     </Typography>
                 </div>
                 <Box className="home-list-container" >
@@ -123,7 +121,7 @@ const Home = () => {
                                 {/* Sheild Icon */}
                                 <svg className='li-icon3' fill="currentColor" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 1 3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z" /></svg>
                             </ListItemIcon>
-                            <ListItemText primary="30-day risk-free trial" />
+                            <ListItemText primary="Curated Selection" />
                         </ListItem>
                         <ListItem sx={listItemSx} className="ListItem1">
                             <ListItemIcon>
@@ -154,10 +152,10 @@ const Home = () => {
 
                 <Box className="bottom-box">
                     <Link className='bottom-box-button1' to="/shop?filter=best-sellers">
-                        <button >SHOP CBD BESTSELLERS</button>
+                        <button >SHOP BESTSELLERS</button>
                     </Link>
                     <Box className='bottom-box-button2'>
-                        <button onClick={() => window.open('https://projectcbd.org/#CBD-explained')} >LEARN MORE ABOUT CBD</button>
+                        <button onClick={() => window.open('https://projectcbd.org/#CBD-explained')} >LEARN ABOUT CBD</button>
                     </Box>
                 </Box>
             </Box>

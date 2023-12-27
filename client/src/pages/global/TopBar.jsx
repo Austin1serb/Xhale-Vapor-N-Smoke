@@ -247,12 +247,12 @@ const TopBar = () => {
                     </Box>
                     <Typography variant="h6" sx={{ flexGrow: 1, display: "flex", alignItems: 'center' }}>
                         <Box component={Link} to="/" className="nav-link">
-                            <Box sx={{ display: { sm: 'none' } }}>
+                            <Box sx={{ display: { sm: 'none' }, ml: '31%', mt: 1 }}>
                                 <img
                                     src={BrandIcon} alt="Brand Icon" className='brand-icon' />
                             </Box>
 
-                            <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+                            <Box sx={{ display: { xs: 'none', sm: 'block' }, ml: 3, mr: 1 }}>
                                 <img src={BrandText} height='80px' width='320px' alt="brand-text" className='brand-icon' />
                             </Box>
                             <Box >

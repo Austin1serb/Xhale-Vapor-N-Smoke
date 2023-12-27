@@ -1,7 +1,7 @@
 
 import '../Styles/Shop.css'
 import React, { useCallback, useEffect, useState } from 'react';
-import { Box, Typography, TextField, Button, Grid, Skeleton, InputAdornment, IconButton, Snackbar, Alert } from '@mui/material';
+import { Box, Typography, TextField, Button, Grid, Skeleton, InputAdornment, IconButton, Snackbar, Alert, CircularProgress } from '@mui/material';
 import axios from 'axios';
 import { useCart } from '../components/CartContext.jsx';
 import { Link, useLocation } from 'react-router-dom';
@@ -40,7 +40,7 @@ const ProductSkeleton = ({ count }) => (
 
 const Shop = () => {
     useEffect(() => {
-        document.title = "Shop at Herba Naturals - Explore Koi, Beezbee, Wyld Products and More";
+        document.title = "Shop at Herba Natural co - Explore Koi, Beezbee, Wyld Products and More";
         document.querySelector('meta[name="description"]').setAttribute("content", "Browse Herba Natural's online store for the finest CBD products. Featuring brands like Koi, Beezbee, and Wyld with a variety of CBD oils, edibles, and topicals.");
     }, []);
 
@@ -59,6 +59,64 @@ const Shop = () => {
     const queryParams = new URLSearchParams(location.search);
     const [filter, setFilter] = useState('');
     const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [loadingSearch, setLoadingSearch] = useState(false)
+
+    const debounceTimeout = 500; // 500ms debounce
+
+    // Function to fetch products based on search term
+    // Function to fetch products based on search term and current filter
+    const fetchSearchProducts = useCallback((searchTerm) => {
+        setLoadingSearch(true); // Set loading to true when fetching starts
+        // Include the filter in the search URL
+        const newFilter = queryParams.get('filter') || '';
+        setFilter(newFilter);
+        const url = `http://localhost:8000/api/product/search?term=${encodeURIComponent(searchTerm)}&filter=${filter}&pageSize=${pageSize}`;
+
+        axios.get(url)
+            .then(response => {
+                setTotalProducts(response.data.totalProducts);
+                setProducts(response.data.products);
+                console.log(totalProducts)
+                console.log(response.data.products)
+                setLoadingSearch(false); // Set loading to false when fetching is complete
+            })
+            .catch(error => {
+                console.error("Error fetching search results:", error);
+                setLoadingSearch(false); // Ensure loading is set to false even if there's an error
+            });
+    }, [pageSize, filter,]); // Include filter in the dependency array
+
+
+    // Debounced search handler
+    useEffect(() => {
+        let handler;
+        let loadingTimer;
+
+        if (searchTerm) {
+            setLoadingSearch(true); // Set loading to true when debounce starts
+
+            // Timer to ensure loading state lasts for at least the debounce period
+            loadingTimer = setTimeout(() => {
+                setLoadingSearch(false);
+            }, debounceTimeout);
+
+            handler = setTimeout(() => {
+                fetchSearchProducts(searchTerm);
+            }, debounceTimeout);
+        } else {
+            // Reset the loading state immediately if the search term is cleared
+            setLoadingSearch(false);
+        }
+
+        return () => {
+            clearTimeout(handler);
+            clearTimeout(loadingTimer);
+        };
+
+    }, [searchTerm, fetchSearchProducts, debounceTimeout]);
+
+
+
 
 
     useEffect(() => {
@@ -68,8 +126,6 @@ const Shop = () => {
 
 
     const fetchProducts = (url) => {
-
-
         setLoading(true);
         axios.get(url)
             .then(response => {
@@ -93,6 +149,7 @@ const Shop = () => {
         const newFilter = queryParams.get('filter') || '';
         setFilter(newFilter);
         setProducts([]);
+        setSearchTerm('')
         setPage(1);
         const url = `http://localhost:8000/api/product/paginate/?page=1&pageSize=${pageSize}&filter=${newFilter}`;
         fetchProducts(url)
@@ -106,7 +163,7 @@ const Shop = () => {
 
     const handleScroll = useCallback(() => {
         // Define a threshold (in pixels) from the bottom of the page
-        const threshold = 500; // for example, 200 pixels from the bottom
+        const threshold = 800; // for example, 200 pixels from the bottom
 
         // Calculate the distance from the bottom
         const distanceFromBottom = document.documentElement.offsetHeight - (window.innerHeight + document.documentElement.scrollTop);
@@ -114,11 +171,14 @@ const Shop = () => {
         if (distanceFromBottom < threshold) {
             // User is within threshold from the bottom
             if (products.length < totalProducts && !loadingMore) {
+                console.log('fetching')
                 setLoadingMore(true);
                 // Fetch the next page of products
-                axios.get(`http://localhost:8000/api/product/paginate/?page=${page}&pageSize=${pageSize}`)
+                const url = `http://localhost:8000/api/product/paginate/?page=${page}&pageSize=${pageSize}&filter=${filter}`;
+                axios.get(url)
                     .then(response => {
-                        setProducts(prevProducts => [...prevProducts, ...response.data.products]);
+                        const newProducts = response.data.products.filter(np => !products.some(p => p._id === np._id));
+                        setProducts(prevProducts => [...prevProducts, ...newProducts]);
                         setPage(prevPage => prevPage + 1);
                         setLoadingMore(false);
                     })
@@ -139,16 +199,25 @@ const Shop = () => {
             )
         ).slice(0, 3); // Return only the first 3 related products
     };
-    const handleSearchChange = (event) => {
-        setSearchTerm(event.target.value);
+
+
+    const resetStateOnClearSearch = () => {
+        setPage(1); // Reset page number
+        setProducts([]); // Revert to initial products
+        setLoadingMore(false); // Reset loading states
+        const newFilter = queryParams.get('filter') || '';
+        setFilter(newFilter);
+        fetchProducts(`http://localhost:8000/api/product/paginate/?page=1&pageSize=${pageSize}&filter=${filter}`);
     };
 
-    const filteredProducts = products.filter(product =>
-        product.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
-
-
+    // Modified handleSearchChange to reset state when search is cleared
+    const handleSearchChange = (event) => {
+        const value = event.target.value;
+        setSearchTerm(value);
+        if (!value) {
+            resetStateOnClearSearch();
+        }
+    };
 
 
 
@@ -208,30 +277,49 @@ const Shop = () => {
             <Box mb={4}>
                 <TextField
                     name='searchBar'
-                    autoCorrect="off"
+                    autoCorrect="false"
+                    autoComplete="off"
+                    autoCapitalize="off"
+                    id='searchBar'
                     InputProps={{
-                        endAdornment:
-                            <InputAdornment position="end" >
-
+                        startAdornment: (
+                            <InputAdornment position="start" >
                                 <IconButton
                                     name='magnifying-icon'
                                     id='magnifying-icon'
                                     aria-label="magnifying-icon"
+                                    sx={{
 
-                                    sx={{ mr: -1 }}>
-                                    {/* magnify icon */}
-                                    <svg
-                                        name='magnifying-icon-svg'
-                                        id='magnifying-icon-svg'
-                                        aria-label="magnifying-icon-svg"
+                                        transition: 'opacity 0.3s', // Add opacity transition
 
-                                        fill='#0F75E0' xmlns="http://www.w3.org/2000/svg" height='20' viewBox="0 0 512 512"><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" /></svg>
+                                    }}
+                                >
+                                    {loadingSearch ?
+                                        <CircularProgress size={25} /> :
+                                        <svg
+                                            name='magnifying-icon-svg'
+                                            id='magnifying-icon-svg'
+                                            aria-label="magnifying-icon-svg"
+                                            fill='#0F75E0'
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            height='20'
+                                            viewBox="0 0 512 512"
+                                        >
+                                            <path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" />
+                                        </svg>}
                                 </IconButton>
 
                             </InputAdornment>
+                        ),
                     }}
-                    label={`Search ${!!filter ? filter.toUpperCase() : 'Products'}`} variant="outlined" value={searchTerm} onChange={handleSearchChange} fullWidth />
+                    label={`Search ${!!filter ? filter.toUpperCase() : 'Products'}`}
+                    variant="outlined"
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                    fullWidth
+                />
             </Box>
+
 
 
             {/* Products Grid */}
@@ -241,12 +329,13 @@ const Shop = () => {
                 </Grid>
             ) : ( // Render products when not loading
                 <Grid container spacing={3} >
-                    {filteredProducts.length === 0 ? ( // No products found
+                    {products && products.length === 0 ? ( // No products found
 
                         <Typography ml={5} variant="h5">No products found</Typography>
 
                     ) : (null)}
-                    {filteredProducts.map((product, index) => (
+
+                    {products.map((product, index) => (
 
                         <Grid item xs={12} sm={6} md={4} key={product._id} style={{ animationDelay: `${index * 0.2}s` }} className="product-slide-in-shop">
                             <div style={productStyles}>
@@ -264,9 +353,6 @@ const Shop = () => {
                                 <Typography sx={{ fontWeight: 100, fontSize: 14 }} className='shop-name' mt={2}>{product.name}</Typography>
                                 <Typography variant="subtitle1" className='shop-brand' sx={{ fontSize: 12, fontWeight: 100, color: 'black' }}>{product.brand}</Typography>
                                 <Typography variant="subtitle2" sx={{ fontWeight: 100, fontSize: 16 }} className='shop-price'>${product.price.toFixed(2)}</Typography>
-                                {/*<Typography variant="body2" mt={2} noWrap>
-                                {product.description.length > 60 ? product.description.substring(0, 60) + "..." : product.description}
-                            </Typography>*/}
 
                                 <Box className='shop-button-container'>
                                     <Button variant="outlined" className='shop-button-cart' sx={{ border: 1, borderRadius: 0, letterSpacing: 2, fontSize: 12, color: 'white', backgroundColor: '#283047', borderColor: '#283047', borderWidth: 1.5, transition: 'all 0.3s', '&:hover': { backgroundColor: '#FE6F49', color: 'white', borderColor: '#FE6F49', transform: 'scale(1.05)' } }} onClick={() => addToCart(product)}>
@@ -284,10 +370,9 @@ const Shop = () => {
                     ))}
                     {/* Display skeletons if more products are to be loaded or loading more products */}
 
-                    {(filteredProducts.length < totalProducts || loadingMore) && (
+                    {(loadingMore) && (
 
-                        <ProductSkeleton count={3} />
-
+                        <CircularProgress />
                     )}
 
 

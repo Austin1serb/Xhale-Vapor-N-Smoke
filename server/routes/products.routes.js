@@ -3,10 +3,12 @@ const express = require("express");
 const router = express.Router();
 const { verifyToken, isAdmin } = require('../verifyToken'); // Import your verifyToken middleware
 
+router.route('/').get(ProductsController.getAll);
+router.get('/search/', ProductsController.searchProducts);
 router.route('/featured').get(ProductsController.getFeatured);
 router.route('/bestsellers').get(ProductsController.getBestSellers);
 router.route('/paginate/').get(ProductsController.getAllPaginate);
-router.route('/').get(ProductsController.getAll);
+
 router.route('/:id').get(ProductsController.getOne);
 
 router.use(isAdmin, verifyToken);

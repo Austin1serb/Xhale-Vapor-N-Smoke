@@ -5,43 +5,52 @@ const nodemailer = require('nodemailer');
 
 let transporter = nodemailer.createTransport({
     host: "smtp.office365.com",
+    port: 587,
+    secure: false,
     auth: {
         user: process.env.EMAIL_USERNAME,
         pass: process.env.EMAIL_PASSWORD
+    },
+    tls: {
+        ciphers: 'SSLv3'
     }
 });
-async function sendReceiptEmail(orderDetails) {
-    // Construct the list of products with quantities and prices
-    let productsHtml = '';
+function generateProductsHtml(orderDetails) {
     if (orderDetails && Array.isArray(orderDetails.products)) {
-        productsHtml = orderDetails.products.map(product => {
+        return orderDetails.products.map(product => {
             const name = product.name || 'Unknown Product';
             const quantity = product.quantity || 0;
             const price = product.price || 0;
             const img = product.img || ''; // URL of the product image
             return `
             <div style="margin-bottom: 20px; display: flex; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px;">
-            <img src="${img}" alt="${name}" style="width: 80px; height: auto; margin-right: 10px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-            <div style="flex-grow: 1;">
-                <div style="font-size: 16px; font-weight: bold; margin-bottom: 5px;">${name}</div>
-                <div style="font-size: 14px; color: #555;">
-                    Quantity: ${quantity}<br>
-                    Price: $${price.toFixed(2)}
+                <img src="${img}" alt="${name}" style="width: 80px; height: auto; margin-right: 10px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <div style="flex-grow: 1;">
+                    <div style="font-size: 16px; font-weight: bold; margin-bottom: 5px;">${name}</div>
+                    <div style="font-size: 14px; color: #555;">
+                        Quantity: ${quantity}<br>
+                        Price: $${price.toFixed(2)}
+                    </div>
                 </div>
             </div>
-        </div>
             `;
         }).join('');
     } else {
         console.error('orderDetails.products is undefined or not an array');
-        productsHtml = 'Error: orderDetails.products is undefined or not an array';
+        return 'Error: orderDetails.products is undefined or not an array';
     }
+}
 
+
+async function sendReceiptEmail(orderDetails) {
+    // Construct the list of products with quantities and prices
+
+    let productsHtml = generateProductsHtml(orderDetails);
 
     let mailOptions2 = {
         from: 'customerservices@herbanaturalco.com', // Your email address
-        to: 'genius.baar@gmail.com', // Owner's email address
-        subject: 'New Order Notification',
+        to: 'customerservices@herbanaturalco.com', // Owner's email address
+        subject: 'New Order Notification - HerbaNaturalCo',
         html: `
         <div style="font-family: Arial, sans-serif; color: #444; background-color: #f4f4f4; padding: 20px;">
         <div style="max-width: 600px; margin: 0 auto; background-color: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 5px;">
@@ -86,13 +95,12 @@ async function sendReceiptEmail(orderDetails) {
             <ul>
                 <li><strong>Shipping Method:</strong> ${orderDetails.shippingMethod ? orderDetails.shippingMethod.carrier : 'N/A'}</li>
                 <li><strong>Shipping Type:</strong> ${orderDetails.shippingMethod ? orderDetails.shippingMethod.type : 'N/A'}</li>
-                <li><strong>Print Your Label Here:</strong> ${orderDetails.shippingMethod ? orderDetails.shippingMethod.labelUrl : 'N/A'}</li>
+                <li><strong>Print Your Label</strong>  <a href=" ${orderDetails.shippingMethod ? orderDetails.shippingMethod.labelUrl : 'N/A'}"> Here</a></li>
                 <li><strong>Estimated Shipping Date:</strong> ${orderDetails.estimatedShipping ? orderDetails.estimatedShipping : 'Unavailable'}</li>
                 <li><strong>Tracking Number:</strong> ${orderDetails.shippingMethod ? orderDetails.shippingMethod.trackingNumber : 'N/A'}</li>
                 <li><strong>Tracking Link:</strong> <a href="${orderDetails.shippingMethod ? orderDetails.shippingMethod.trackingUrl : '#'}">${orderDetails.shippingMethod ? 'Track Your Order' : 'N/A'}</a></li>
             </ul>
-    
-            <p style="text-align: center;">Thank you for using our service!</p>
+
         </div>
     </div> `
     };
@@ -100,6 +108,118 @@ async function sendReceiptEmail(orderDetails) {
     await transporter.sendMail(mailOptions2);
 
 }
+
+
+
+
+async function sendShippedEmail(orderDetails) {
+    let productsHtml = generateProductsHtml(orderDetails);
+
+
+
+
+    let mailOptions = {
+        from: 'customerservices@herbanaturalco.com',
+        to: orderDetails.customerEmail,
+        subject: 'Your Order Has Been Shipped - HerbaNaturalCo',
+        html: `
+       <div style="font-family: Arial, sans-serif; color: #333; background-color: #f4f4f4; padding: 20px;">
+            <div style="max-width: 600px; margin: 0 auto; background-color: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 5px; box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);">
+                <div style="text-align: center;">
+                    <img src="https://i.imgur.com/1TzCNZZ.png" style="width: 300px;" alt="Herba Naturals Logo" />
+                    <h2 style="color: #4CAF50;">Delivered Successfully!</h2>
+                </div>
+                <p>Hi ${orderDetails.address.split(",")[0]},</p>
+                <p>We're pleased to inform you that your order (Order Number: ${orderDetails.orderNumber}) has been successfully delivered to the following address:</p>
+                <p><strong>${orderDetails.address}</strong></p>
+                
+                <h3 style="color: #333;">Items in Your Order:</h3>
+                ${productsHtml}
+                
+                <p>If you have any questions or if there's anything further we can do for you, please don't hesitate to reply to this email or contact our customer service.</p>
+                <p>Enjoy your products and thank you for choosing HerbaNaturalCo!</p>
+                <p><strong>Didn't receive your order?</strong> If you have any issues with your delivery, please let us know immediately so we can assist you.</p>
+                <p style="text-align: center; color: #00B824;">Warm regards,<br>The Herba Naturals Team</p>
+            </div>
+        </div>
+    `
+    };
+
+    // Send the email
+    await transporter.sendMail(mailOptions);
+}
+
+async function sendDeliveredEmail(orderDetails) {
+
+    let productsHtml = generateProductsHtml(orderDetails);
+
+
+
+    let mailOptions = {
+        from: 'customerservices@herbanaturalco.com',
+        to: orderDetails.customerEmail,
+        subject: 'Your Order Has Been Delivered - HerbaNaturalCo',
+        html: `
+        <div style="font-family: Arial, sans-serif; color: #333; background-color: #f4f4f4; padding: 20px;">
+            <div style="max-width: 600px; margin: 0 auto; background-color: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 5px; box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);">
+                <div style="text-align: center;">
+                    <img src="https://i.imgur.com/1TzCNZZ.png" style="width: 300px;" alt="Herba Naturals Logo" />
+                    <h2 style="color: #4CAF50;">Delivered Successfully!</h2>
+                </div>
+                <p>Hi ${orderDetails.address.split(",")[0]},</p>
+                <p>We're pleased to inform you that your order (Order Number: ${orderDetails.orderNumber}) has been successfully delivered to the following address:</p>
+                <p><strong>${orderDetails.address}</strong></p>
+                
+                <h3 style="color: #333;">Items in Your Order:</h3>
+                ${productsHtml}
+                
+                <p>If you have any questions or if there's anything further we can do for you, please don't hesitate to reply to this email or contact our customer service.</p>
+                <p>Enjoy your products and thank you for choosing HerbaNaturalCo!</p>
+                <p><strong>Didn't receive your order?</strong> If you have any issues with your delivery, please let us know immediately so we can assist you.</p>
+                <p style="text-align: center; color: #00B824;">Warm regards,<br>The Herba Naturals Team</p>
+            </div>
+        </div>
+    `
+    };
+
+    // Send the email
+    await transporter.sendMail(mailOptions);
+}
+
+async function sendCanceledEmail(orderDetails) {
+    let productsHtml = generateProductsHtml(orderDetails);
+
+    let mailOptions = {
+        from: 'customerservices@herbanaturalco.com',
+        to: orderDetails.customerEmail,
+        subject: 'Your Order Has Been Canceled - HerbaNaturalCo',
+        html: `
+        <div style="font-family: Arial, sans-serif; color: #333; background-color: #f4f4f4; padding: 20px;">
+            <div style="max-width: 600px; margin: 0 auto; background-color: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 5px; box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);">
+                <div style="text-align: center;">
+                          <img src="https://i.imgur.com/1TzCNZZ.png" style="width: 300px;" alt="Herba Naturals Logo" />
+                    <h2 style="color: #FF6347;">Order Cancellation Notice</h2>
+                </div>
+                <p>Dear ${orderDetails.address.split(",")[0]},</p>
+                <p>We regret to inform you that your order (Order Number: ${orderDetails.orderNumber}) has been canceled. Here are the details:</p>
+                
+                <h3 style="color: #333;">Items in Your Order:</h3>
+                ${productsHtml}
+                
+                <p>If you believe this was a mistake or have any questions, please contact us immediately at customerservices@herbanaturalco.com. We're here to help.</p>
+                <p>We apologize for any inconvenience this may have caused and thank you for your understanding.</p>
+                <p style="text-align: center; color: #00B824;">Warm regards,<br>The Herba Naturals Team</p>
+            </div>
+        </div>
+        `
+    };
+
+    // Send the email
+
+    await transporter.sendMail(mailOptions);
+}
+
+
 
 
 module.exports = {
@@ -207,22 +327,30 @@ module.exports = {
 
 
 
-    updateOne: (req, res) => {
-        Orders.findOneAndUpdate(
-            { _id: req.params.id },
-            {
-                // Update other fields as needed
-                orderStatus: req.body.orderStatus, // Assuming orderStatus is the field to be updated
-            },
-            { new: true, runValidators: true }
-        )
-            .then(data => {
-                res.json(data);
-            })
-            .catch(err => {
-                console.error('Error updating order:', err);
-                res.status(400).json(err);
-            });
+    updateOne: async (req, res) => {
+        const orderId = req.params.id;
+        const { orderStatus } = req.body;
+
+        try {
+            const updatedOrder = await Orders.findOneAndUpdate(
+                { _id: orderId },
+                { orderStatus },
+                { new: true, runValidators: true }
+            );
+
+            if (orderStatus === 'Shipped') {
+                await sendShippedEmail(updatedOrder);
+            } else if (orderStatus === 'Delivered') {
+                await sendDeliveredEmail(updatedOrder);
+            } else if (orderStatus === 'Canceled') {
+                await sendCanceledEmail(updatedOrder);
+            }
+
+            res.json(updatedOrder);
+        } catch (err) {
+            console.error('Error updating order:', err);
+            res.status(400).json(err);
+        }
     },
 
 

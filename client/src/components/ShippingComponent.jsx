@@ -139,7 +139,13 @@ const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, b
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-
+    const scrollToTop = () => {
+        window.scrollTo(0, 0);
+      };
+      // Scroll to the top when the component mounts
+      useEffect(() => {
+        scrollToTop();
+      }, []);
 
     useEffect(() => {
         setButtonDisabled(new Array(shippingOptions.length).fill(false));

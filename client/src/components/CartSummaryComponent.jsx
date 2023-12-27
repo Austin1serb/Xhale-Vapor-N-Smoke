@@ -50,7 +50,13 @@ const CartSummaryComponent = ({ cartItems, shippingCost, total, removeFromCart, 
         , [grandTotal])
 
 
-
+        const scrollToTop = () => {
+            window.scrollTo(0, 0);
+          };
+          // Scroll to the top when the component mounts
+          useEffect(() => {
+            scrollToTop();
+          }, []);
     return (
         <div className='cartSummary-container' >
 

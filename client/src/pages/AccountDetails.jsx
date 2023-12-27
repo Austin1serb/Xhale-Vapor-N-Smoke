@@ -213,6 +213,7 @@ const AccountDetails = () => {
 
     const renderOrders = () => {
         return customer && customer.orders && customer.orders.length > 0 ? (
+
             customer.orders.map((order, index) => (
                 <Paper key={index} sx={{ padding: 2, marginBottom: 3 }}>
                     <Typography variant="h6">Order #{order.orderNumber}</Typography>
@@ -424,7 +425,9 @@ const AccountDetails = () => {
                                 />
                             </div>
                         </Modal>
+                        <h4 style={{ textAlign: 'center', marginTop: "20px" }}>Your Orders:</h4>
                     </Grid>
+
                     {renderOrders()}
                 </Grid>
                 <Box sx={{ marginTop: 2, height: '90px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexDirection: { xs: 'column', sm: 'row' } }}>
