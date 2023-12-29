@@ -9,7 +9,6 @@ import { BrowserRouter as Router } from 'react-router-dom';
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/service-worker.js', { scope: '/' }).then(registration => {
-      console.log('ServiceWorker registration successful with scope: ', registration.scope);
     }, err => {
       console.log('ServiceWorker registration failed: ', err);
     });
@@ -20,7 +19,7 @@ if ('serviceWorker' in navigator) {
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <Router  scrollRestoration="auto">
+  <Router scrollRestoration="auto">
     <App />
   </Router>,
 );

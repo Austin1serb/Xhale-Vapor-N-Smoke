@@ -8,8 +8,8 @@ const SuccessPage = () => {
     const paymentResult = location.state ? location.state.paymentResult : '';
 
     useEffect(() => {
-        document.title = "Success - Thank You for Your Purchase at Herba Naturals";
-        document.querySelector('meta[name="description"]').setAttribute("content", "Thank you for your purchase at Herba Naturals. We are preparing your CBD products for delivery. Explore more while you wait.");
+        document.title = "Success - Thank You for Your Purchase at Herba Natural";
+        document.querySelector('meta[name="description"]').setAttribute("content", "Thank you for your purchase at Herba Natural We are preparing your CBD products for delivery. Explore more while you wait.");
     }, []);
 
     if (!paymentResult) {

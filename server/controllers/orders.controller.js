@@ -126,7 +126,7 @@ async function sendShippedEmail(orderDetails) {
        <div style="font-family: Arial, sans-serif; color: #333; background-color: #f4f4f4; padding: 20px;">
             <div style="max-width: 600px; margin: 0 auto; background-color: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 5px; box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);">
                 <div style="text-align: center;">
-                    <img src="https://i.imgur.com/1TzCNZZ.png" style="width: 300px;" alt="Herba Naturals Logo" />
+                    <img src="https://i.imgur.com/1TzCNZZ.png" style="width: 300px;" alt="Herba NaturalLogo" />
                     <h2 style="color: #4CAF50;">Delivered Successfully!</h2>
                 </div>
                 <p>Hi ${orderDetails.address.split(",")[0]},</p>
@@ -139,7 +139,7 @@ async function sendShippedEmail(orderDetails) {
                 <p>If you have any questions or if there's anything further we can do for you, please don't hesitate to reply to this email or contact our customer service.</p>
                 <p>Enjoy your products and thank you for choosing HerbaNaturalCo!</p>
                 <p><strong>Didn't receive your order?</strong> If you have any issues with your delivery, please let us know immediately so we can assist you.</p>
-                <p style="text-align: center; color: #00B824;">Warm regards,<br>The Herba Naturals Team</p>
+                <p style="text-align: center; color: #00B824;">Warm regards,<br>The Herba NaturalTeam</p>
             </div>
         </div>
     `
@@ -163,7 +163,7 @@ async function sendDeliveredEmail(orderDetails) {
         <div style="font-family: Arial, sans-serif; color: #333; background-color: #f4f4f4; padding: 20px;">
             <div style="max-width: 600px; margin: 0 auto; background-color: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 5px; box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);">
                 <div style="text-align: center;">
-                    <img src="https://i.imgur.com/1TzCNZZ.png" style="width: 300px;" alt="Herba Naturals Logo" />
+                    <img src="https://i.imgur.com/1TzCNZZ.png" style="width: 300px;" alt="Herba NaturalLogo" />
                     <h2 style="color: #4CAF50;">Delivered Successfully!</h2>
                 </div>
                 <p>Hi ${orderDetails.address.split(",")[0]},</p>
@@ -176,7 +176,7 @@ async function sendDeliveredEmail(orderDetails) {
                 <p>If you have any questions or if there's anything further we can do for you, please don't hesitate to reply to this email or contact our customer service.</p>
                 <p>Enjoy your products and thank you for choosing HerbaNaturalCo!</p>
                 <p><strong>Didn't receive your order?</strong> If you have any issues with your delivery, please let us know immediately so we can assist you.</p>
-                <p style="text-align: center; color: #00B824;">Warm regards,<br>The Herba Naturals Team</p>
+                <p style="text-align: center; color: #00B824;">Warm regards,<br>The Herba NaturalTeam</p>
             </div>
         </div>
     `
@@ -197,7 +197,7 @@ async function sendCanceledEmail(orderDetails) {
         <div style="font-family: Arial, sans-serif; color: #333; background-color: #f4f4f4; padding: 20px;">
             <div style="max-width: 600px; margin: 0 auto; background-color: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 5px; box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);">
                 <div style="text-align: center;">
-                          <img src="https://i.imgur.com/1TzCNZZ.png" style="width: 300px;" alt="Herba Naturals Logo" />
+                          <img src="https://i.imgur.com/1TzCNZZ.png" style="width: 300px;" alt="Herba NaturalLogo" />
                     <h2 style="color: #FF6347;">Order Cancellation Notice</h2>
                 </div>
                 <p>Dear ${orderDetails.address.split(",")[0]},</p>
@@ -208,7 +208,7 @@ async function sendCanceledEmail(orderDetails) {
                 
                 <p>If you believe this was a mistake or have any questions, please contact us immediately at customerservices@herbanaturalco.com. We're here to help.</p>
                 <p>We apologize for any inconvenience this may have caused and thank you for your understanding.</p>
-                <p style="text-align: center; color: #00B824;">Warm regards,<br>The Herba Naturals Team</p>
+                <p style="text-align: center; color: #00B824;">Warm regards,<br>The Herba NaturalTeam</p>
             </div>
         </div>
         `

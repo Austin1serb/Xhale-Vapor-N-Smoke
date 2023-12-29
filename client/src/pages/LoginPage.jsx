@@ -24,8 +24,8 @@ import { useAuth } from '../components/Utilities/useAuth';
 
 const LoginPage = () => {
     useEffect(() => {
-        document.title = "Login to Herba Naturals - Access Your CBD Products Account";
-        document.querySelector('meta[name="description"]').setAttribute("content", "Log in to your Herba Naturals account to access our premium CBD products, track orders, and manage your details.");
+        document.title = "Login to Herba Natural - Access Your CBD Products Account";
+        document.querySelector('meta[name="description"]').setAttribute("content", "Log in to your Herba Naturalaccount to access our premium CBD products, track orders, and manage your details.");
     }, []);
 
 

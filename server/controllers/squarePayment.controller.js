@@ -168,9 +168,9 @@ async function sendReceiptEmail(cost, notes, estimatedShipping, orderDetails, la
         html: `
         <div style="font-family: Arial, sans-serif; color: #333; background-color: #f4f4f4; padding: 20px;">
             <div style="max-width: 600px; margin: 0 auto; background-color: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 5px; box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);">
-                <h2 style="color: #0F75E0; text-align: center;">Thank You from Herba Naturals!</h2>
+                <h2 style="color: #0F75E0; text-align: center;">Thank You from Herba Natural!</h2>
                 <div style="text-align: center;">
-                    <img src="https://i.imgur.com/4cTMTOA.png" style="width: 300px;" alt="Herba Naturals Logo" onerror="this.style.display='none'"/>
+                    <img src="https://i.imgur.com/4cTMTOA.png" style="width: 300px;" alt="Herba Natural Logo" onerror="this.style.display='none'"/>
                 </div>
                 <p style="text-align: center;">We appreciate your order and are excited to share our products with you. Here are the details of your purchase:</p>
                 <ul>
@@ -190,7 +190,7 @@ async function sendReceiptEmail(cost, notes, estimatedShipping, orderDetails, la
                 <p><strong>Your tracking number is:</strong> ${trackingNumber}</p>
                 <p>You can track your order: ${trackingUrls}</p>
                 <p>If you have any questions or concerns, please don't hesitate to contact us at customerservices@herbanaturalco.com</p>
-                <p style="text-align: center; color: #0fe09e;">Warm regards,The Herba Naturals Team</p>
+                <p style="text-align: center; color: #0fe09e;">Warm regards,The Herba Natural Team</p>
             </div>
         </div>
     `

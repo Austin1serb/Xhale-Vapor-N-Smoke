@@ -40,7 +40,7 @@ const ProductSkeleton = ({ count }) => (
 
 const Shop = () => {
     useEffect(() => {
-        document.title = "Shop at Herba Natural co - Explore Koi, Beezbee, Wyld Products and More";
+        document.title = "Shop at Herba Natural - Explore Koi, Beezbee, Wyld Products and More";
         document.querySelector('meta[name="description"]').setAttribute("content", "Browse Herba Natural's online store for the finest CBD products. Featuring brands like Koi, Beezbee, and Wyld with a variety of CBD oils, edibles, and topicals.");
     }, []);
 

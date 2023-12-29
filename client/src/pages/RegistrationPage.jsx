@@ -26,7 +26,7 @@ import { useAuth } from '../components/Utilities/useAuth';
 const RegistrationPage = () => {
     useEffect(() => {
         document.title = "Create an Account - Join Herba Natural's Family";
-        document.querySelector('meta[name="description"]').setAttribute("content", "Join the Herba Naturals family. Register to start purchasing high-quality CBD products and receive updates on new arrivals and offers.");
+        document.querySelector('meta[name="description"]').setAttribute("content", "Join the Herba Naturalfamily. Register to start purchasing high-quality CBD products and receive updates on new arrivals and offers.");
     }, []);
 
 

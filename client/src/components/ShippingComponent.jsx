@@ -141,11 +141,11 @@ const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, b
     }, []);
     const scrollToTop = () => {
         window.scrollTo(0, 0);
-      };
-      // Scroll to the top when the component mounts
-      useEffect(() => {
+    };
+    // Scroll to the top when the component mounts
+    useEffect(() => {
         scrollToTop();
-      }, []);
+    }, []);
 
     useEffect(() => {
         setButtonDisabled(new Array(shippingOptions.length).fill(false));
@@ -287,9 +287,7 @@ const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, b
             {/* Proceed to Payment Button */}
             <Grid container sx={{ marginTop: '20px', justifyContent: 'space-between', marginLeft: { xs: 3.5, sm: 0 } }}>
 
-                <Button onClick={back} variant="outlined" sx={{ m: 1, width: { xs: '75%', sm: '45%', md: '230px' }, letterSpacing: 2, color: '#283047', backgroundColor: 'white', borderColor: '#283047', borderWidth: 1.5, height: 55, '&:hover': { backgroundColor: '#0F75E0', color: 'white', } }}>
-                    <ArrowBackIosNewIcon sx={{ fontSize: 18, mr: 1 }} />
-                    Return to information</Button>
+
                 <Button disabled={!!isLoading} onClick={handleLocalCheckout} variant="outlined" sx={{ m: 1, width: { xs: '75%', sm: '45%', md: '230px' }, letterSpacing: 2, color: 'white', backgroundColor: '#283047', height: 56.5, "&:hover": { backgroundColor: '#FE6F49', border: 'none', }, textAlign: 'center' }}>
                     {isLoading ? (
                         <CircularProgress
@@ -302,7 +300,9 @@ const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, b
                         </>
                     )}
                 </Button>
-
+                <Button onClick={back} variant="outlined" sx={{ m: 1, width: { xs: '75%', sm: '45%', md: '230px' }, letterSpacing: 2, color: '#283047', backgroundColor: 'white', borderColor: '#283047', borderWidth: 1.5, height: 55, '&:hover': { backgroundColor: '#0F75E0', color: 'white', } }}>
+                    <ArrowBackIosNewIcon sx={{ fontSize: 18, mr: 1 }} />
+                    Return to information</Button>
 
             </Grid>
         </Box>

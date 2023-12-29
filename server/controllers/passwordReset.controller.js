@@ -28,11 +28,11 @@ exports.forgotPassword = async (req, res) => {
             const mailOptions = {
                 from: process.env.EMAIL_USERNAME,
                 to: email,
-                subject: 'Password Reset Link-Herba Naturals',
+                subject: 'Password Reset Link-Herba Natural',
                 html: `
         <div style="font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; color: #333; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
             <h2 style="color: #0F75E0; text-align: center;">Reset Your Password</h2>
-            <p style="text-align: center; font-size: 16px;">You requested a password reset for your Herba Naturals account.</p>
+            <p style="text-align: center; font-size: 16px;">You requested a password reset for your Herba Natural account.</p>
             <div style="text-align: center; margin: 25px 0;">
                 <a href="${resetLink}" style="background-color: #0F75E0; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-size: 18px;">Reset Password</a>
             </div>

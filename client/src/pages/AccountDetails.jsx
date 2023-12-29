@@ -22,8 +22,8 @@ import ForgotPassword from '../components/ForgotPassword';
 
 const AccountDetails = () => {
     useEffect(() => {
-        document.title = "Your Account Details - Herba Naturals User Profile";
-        document.querySelector('meta[name="description"]').setAttribute("content", "Manage your Herba Naturals account details. Update personal information, track orders, and customize your CBD shopping experience.");
+        document.title = "Your Account Details - Herba Natural User Profile";
+        document.querySelector('meta[name="description"]').setAttribute("content", "Manage your Herba Natural account details. Update personal information, track orders, and customize your CBD shopping experience.");
     }, []);
 
 
@@ -215,12 +215,21 @@ const AccountDetails = () => {
         return customer && customer.orders && customer.orders.length > 0 ? (
 
             customer.orders.map((order, index) => (
-                <Paper key={index} sx={{ padding: 2, marginBottom: 3 }}>
+                <Paper key={index} sx={{ padding: 2, marginBottom: 3, width: '100%' }} >
                     <Typography variant="h6">Order #{order.orderNumber}</Typography>
                     <Typography variant="body2">Order Date: {order.orderDate ? new Date(order.orderDate).toLocaleDateString() : 'N/A'}</Typography>
                     <Typography variant="body2">Total Amount: ${order.totalAmount ? order.totalAmount.grandTotal.toFixed(2) : 'N/A'}</Typography>
-                    <Typography variant="body2">Order Status: {order.orderStatus || 'Unknown'}</Typography>
-                    <Typography variant="body2">Payment Status: {order.paymentStatus || 'N/A'}</Typography>
+                    <Typography variant="body2">Order Status: {order?.orderStatus || 'Unknown'}</Typography>
+                    <Typography variant="body2">Payment Status: {order?.paymentStatus || 'N/A'}</Typography>
+                    <Divider sx={{ my: 2 }} />
+                    {order.shippingMethod && (
+                        <>
+                            <Typography variant="body2">Shipping Carrier: {order.shippingMethod?.carrier || 'N/A'}</Typography>
+                            <Typography variant="body2">Shipping To: {order.address || 'N/A'}</Typography>
+                            <Typography variant="body2">Tracking Number: {order.shippingMethod?.trackingNumber || 'N/A'}</Typography>
+                            <Typography variant="body2">Track Your Package: <a href={order.shippingMethod?.trackingUrl || '#'}>Here</a></Typography>
+                        </>
+                    )}
                     <Divider sx={{ my: 2 }} />
                     {order.products && order.products.length > 0 ? (
                         order.products.map((item, idx) => renderOrderItem(item))
@@ -228,10 +237,8 @@ const AccountDetails = () => {
                         <Typography variant="body2">No products in this order.</Typography>
                     )}
                     <Divider sx={{ my: 2 }} />
-                    {order.shippingMethod && (
-                        <Typography variant="body2">Shipping Method: {order.shippingMethod.name}</Typography>
-                    )}
-                    <Typography variant="body2">Address: {order.address || 'N/A'}</Typography>
+
+
                     {order.orderNotes && (
                         <Typography variant="body2">Notes: {order.orderNotes}</Typography>
                     )}
@@ -406,6 +413,26 @@ const AccountDetails = () => {
                                 Change your password?
                             </Button>
                         </Typography>
+                        <Box sx={{ marginTop: 2, height: '90px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexDirection: { xs: 'column', sm: 'row' } }}>
+                            <Button
+                                style={{ width: '210px' }}
+                                disabled={loading || !isFormChanged}
+                                variant="contained"
+                                color="primary"
+                                type="submit"
+                            >
+                                {loading ? <CircularProgress size={24} /> : 'Save Changes'}
+                            </Button>
+                            <Button
+                                style={{ width: '210px' }}
+                                variant="contained"
+                                color="error"
+                                onClick={handleOpenDialog}
+
+                            >
+                                Delete Account
+                            </Button>
+                        </Box>
                         <Modal
                             open={forgotPasswordOpen}
                             onClose={() => setForgotPasswordOpen(false)}
@@ -425,31 +452,15 @@ const AccountDetails = () => {
                                 />
                             </div>
                         </Modal>
-                        <h4 style={{ textAlign: 'center', marginTop: "20px" }}>Your Orders:</h4>
+                        <Typography variant="h1" component="h1" sx={{ marginBottom: 2, fontSize: 'h5.fontSize', mt: 10 }}>
+                            Your Orders
+                        </Typography>
+
                     </Grid>
 
                     {renderOrders()}
                 </Grid>
-                <Box sx={{ marginTop: 2, height: '90px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexDirection: { xs: 'column', sm: 'row' } }}>
-                    <Button
-                        style={{ width: '210px' }}
-                        disabled={loading || !isFormChanged}
-                        variant="contained"
-                        color="primary"
-                        type="submit"
-                    >
-                        {loading ? <CircularProgress size={24} /> : 'Save Changes'}
-                    </Button>
-                    <Button
-                        style={{ width: '210px' }}
-                        variant="contained"
-                        color="error"
-                        onClick={handleOpenDialog}
 
-                    >
-                        Delete Account
-                    </Button>
-                </Box>
             </form>
             <Dialog
                 open={openDialog}

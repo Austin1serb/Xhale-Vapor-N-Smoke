@@ -14,8 +14,8 @@ import '../Styles/CheckoutPage.css'
 
 const CheckoutPage = () => {
     useEffect(() => {
-        document.title = "Checkout - Complete Your Herba Naturals Purchase";
-        document.querySelector('meta[name="description"]').setAttribute("content", "Secure checkout process for your Herba Naturals purchases. Complete your order of premium CBD products quickly and safely.");
+        document.title = "Checkout - Complete Your Herba Natural Purchase";
+        document.querySelector('meta[name="description"]').setAttribute("content", "Secure checkout process for your Herba Natural purchases. Complete your order of premium CBD products quickly and safely.");
     }, []);
 
 
@@ -525,7 +525,7 @@ const CheckoutPage = () => {
                             </Stepper>
                             <Box sx={{ mt: { xs: 5, sm: 0 } }}>
                                 {activeStep === 0 &&
-                                    <Box sx={{ pt: { xs: 0, sm: 2.5 }, borderTop: {xs:'none' ,sm:'0.1px solid black}', },  }} className='cartSummary-component-box'>
+                                    <Box sx={{ pt: { xs: 0, sm: 2.5 }, borderTop: { xs: 'none', sm: '0.1px solid black}', }, }} className='cartSummary-component-box'>
                                         <CartSummaryComponent
                                             cartItems={cart.map(item => ({
                                                 _id: item.product._id,
@@ -635,7 +635,7 @@ const CheckoutPage = () => {
                     </div>
                     : null}
             </Box>
-            
+
             <Snackbar
                 open={snackbarOpen}
                 autoHideDuration={null}

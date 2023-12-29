@@ -32,8 +32,8 @@ const Contact = React.lazy(() => import('./pages/Contact'));
 
 const App = () => {
   const location = useLocation();
-
-  const [isAgeVerified, setIsAgeVerified] = useState(false);
+  //initially set to true for bots that dont run JS
+  const [isAgeVerified, setIsAgeVerified] = useState(true);
 
   const isAdminDashboardRoute = !!useMatch('/customer/admin')
   // Define paths where Age Verification should not be shown
@@ -50,12 +50,28 @@ const App = () => {
     }
   };
   useEffect(() => {
-    // Check session storage
+    // Check if the user has already verified their age in this session.
     const isVerified = localStorage.getItem('isVerified');
-    if (isVerified) {
+    if (isVerified === 'true') {
+      setIsAgeVerified(true);
+    }
+    else {
+      // If the user has not verified their age, set isAgeVerified to false.
+      localStorage.setItem('isVerified', false);
+
+      setIsAgeVerified(false);
+    }
+
+    // Detect if the user-agent is a known crawler.
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    const isBot = /Googlebot|Bingbot|Slurp|DuckDuckBot|Baiduspider|YandexBot|Sogou|Exabot|ia_archiver|Facebot|Twitterbot|MJ12bot|BLEXBot|SemrushBot|Dotbot|BLEXBot|rogerbot|AhrefsBot|UptimeRobot|CCBot|Applebot|AdsBot-Google|SeznamBot|SISTRIX|Ezooms|pingdom|Mail.RU_Bot|HubSpot|Facebot|Omgili|BLEXBot|Screaming Frog|FAST-WebCrawler|YandexBot|Cliqzbot|ltx71|AddThis|BUbiNG|PetalBot|BUbiNG|Petaybot|MLBot|TweetmemeBot|PaperLiBot|Googlebot-Image|BingPreview|Discordbot|Yahoo|facebookexternalhit/i.test(userAgent);
+
+    // If it's a bot, consider it "verified" to bypass the overlay.
+    if (isBot) {
       setIsAgeVerified(true);
     }
   }, []);
+
 
 
   return (

@@ -11,10 +11,10 @@ const ShopByBrand = React.lazy(() => import('../components/ShopByBrand.jsx'));
 
 const Home = () => {
     useEffect(() => {
-        document.title = "Herba Naturals - Premium CBD Products in Kirkland | Home";
-        document.querySelector('meta[name="description"]').setAttribute("content", "Discover premium CBD products with Herba Naturals in Kirkland. Explore our range of Koi, Beezbee, and Wyld CBD oils, edibles, and topicals.");
+        document.title = "HerbaNatural - Premium CBD | Koi, beeZbee, Wyld | Home";
+        document.querySelector('meta[name="description"]').setAttribute("content", "Discover premium CBD products with Herba Natural in Kirkland. Explore our range of Koi, Beezbee, and Wyld CBD oils, edibles, and topicals.");
         const preloadLink = document.createElement("link");
-        preloadLink.href = `https://herbanaturalco.com/cbd.webp`; // Use PUBLIC_URL here
+        preloadLink.href = `https://herbanaturalco.com/cbd.webp`;
         preloadLink.rel = "preload";
         preloadLink.as = "image";
         document.head.appendChild(preloadLink);

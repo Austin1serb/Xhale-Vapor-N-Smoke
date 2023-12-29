@@ -1,5 +1,5 @@
 /* eslint-disable no-restricted-globals */
-const CACHE_NAME = 'my-app-v14'; // Change version to 'my-app-v2', 'my-app-v3', etc. when updating the app
+const CACHE_NAME = 'my-app-v15';
 const urlsToCache = [
     '/',
     '/cbd.webp',
@@ -15,8 +15,9 @@ const urlsToCache = [
     '/icons/icon-512x512.png',
     '/icons/maskable_icon.png',
     '/icons/facebook-logo-1200x630.png',
-    '/icons/apple-touch-icon.png'
-
+    '/icons/apple-touch-icon.png',
+    'https://fonts.googleapis.com/css2?family=Playfair+Display&family=Poppins:wght@200;400&family=Source+Sans+3:wght@400&display=swap',
+    'https://fonts.googleapis.com/css2?family=Cormorant:wght@500&display=swap',
 
 
 
@@ -27,7 +28,6 @@ self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then(cache => {
-                console.log('Opened cache');
                 return cache.addAll(urlsToCache);
             })
     );
