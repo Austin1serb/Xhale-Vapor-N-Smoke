@@ -3,7 +3,7 @@ import '../Styles/PolicyPages.css'; // Import your CSS file for styling
 
 function ShippingPolicy() {
     useEffect(() => {
-        document.title = "Shipping Policy - Herba Naturals Delivery Information";
+        document.title = "Shipping Policy - Herba NaturalDelivery Information";
         document.querySelector('meta[name="description"]').setAttribute("content", "Understand Herba Natural's shipping policies. Get details on shipping methods, delivery times, and tracking your order of CBD products.");
     }, []);
 
@@ -18,11 +18,11 @@ function ShippingPolicy() {
                 <h1>Shipping Policy</h1>
 
 
-                <p>Welcome to Herba Naturals! We appreciate your business and want to ensure a smooth and transparent shopping experience for our valued customers. Please take a moment to review our shipping policy, which outlines important information regarding shipping, delivery, and related matters.</p>
+                <p>Welcome to Herba Natural We appreciate your business and want to ensure a smooth and transparent shopping experience for our valued customers. Please take a moment to review our shipping policy, which outlines important information regarding shipping, delivery, and related matters.</p>
 
                 <h3>1. Shipping Providers:</h3>
                 <p>
-                    At Herba Naturals, we offer various shipping options to provide flexibility and convenience to our customers. We may use different shipping providers, such as USPS, FedEx, UPS, or others, depending on the availability and destination of the order. Please note that the shipping provider you select at checkout may not always be the one used for your shipment. We reserve the right to choose the shipping provider that best suits your order to ensure a timely and secure delivery.
+                    At Herba Natural we offer various shipping options to provide flexibility and convenience to our customers. We may use different shipping providers, such as USPS, FedEx, UPS, or others, depending on the availability and destination of the order. Please note that the shipping provider you select at checkout may not always be the one used for your shipment. We reserve the right to choose the shipping provider that best suits your order to ensure a timely and secure delivery.
                 </p>
 
                 <h3>2. Shipping Times:</h3>
@@ -52,7 +52,7 @@ function ShippingPolicy() {
 
                 <h3>7. Contact Us:</h3>
                 <p>
-                    If you have any questions or concerns regarding our shipping policy or the status of your order, please don't hesitate to contact our customer support team at customerservices@herbanaturalco.com. We are here to assist you and ensure that your shopping experience with Herba Naturals is as pleasant as possible.
+                    If you have any questions or concerns regarding our shipping policy or the status of your order, please don't hesitate to contact our customer support team at customerservices@herbanaturalco.com. We are here to assist you and ensure that your shopping experience with Herba Naturalis as pleasant as possible.
                 </p>
             </div>
         </div>

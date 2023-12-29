@@ -178,7 +178,8 @@ module.exports = {
 
     createOne: async (req, res) => {
 
-        const { firstName, lastName, email, password, recaptchaValue, isVerified } = req.body;
+        let { firstName, lastName, email, password, recaptchaValue, isVerified } = req.body;
+        email = email.toLowerCase()
         try {
             const recaptchaVerified = await verifyRecaptcha(recaptchaValue);
             if (!recaptchaVerified) {
@@ -199,10 +200,8 @@ module.exports = {
                 email,
                 isVerified,
                 password: hashedPassword,
-
             });
 
-            // Store the refresh token securely (e.g., in a database)
             await customer.save();
             // Generate a secure refresh token
             const refreshToken = jwt.sign({
@@ -217,9 +216,8 @@ module.exports = {
                 customerId: customer._id,
                 firstName: customer.firstName,
                 lastName: customer.lastName,
-                email: customer.email
-            }, secretKey, { expiresIn: '12h' });
-
+                email: customer.email,
+            }, secretKey, { expiresIn: '1h' });
 
             // Set refresh token in HTTP-Only cookie
             res.cookie('refreshToken', refreshToken, {
@@ -246,8 +244,8 @@ module.exports = {
 
     loginUser: async (req, res) => {
         try {
-            const { email, password } = req.body;
-
+            let { email, password } = req.body;
+            email = email.toLowerCase()
             // Find the user by email
             const user = await Customers.findOne({ email });
 
@@ -268,7 +266,7 @@ module.exports = {
                     lastName: user.lastName,
                     email: user.email,
                     isAdmin: user.isAdmin,
-                }, secretKey, { expiresIn: '12h' });
+                }, secretKey, { expiresIn: '1h' });
 
 
                 // Generate a new refresh token

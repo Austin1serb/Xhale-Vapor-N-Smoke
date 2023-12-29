@@ -20,7 +20,7 @@ exports.createAddress = (req, res) => {
     const shipment = {
         address_from: {
             "name": "SAMI",
-            "company": "HERBA NATURALS",
+            "company": "Herba Natural",
             "street1": "5 lake st",
             "city": "Kirkland",
             "state": "Wa",
@@ -52,7 +52,7 @@ exports.createShippoLabel = async (req, res) => {
     const addressFrom = {
 
         "name": "SAMI",
-        "company": "HERBA NATURALS",
+        "company": "Herba Natural",
         "street1": "5 lake st",
         "city": "Kirkland",
         "state": "Wa",

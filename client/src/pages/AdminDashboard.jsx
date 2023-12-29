@@ -29,7 +29,7 @@ import { Link } from 'react-router-dom';
 
 const AdminDashboard = () => {
     useEffect(() => {
-        document.title = "Admin Dashboard - Herba Naturals Management Portal";
+        document.title = "Admin Dashboard - Herba NaturalManagement Portal";
         document.querySelector('meta[name="description"]').setAttribute("content", "Herba Natural's Admin Dashboard. Manage products, orders, and customer interactions efficiently in our secure admin portal.");
     }, []);
 

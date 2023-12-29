@@ -167,7 +167,6 @@ module.exports = {
     searchProducts: async (req, res) => {
 
         try {
-            console.log(req.query)
 
             const searchTerm = req.query.term;
             const pageSize = parseInt(req.query.pageSize) || 10; // Default page size
@@ -212,7 +211,7 @@ module.exports = {
 
             const totalProducts = await Products.countDocuments(query);
             const products = await Products.find(query).limit(pageSize).skip(skip);
-            console.log(products)
+
             res.json({ products, totalProducts, currentPage: page, totalPages: Math.ceil(totalProducts / pageSize) });
         } catch (error) {
             res.status(500).send("Error occurred while fetching products.");

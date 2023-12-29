@@ -50,13 +50,13 @@ const CartSummaryComponent = ({ cartItems, shippingCost, total, removeFromCart, 
         , [grandTotal])
 
 
-        const scrollToTop = () => {
-            window.scrollTo(0, 0);
-          };
-          // Scroll to the top when the component mounts
-          useEffect(() => {
-            scrollToTop();
-          }, []);
+    const scrollToTop = () => {
+        window.scrollTo(0, 0);
+    };
+    // Scroll to the top when the component mounts
+    useEffect(() => {
+        scrollToTop();
+    }, []);
     return (
         <div className='cartSummary-container' >
 
@@ -106,7 +106,7 @@ const CartSummaryComponent = ({ cartItems, shippingCost, total, removeFromCart, 
                                         <Typography sx={{ fontFamily: '"Avenir Next", sans-serif', fontWeight: 200, color: 'black', fontVariantCaps: 'all-small-caps', lineHeight: 1 }}>{item.specs}</Typography>
 
                                     </Box>
-                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: { xs: '260px', md: '290px' } }}>
+                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: { xs: '100%', md: '290px' } }}>
                                         <Typography sx={{ fontWeight: 100, color: 'gray', ml: 1, }}>${item.price.toFixed(2) * item.quantity}</Typography>
                                         {/* Quantity Controls */}
                                         <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: "center" }}>
@@ -126,7 +126,7 @@ const CartSummaryComponent = ({ cartItems, shippingCost, total, removeFromCart, 
                                         </Box>
                                         {/* Remove Button */}
                                         <Box sx={{}}>
-                                            <Button sx={{ fontSize: 12, color: '#0F75E0', textDecoration: 'underline' }} onClick={() => removeFromCart(item._id)}>Remove</Button>
+                                            <Button sx={{ fontSize: 12, color: '#0F75E0', textDecoration: 'underline', }} onClick={() => removeFromCart(item._id)}>Remove</Button>
                                         </Box>
                                     </Box>
                                 </Box>
@@ -165,7 +165,7 @@ const CartSummaryComponent = ({ cartItems, shippingCost, total, removeFromCart, 
 
                             <ListItem style={{ padding: '10px 0' }}>
                                 <ListItemText primary={
-                                    <Box component="span" sx={{ display: 'flex', alignItems: 'center' }}>
+                                    <Box component="span" sx={{ display: 'flex', alignItems: 'center', }}>
                                         Estimated Taxes
                                         <Tooltip title="The final tax and total will be confirmed by email or text after you place your order." arrow>
                                             <InfoOutlinedIcon sx={{ fontSize: 18, ml: 1, cursor: 'pointer' }} />

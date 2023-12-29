@@ -5,8 +5,8 @@ import { Link } from 'react-router-dom';
 
 const Contact = () => {
     useEffect(() => {
-        document.title = "Contact Herba Naturals - Get in Touch with Us in Kirkland";
-        document.querySelector('meta[name="description"]').setAttribute("content", "Contact Herba Naturals in Kirkland for inquiries, support, or feedback. We're here to help with all your CBD needs.");
+        document.title = "Contact Herba Natural - Get in Touch with Us in Kirkland";
+        document.querySelector('meta[name="description"]').setAttribute("content", "Contact Herba Natural in Kirkland for inquiries, support, or feedback. We're here to help with all your CBD needs.");
     }, []);
 
 

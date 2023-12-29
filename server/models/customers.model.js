@@ -15,6 +15,7 @@ const CustomerSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please provide an email address.'],
         unique: [true, 'Email already in use.'],
+        lowercase: true,
         match: [
             /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/
             ,
@@ -23,7 +24,7 @@ const CustomerSchema = new mongoose.Schema({
     },
     refreshToken: {
         type: String,
-        required: false, // Make this field optional
+        required: false,
     },
 
     phone: {
@@ -83,6 +84,8 @@ const CustomerSchema = new mongoose.Schema({
 
 
 },
+
+
     { timestamps: true });
 
 const Customer = mongoose.model('Customer', CustomerSchema);

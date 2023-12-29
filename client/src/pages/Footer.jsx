@@ -31,12 +31,12 @@ const Footer = () => {
                 <Box display="flex" justifyContent="space-between" flexDirection={{ xs: 'column', sm: 'row' }}>
                     <Box display={'flex'} mb={2} flexDirection={"column"} justifyContent={"space-between"}>
                         <Typography variant="body2">
-                            &copy; {new Date().getFullYear()} Herba Naturals
+                            &copy; {new Date().getFullYear()} Herba Natural
                         </Typography>
                         <div className='footer-contact-container'>
 
                             <ul style={{ fontSize: 14, listStyle: 'none', marginTop: 10 }}>
-                                <li>customerservices@herbanaturalco.com</li>
+                                <li style={{ fontFamily: "sans-serif" }}>Contact: Customerservices@herbanaturalco.com</li>
 
                             </ul>
                         </div>

@@ -54,11 +54,11 @@ const InformationComponent = ({ next, back, onShippingDetailsSubmit, formData })
 
     const scrollToTop = () => {
         window.scrollTo(0, 0);
-      };
-      // Scroll to the top when the component mounts
-      useEffect(() => {
+    };
+    // Scroll to the top when the component mounts
+    useEffect(() => {
         scrollToTop();
-      }, []);
+    }, []);
     const fetchCustomerData = (userId) => {
 
         fetch(`http://localhost:8000/api/customer/${userId}`, {

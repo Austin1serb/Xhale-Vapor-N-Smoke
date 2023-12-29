@@ -55,7 +55,7 @@ const QuickView = ({ productId, open, handleClose, products }) => {
         if (!open) {
             setProductDetails(null);
             setSelectedImage('');
-            document.title = 'Shop at Herba Naturals - Explore Koi, Beezbee, Wyld Products and More';
+            document.title = 'Shop at HerbaNatural - Explore Koi, Beezbee, Wyld Products and More';
             const metaDescription = document.querySelector('meta[name="description"]');
             const metaKeywords = document.querySelector('meta[name="keywords"]');
             if (metaDescription) {
