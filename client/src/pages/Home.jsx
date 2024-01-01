@@ -5,6 +5,7 @@ import { Box, Typography, List, ListItem, ListItemText, ListItemIcon, CircularPr
 
 
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 //lazy load my imports
 const BestSellersSection = React.lazy(() => import('../components/BestSellersSection.jsx'));
 const ShopByBrand = React.lazy(() => import('../components/ShopByBrand.jsx'));
@@ -13,16 +14,9 @@ const Home = () => {
     useEffect(() => {
         document.title = "HerbaNatural - Premium CBD | Koi, beeZbee, Wyld | Home";
         document.querySelector('meta[name="description"]').setAttribute("content", "Discover premium CBD products with Herba Natural in Kirkland. Explore our range of Koi, Beezbee, and Wyld CBD oils, edibles, and topicals.");
-        const preloadLink = document.createElement("link");
-        preloadLink.href = `https://herbanaturalco.com/cbd.webp`;
-        preloadLink.rel = "preload";
-        preloadLink.as = "image";
-        document.head.appendChild(preloadLink);
 
-        // Cleanup function to remove the preload link when the component unmounts
-        return () => {
-            document.head.removeChild(preloadLink);
-        };
+
+
     }, []);
 
 
@@ -50,7 +44,10 @@ const Home = () => {
     return (
 
         <div>
-
+            <Helmet>
+                {/* Preload the image */}
+                <link rel="preload" href="/cbd.webp" as="image" />
+            </Helmet>
             <Box sx={{ ml: { xs: -1.25, sm: 0 } }} className="home-container">
                 <div className="left-content">
                     <div className='colored-square-content'>
@@ -64,14 +61,17 @@ const Home = () => {
                     </div>
                 </div>
                 <div className="right-content animated-left slide-in">
-                    <img
-                        src={'/cbd.webp'}
-                        alt="cbd"
-                        height='400px'
-                        width='400px'
-
-                    />
+                    <div className="image-container">
+                        <img
+                            src={'/cbd.webp'}
+                            alt="cbd"
+                            height='400px'
+                            width='400px'
+                            loading='LAZY'
+                        />
+                    </div>
                 </div>
+
             </Box>
             <Box component='div' py={{ xs: 5, sm: 16 }} sx={{ width: { xs: '320px', sm: '70%' }, height: 'auto', alignItems: 'center', justifyContent: 'center', margin: '0 auto', textAlign: 'center', mt: { xs: -30, sm: -40, md: 0 } }}>
                 <div >
