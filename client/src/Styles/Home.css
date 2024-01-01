@@ -105,12 +105,43 @@
     min-width: 350px;
 }
 
-.right-content img {
+.image-container {
+    background-color: #F4CDAA;
+    /* Placeholder color */
+    width: 665px;
+    /* Same as the image */
+    height: 665px;
+    /* Same as the image */
+    overflow: hidden;
+    /* To keep everything neat */
+    position: relative;
+    /* For positioning the slide-in effect */
+}
 
+.right-content img {
+    border: 0.1px solid black;
+    height: auto;
+    /* Maintain aspect ratio */
+    position: absolute;
+    /* Slide over the placeholder */
+    left: 100%;
+    /* Start from the left */
+    animation: slideIn 3s forwards;
+    /* Animation to slide in */
     border: .1px solid black;
     width: 665px;
     height: auto;
 
+}
+
+@keyframes slideIn {
+    from {
+        left: 100%;
+    }
+
+    to {
+        left: 0;
+    }
 }
 
 @media (max-width: 938px) {
@@ -227,6 +258,7 @@
 .icon5 {
     font-size: x-large;
 }
+
 
 
 
