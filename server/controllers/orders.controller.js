@@ -1,3 +1,4 @@
+const Customer = require('../models/customers.model');
 const Orders = require('../models/orders.model')
 const Product = require('../models/products.model')
 const moment = require('moment')
@@ -232,9 +233,6 @@ module.exports = {
 
             newOrder.orderNumber = newOrder._id; // Assign the _id to orderNumber
             const savedOrder = await newOrder.save();
-
-
-
             try {
                 await sendReceiptEmail(savedOrder); // Await the email sending
             } catch (emailError) {
@@ -502,4 +500,87 @@ module.exports = {
 }
 
 
+
+
+//function randomDate(start, end) {
+//    return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+//}
+
+
+
+
+//function generateUniqueId() {
+//    // Implement a suitable method to generate unique IDs
+//    return Math.floor(Math.random() * 10000000000).toString();
+//}
+//// Fetch users, products, and orders from your database (assuming Mongoose)
+//async function fetchData() {
+//    const users = await Customer.find().exec();
+//    const products = await Product.find().exec();
+//    const existingOrders = await Orders.find().exec();
+//    return { users, products, existingOrders };
+//}
+
+
+
+//function createRandomOrder(users, products, existingOrders) {
+
+//    // Select a random user and product
+//    const user = users[Math.floor(Math.random() * users.length)];
+//    const productTemplate = products[0];
+//    const existingOrderTemplate = existingOrders[0]; // Use the first order as a template
+//    console.log('productTemplate: ', productTemplate)
+
+//    // Create a new order mimicking the structure of the existing one
+//    const newOrder = {
+//        customer: user._id,
+//        customerEmail: user.email,
+//        customerPhone: '121-232-2323',
+//        products: [
+//            {
+//                name: productTemplate.name,
+//                productId: productTemplate._id,
+//                price: productTemplate.price.toFixed(2),
+//                quantity: 2,
+//                img: productTemplate.imgSource[0].url,
+
+//            }
+//        ],
+//        address: "Austin Serb, 330 4th st, krikland, wa, 98033, US",
+//        shippingMethod: existingOrderTemplate.shippingMethod, // Copy from template or customize
+//        totalAmount: {
+//            grandTotal: 12.00,
+//            subTotal: 8.00,
+//            tax: 2.00,
+//            shippingCost: 2.00,
+
+//        }, // Calculate based on products or copy
+//        orderStatus: "Pending", // Or randomize based on your needs
+//        paymentStatus: "Pending", // Or randomize based on your needs
+//        transactionId: generateUniqueId(),
+//        createdBy: user._id,
+//        createdByType: "Customer",
+//        orderDate: randomDate(new Date(2023, 7, 1), new Date(2024, 0, 1)).toISOString(),
+//        orderNumber: generateUniqueId(),
+//    };
+
+//    return newOrder;
+//}
+
+//// Assuming 'users', 'products', and 'existingOrders' are your provided arrays
+//async function generateAndLogRandomOrder() {
+//    const { users, products, existingOrders } = await fetchData();
+
+//    if (users.length > 0 && products.length > 0 && existingOrders.length > 0) {
+//        const newOrder = createRandomOrder(users, products, existingOrders);
+//        console.log(newOrder);
+
+//        // If you're ready to insert the new order into the database, do it here.
+//        const savedOrder = await new Orders(newOrder).save();
+//    } else {
+//        console.log("Data is missing in one of the collections");
+//    }
+//}
+
+//generateAndLogRandomOrder();
 

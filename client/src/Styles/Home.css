@@ -31,6 +31,7 @@
 .colored-square h1 {
     color: #282F48;
     margin-bottom: 10px;
+    font-weight: 100;
 
 }
 
@@ -122,29 +123,32 @@
     border: 0.1px solid black;
     height: auto;
     /* Maintain aspect ratio */
-    position: absolute;
-    /* Slide over the placeholder */
-    left: 100%;
+    transform: translateX(100%);
     /* Start from the left */
-    animation: slideIn 3s forwards;
+    animation: slideIn 2s forwards;
+    animation-delay: 1s;
     /* Animation to slide in */
-    border: .1px solid black;
     width: 665px;
-    height: auto;
 
 }
 
 @keyframes slideIn {
     from {
-        left: 100%;
+        transform: translateX(100%);
     }
 
     to {
-        left: 0;
+        transform: translateX(0);
     }
 }
 
 @media (max-width: 938px) {
+    .image-container {
+
+        width: 100%;
+    }
+
+
     .left-content {
 
         animation: slideInFromTop 2s forwards;
@@ -171,6 +175,7 @@
     }
 
 
+
     .bottom-box {
         display: inline;
     }
@@ -195,16 +200,31 @@
     }
 }
 
+@media (max-width: 720px) {
+    .image-container {
+        height: 500px;
+    }
+}
+
 @media (max-width: 660px) {
     .left-content {
         animation: slideInFromTopMobile 1.5s forwards;
         width: 70%;
         margin-left: 40px;
+    }
 
+    .image-container {
+        height: 400px;
     }
 }
 
-@media (max-width: 380px) {
+@media (max-width: 660px) {
+    .image-container {
+        height: 350px;
+    }
+}
+
+@media (max-width: 370px) {
     .right-content {
         margin-left: 10px;
     }

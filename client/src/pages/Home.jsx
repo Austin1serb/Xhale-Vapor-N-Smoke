@@ -1,23 +1,31 @@
-import React, { Suspense, useEffect } from 'react';
-import '../Styles/Home.css'; // You can create a CSS file for styling
-
+import React, { Suspense, useEffect, useState } from 'react';
+import '../Styles/Home.css';
 import { Box, Typography, List, ListItem, ListItemText, ListItemIcon, CircularProgress } from '@mui/material';
-
-
 import { Link } from 'react-router-dom';
-import { Helmet } from 'react-helmet';
+
 //lazy load my imports
 const BestSellersSection = React.lazy(() => import('../components/BestSellersSection.jsx'));
 const ShopByBrand = React.lazy(() => import('../components/ShopByBrand.jsx'));
 
-const Home = () => {
+const Home = ({ screenWidth }) => {
+
+
     useEffect(() => {
+        // Set page title and meta description
         document.title = "HerbaNatural - Premium CBD | Koi, beeZbee, Wyld | Home";
         document.querySelector('meta[name="description"]').setAttribute("content", "Discover premium CBD products with Herba Natural in Kirkland. Explore our range of Koi, Beezbee, and Wyld CBD oils, edibles, and topicals.");
+        // Preload image
+        const preloadLink = document.createElement("link");
+        preloadLink.href = screenWidth < 600 ? '/cbd-mobile.webp' : '/cbd.webp';
+        preloadLink.rel = "preload";
+        preloadLink.as = "image";
+        document.head.appendChild(preloadLink);
 
-
-
-    }, []);
+        // Cleanup function to remove the preload link when the component unmounts
+        return () => {
+            document.head.removeChild(preloadLink);
+        };
+    }, [screenWidth]);
 
 
 
@@ -44,10 +52,7 @@ const Home = () => {
     return (
 
         <div>
-            <Helmet>
-                {/* Preload the image */}
-                <link rel="preload" href="/cbd.webp" as="image" />
-            </Helmet>
+
             <Box sx={{ ml: { xs: -1.25, sm: 0 } }} className="home-container">
                 <div className="left-content">
                     <div className='colored-square-content'>
@@ -62,13 +67,21 @@ const Home = () => {
                 </div>
                 <div className="right-content animated-left slide-in">
                     <div className="image-container">
-                        <img
-                            src={'/cbd.webp'}
-                            alt="cbd"
-                            height='400px'
-                            width='400px'
-                            loading='LAZY'
-                        />
+                        {screenWidth < 600 ? (
+                            <img
+                                src={'/cbd-mobile.webp'}
+                                alt="cbd"
+                                height='400'
+                                width='400'
+                            />
+                        ) : (
+                            <img
+                                src={'/cbd.webp'}
+                                alt="cbd"
+                                height='400'
+                                width='400'
+                            />
+                        )}
                     </div>
                 </div>
 

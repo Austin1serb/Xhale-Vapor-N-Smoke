@@ -246,6 +246,8 @@ module.exports = {
         try {
             let { email, password } = req.body;
             email = email.toLowerCase()
+            console.log(email)
+            console.log('password: ', password)
             // Find the user by email
             const user = await Customers.findOne({ email });
 
@@ -254,11 +256,10 @@ module.exports = {
             }
 
             // Compare the hashed password provided in the request with the hashed password in the database
-            const passwordMatch = bcrypt.compare(password, user.password);
 
+            const passwordMatch = await bcrypt.compare(password, user.password);
+            // Passwords match, user is authenticated
             if (passwordMatch) {
-                // Passwords match, user is authenticated
-
                 // Generate a new access token
                 const accessToken = jwt.sign({
                     customerId: user._id,
@@ -267,8 +268,6 @@ module.exports = {
                     email: user.email,
                     isAdmin: user.isAdmin,
                 }, secretKey, { expiresIn: '1h' });
-
-
                 // Generate a new refresh token
                 const newRefreshToken = jwt.sign({
                     customerId: user._id
@@ -279,14 +278,11 @@ module.exports = {
                 await user.save();
                 // Set refresh token in HTTP-Only cookie
                 res.cookie('refreshToken', newRefreshToken, {
-
                     httpOnly: true,
                     secure: true,
                     maxAge: 43300000/* refresh token expiry in milliseconds */,
                     sameSite: 'Lax',
                 });
-
-
                 // Send the new access token and refresh token to the client
                 return res.json({ message: 'Login successful', accessToken, });
             } else {
@@ -294,11 +290,10 @@ module.exports = {
                 return res.status(401).json({ message: 'Incorrect email or password.' });
             }
         } catch (err) {
+            console.error(err)
             return res.status(500).json({ message: 'Server error', error: err });
         }
     },
-
-
     revokeToken: async (refreshToken) => {
         try {
             const revokedToken = new RevokedToken({ token: refreshToken });

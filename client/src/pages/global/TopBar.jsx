@@ -18,7 +18,6 @@ import React, { useState, useEffect, useRef, Suspense, } from 'react';
 import { Link, } from 'react-router-dom';
 import { useCart } from '../../components/CartContext.jsx';
 import { useAuth } from '../../components/Utilities/useAuth';
-import { Helmet } from 'react-helmet';
 
 
 
@@ -27,7 +26,7 @@ const Cart = React.lazy(() => import('../../components/Cart'));
 const DropdownMenu = React.lazy(() => import('../../components/DropDownMenu'));
 
 
-const TopBar = () => {
+const TopBar = ({ screenWidth }) => {
 
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [showBorder, setShowBorder] = useState(false);
@@ -44,7 +43,22 @@ const TopBar = () => {
     const closeIconRef = useRef(null);
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
 
+    useEffect(() => {
+        // Determine which image to preload based on screen width
+        let imageToPreload = screenWidth < 600 ? SmallBrandIcon : BrandIcon;
 
+        // Create preload link element
+        const preloadLink = document.createElement("link");
+        preloadLink.href = imageToPreload;
+        preloadLink.rel = "preload";
+        preloadLink.as = "image";
+        document.head.appendChild(preloadLink);
+
+        // Cleanup function to remove the preload link when the component unmounts or screen width changes
+        return () => {
+            document.head.removeChild(preloadLink);
+        };
+    }, [screenWidth]); // Re-run when screenWidth changes
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -56,10 +70,6 @@ const TopBar = () => {
                 setMobileDrawerOpen(false);
             }
         };
-
-
-
-
         document.addEventListener("mousedown", handleClickOutside);
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
@@ -194,12 +204,6 @@ const TopBar = () => {
     };
     return (
         <>
-            <Helmet>
-                <link rel="preload" href={BrandIcon} as="image" />
-                <link rel="preload" href={SmallBrandIcon} as="image" />
-                <link rel="preload" href={BrandText} as="image" />
-            </Helmet>
-
             <Box className='app-bar' sx={{ flexGrow: 1, mb: 10 }}  >
                 <AppBar
                     sx={{
@@ -257,14 +261,14 @@ const TopBar = () => {
                             <Box component={Link} to="/" className="nav-link">
                                 <Box sx={{ display: { sm: 'none' }, ml: '31%', mt: 1 }}>
                                     <img
-                                        src={BrandIcon} alt="Brand Icon" className='brand-icon' />
+                                        src={BrandIcon} alt="Brand Icon" className='brand-icon' height='200' width='600' />
                                 </Box>
 
                                 <Box sx={{ display: { xs: 'none', sm: 'block' }, ml: 3, mr: 1 }}>
                                     <img src={BrandText} height='80px' width='320px' alt="brand-text" className='brand-icon' />
                                 </Box>
                                 <Box >
-                                    <img src={SmallBrandIcon} height='auto' width='auto' alt="brand-icon-small" className='brand-icon-small' />
+                                    <img src={SmallBrandIcon} height='250' width='250' alt="brand-icon-small" className='brand-icon-small' />
                                 </Box>
                             </Box>
                             <Box>
