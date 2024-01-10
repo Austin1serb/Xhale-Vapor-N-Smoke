@@ -34,10 +34,10 @@ const OrderDetails = ({ order, open, onClose }) => {
                         <Grid item xs={12} md={6} lg={4}>
                             <Card>
                                 <CardContent>
-                                    <Typography variant="body1" gutterBottom>Order Total: ${order.totalAmount.grandTotal.toFixed(2)}</Typography>
-                                    <Typography variant="body2">Subtotal: ${order.totalAmount.subTotal.toFixed(2)}</Typography>
-                                    <Typography variant="body2">Tax: ${order.totalAmount.tax.toFixed(2)}</Typography>
-                                    <Typography variant="body2">Shipping: ${order.totalAmount.shippingCost.toFixed(2)}</Typography>
+                                    <Typography variant="body1" gutterBottom>Order Total: ${order.totalAmount.grandTotal?.toFixed(2)}</Typography>
+                                    <Typography variant="body2">Subtotal: ${order.totalAmount.subTotal?.toFixed(2)}</Typography>
+                                    <Typography variant="body2">Tax: ${order.totalAmount.tax?.toFixed(2)}</Typography>
+                                    <Typography variant="body2">Shipping: ${order.totalAmount.shippingCost?.toFixed(2)}</Typography>
                                 </CardContent>
                             </Card>
                         </Grid>

@@ -8,6 +8,7 @@ import { CartProvider } from './components/CartContext';
 import { Backdrop, CircularProgress } from '@mui/material';
 import ProtectedRoute from './components/Utilities/ProtectedRoute';
 import AuthProvider from './components/Utilities/AuthProvider';
+import useThrottle from './components/Utilities/useThrottle';
 
 
 const AdminDashboard = React.lazy(() => import('./pages/AdminDashboard'));
@@ -31,6 +32,21 @@ const Contact = React.lazy(() => import('./pages/Contact'));
 
 
 const App = () => {
+  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+
+  const handleResize = useThrottle(() => {
+    setScreenWidth(window.innerWidth);
+  }, 200); // Throttle for 200ms, adjust as needed
+
+  useEffect(() => {
+    window.addEventListener('resize', handleResize);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [handleResize]); // Add handleResize to the dependency array
+
   const location = useLocation();
   //initially set to true for bots that dont run JS
   const [isAgeVerified, setIsAgeVerified] = useState(true);
@@ -80,7 +96,7 @@ const App = () => {
       <AuthProvider>
         <CartProvider>
 
-          {(!isAdminDashboardRoute) && <TopBar />}
+          {(!isAdminDashboardRoute) && <TopBar screenWidth={screenWidth} />}
           {!isAgeVerified && !isExcludedRoute &&
             <Suspense fallback={<CircularProgress />}>
               <AgeVerification onVerify={handleVerify} />
@@ -104,7 +120,7 @@ const App = () => {
                     </ProtectedRoute>
                   }
                 />
-                <Route path="/" element={<Home />} />
+                <Route path="/" element={<Home screenWidth={screenWidth} />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/about" element={<AboutUs />} />
                 <Route path="/reset-password/:token" element={<ResetPassword />} />

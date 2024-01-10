@@ -16,8 +16,6 @@
 //    '/icons/maskable_icon.png',
 //    '/icons/facebook-logo-1200x630.png',
 //    '/icons/apple-touch-icon.png',
-//    'https://fonts.googleapis.com/css2?family=Playfair+Display&family=Poppins:wght@200;400&family=Source+Sans+3:wght@400&display=swap',
-//    'https://fonts.googleapis.com/css2?family=Cormorant:wght@500&display=swap',
 
 
 

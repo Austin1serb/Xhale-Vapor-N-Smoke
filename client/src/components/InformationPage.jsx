@@ -116,7 +116,19 @@ const InformationComponent = ({ next, back, onShippingDetailsSubmit, formData })
         country: ''
     });
 
-
+    // useEffect to run validate field
+    useEffect(() => {
+        validateField('email', email);
+        validateField('firstName', firstName);
+        validateField('lastName', lastName);
+        validateField('phone', phone);
+        validateField('address', address);
+        validateField('city', city);
+        validateField('state', state);
+        validateField('zip', zip);
+        validateField('country', country);
+    }
+        , [email, firstName, lastName, phone, address, city, state, zip, country]);
 
 
     const validateField = (fieldName, value) => {
@@ -163,7 +175,6 @@ const InformationComponent = ({ next, back, onShippingDetailsSubmit, formData })
 
     const handleSubmit = (event) => {
         event.preventDefault();
-
         // Validate each field and check if the form is valid
         const isEmailValid = validateField('email', email);
         const isFirstNameValid = validateField('firstName', firstName);
@@ -198,7 +209,6 @@ const InformationComponent = ({ next, back, onShippingDetailsSubmit, formData })
         onShippingDetailsSubmit(details);
         setFormSubmitted(true)
         submitFormData(details);
-
         next(); // Proceed to the next step
     };
 
@@ -314,10 +324,7 @@ const InformationComponent = ({ next, back, onShippingDetailsSubmit, formData })
                     // Unknown component type
                     break;
             }
-
-
         });
-
         // Combine street number and route to form the street address
         const streetAddress = streetNumber && route ? `${streetNumber} ${route}` : route;
         setAddress(streetAddress); // Set only the street address for the "Address line 1" field
@@ -326,16 +333,12 @@ const InformationComponent = ({ next, back, onShippingDetailsSubmit, formData })
 
     const formatPhoneNumber = (value) => {
         if (!value) return value;
-
         const phoneNumber = value.replace(/[^\d]/g, '');
         const phoneNumberLength = phoneNumber.length;
-
         if (phoneNumberLength < 4) return phoneNumber;
-
         if (phoneNumberLength < 7) {
             return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3)}`;
         }
-
         return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 10)}`;
     };
     const handlePhoneChange = (e) => {
