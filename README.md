@@ -14,7 +14,7 @@ Project Preview
 <img src="https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/043971fe-afd2-4e44-b47a-0d9a1d1528f5" width="400px" alt="Light House Score - Mobile">
 
 ### Home Page
-<img src="https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/136e07e2-fcd4-4abf-95b2-b8ae827b46f9" width="800" alt="Home Page">
+<img src="https://i.imgur.com/dkswWBC.gif" width="800" alt="Home Page">
 
 ### Shop Button Dropdown (on hover)
 <img src="https://github.com/Austin1serb/Xhale-Vapor-N-Smoke/assets/128577470/40a3465e-f610-4ea7-a724-c48dedf397cb" width="800" alt="Shop Dropdown">
