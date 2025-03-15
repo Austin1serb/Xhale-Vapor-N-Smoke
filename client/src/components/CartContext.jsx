@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { Box, Snackbar } from '@mui/material';
+import {  Snackbar } from '@mui/material';
 
 const CartContext = createContext();
 
@@ -90,13 +90,13 @@ export const CartProvider = ({ children }) => {
                 autoHideDuration={2000} // Snackbar will close after 2 seconds
                 onClose={() => setOpenSnackbar(false)}
                 message={`${truncatedName} - has been added to the cart.`}
-                action={<React.Fragment>
-                    <Box>
+                action={
+                <div>
                         <svg height='24' version="1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" enableBackground="new 0 0 48 48">
                             <polygon fill="#43A047" points="40.6,12.1 17,35.7 7.4,26.1 4.6,29 17,41.3 43.4,14.9" />
                         </svg>
-                    </Box>
-                </React.Fragment>}
+                    </div>
+                    }
             />
 
         </CartContext.Provider>

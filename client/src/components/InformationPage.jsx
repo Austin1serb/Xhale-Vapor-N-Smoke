@@ -4,7 +4,8 @@ import AddressAutocomplete from './AddressAutocomplete';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import { jwtDecode } from 'jwt-decode';
 import { useAuth } from './Utilities/useAuth';
-import '../Styles/CheckoutPage.css'
+import '../Styles/CheckoutPage.scss'
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 const InformationComponent = ({ next, back, onShippingDetailsSubmit, formData }) => {
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
@@ -593,13 +594,19 @@ const InformationComponent = ({ next, back, onShippingDetailsSubmit, formData })
                     </Grid>
                     <Grid item xs={12} className='information-buttons'>
 
-                        <Button onClick={back} variant="outlined" sx={{ height: 55, m: 1, letterSpacing: 2, color: '#283047', backgroundColor: 'white', borderColor: '#283047', borderWidth: 1.5, '&:hover': { backgroundColor: '#0F75E0', color: 'white', } }}>
-                            <ArrowBackIosNewIcon sx={{ fontSize: 18, mr: 1, display: { xs: 'none', sm: 'block' } }} />
-                            Back to cart</Button>
+                        <Button onClick={back} variant="outlined" sx={{ width: '45%', height: 55, m: 1, letterSpacing: 2, color: '#283047', backgroundColor: 'white', borderColor: '#283047', borderWidth: 1.5, '&:hover': { backgroundColor: '#0F75E0', color: 'white', } }}>
+                            <ArrowBackIosNewIcon sx={{ fontSize: 18, mr: 1, }} />
+
+                            <span className='cartSummary-checkout-text2'>Back</span>
+                            <span className='cartSummary-checkout-text'>Back to cart</span>
+                        </Button>
 
 
 
-                        <Button onClick={handleSubmit} variant="outlined" sx={{ letterSpacing: 2, color: 'white', backgroundColor: '#283047', "&:hover": { backgroundColor: '#FE6F49', border: '1px solid #FE6F49 ', }, textAlign: 'center', height: 55 }} ><span className='cartSummary-checkout-text'>Proceed</span>  to Shipping</Button>
+                        <Button onClick={handleSubmit} variant="outlined" sx={{ width: '45%', letterSpacing: 2, color: 'white', backgroundColor: '#283047', "&:hover": { backgroundColor: '#FE6F49', border: '1px solid #FE6F49 ', }, textAlign: 'center', height: 55 }} ><span className='cartSummary-checkout-text'>Proceed to Shipping</span>
+                            <span className='cartSummary-checkout-text2'>Shipping</span>
+                            <ArrowForwardIosIcon sx={{ fontSize: 18, ml: 1, color: 'white', }} />
+                        </Button>
                     </Grid>
                 </Grid>
             </FormControl>

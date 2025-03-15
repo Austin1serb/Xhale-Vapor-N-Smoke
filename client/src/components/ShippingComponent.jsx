@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Typography, Grid, List, ListItem, ListItemText, Button, CircularProgress, Box, ListItemAvatar } from '@mui/material';
-import '../Styles/CheckoutPage.css'
+import '../Styles/CheckoutPage.scss'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { format, addDays } from 'date-fns';
 import ShippingDetailsComponent from './ShippingDetailsComponent';
 const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, back, isLoading, onShippingOptionsChange, handleCheckout, setEstimatedShipping, lastAddress, setLastAddress, shipmentOptions, setShipmentOptions, fullCost, setShippingDetails }) => {
@@ -246,7 +247,7 @@ const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, b
 
                                     <div className='checkout-shipping-item-container'>
                                         <div >
-                                            <ListItemText className='checkout-shipping-name' primary={option.servicelevel.name} secondary={`Estimated Delivery: ${calculateShippingDate(option.estimated_days)}`} />
+                                            <ListItemText className='checkout-shipping-name' primary={option.servicelevel.name} secondary={`Est. Delivery: ${calculateShippingDate(option.estimated_days)}`} />
                                             <ListItemAvatar >
                                                 <img src={option.provider_image_75} alt="index" />
                                             </ListItemAvatar>
@@ -285,10 +286,13 @@ const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, b
 
 
             {/* Proceed to Payment Button */}
-            <Grid container sx={{ marginTop: '20px', justifyContent: 'space-between', marginLeft: { xs: 3.5, sm: 0 } }}>
+            <Grid container sx={{ marginTop: '20px', justifyContent: 'space-between', display: 'flex', width: '100%' }} className='information-buttons'>
 
-
-                <Button disabled={!!isLoading} onClick={handleLocalCheckout} variant="outlined" sx={{ m: 1, width: { xs: '75%', sm: '45%', md: '230px' }, letterSpacing: 2, color: 'white', backgroundColor: '#283047', height: 56.5, "&:hover": { backgroundColor: '#FE6F49', border: 'none', }, textAlign: 'center' }}>
+                <Button onClick={back} variant="outlined" sx={{ width: '45%', m: 0, letterSpacing: 2, color: '#283047', backgroundColor: 'white', borderColor: '#283047', borderWidth: 1.5, height: 55, '&:hover': { backgroundColor: '#0F75E0', color: 'white', } }}>
+                    <ArrowBackIosNewIcon sx={{ fontSize: 18, mr: 1, }} />
+                    <span className='cartSummary-checkout-text2'>Return</span>
+                    <span className='cartSummary-checkout-text'>Return to information</span></Button>
+                <Button disabled={!!isLoading} onClick={handleLocalCheckout} variant="outlined" sx={{ width: '45%', m: 0, letterSpacing: 2, color: 'white', backgroundColor: '#283047', height: 56.5, "&:hover": { backgroundColor: '#FE6F49', border: 'none', }, textAlign: 'center' }}>
                     {isLoading ? (
                         <CircularProgress
                             size={24}
@@ -296,14 +300,13 @@ const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, b
                         />
                     ) : (
                         <>
-                            <span className='cartSummary-checkout-text'>Proceed to </span> Payment
+
+                            <span className='cartSummary-checkout-text2'>Payment</span>
+                            <span className='cartSummary-checkout-text'>Proceed to Payment</span>
                         </>
                     )}
+                    <ArrowForwardIosIcon sx={{ fontSize: 18, ml: 1, color: 'white', }} />
                 </Button>
-                <Button onClick={back} variant="outlined" sx={{ m: 1, width: { xs: '75%', sm: '45%', md: '230px' }, letterSpacing: 2, color: '#283047', backgroundColor: 'white', borderColor: '#283047', borderWidth: 1.5, height: 55, '&:hover': { backgroundColor: '#0F75E0', color: 'white', } }}>
-                    <ArrowBackIosNewIcon sx={{ fontSize: 18, mr: 1 }} />
-                    Return to information</Button>
-
             </Grid>
         </Box>
     );

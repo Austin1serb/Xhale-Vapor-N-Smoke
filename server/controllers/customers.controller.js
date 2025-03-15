@@ -63,8 +63,6 @@ const verifyRefreshToken = async (req) => {
 };
 
 
-
-
 const verifyAccessToken = (req) => {
     const accessToken = req.headers.authorization.split(' ')[1];
 
@@ -76,25 +74,16 @@ const verifyAccessToken = (req) => {
     if (!decoded || decoded.userId !== req.params.id) {
         throw new Error('Invalid access token');
     }
-
-
-
     return decoded;
 };
 
 
-
-
-
 module.exports = {
-
     getAll: (req, res) => {
         Customers.find()
             .then(data => { res.json(data) })
             .catch(err => res.json(err))
     },
-
-
     getOne: (req, res) => {
         const userId = req.params.id; // Retrieve the user's ID from the request parameter
 
@@ -246,8 +235,6 @@ module.exports = {
         try {
             let { email, password } = req.body;
             email = email.toLowerCase()
-            console.log(email)
-            console.log('password: ', password)
             // Find the user by email
             const user = await Customers.findOne({ email });
 

@@ -9,6 +9,7 @@ import { Backdrop, CircularProgress } from '@mui/material';
 import ProtectedRoute from './components/Utilities/ProtectedRoute';
 import AuthProvider from './components/Utilities/AuthProvider';
 import useThrottle from './components/Utilities/useThrottle';
+import Test from './components/Test';
 
 
 const AdminDashboard = React.lazy(() => import('./pages/AdminDashboard'));
@@ -91,60 +92,59 @@ const App = () => {
 
 
   return (
-    <div>
+    <AuthProvider>
+      <CartProvider>
 
-      <AuthProvider>
-        <CartProvider>
-
-          {(!isAdminDashboardRoute) && <TopBar screenWidth={screenWidth} />}
-          {!isAgeVerified && !isExcludedRoute &&
-            <Suspense fallback={<CircularProgress />}>
-              <AgeVerification onVerify={handleVerify} />
-            </Suspense>
-          }
-          <Suspense fallback={
-            <Backdrop open={true} style={{ zIndex: 9999, color: '#fff' }}>
-              <CircularProgress color="inherit" />
-            </Backdrop>
-
-          }>
-            <Routes>
-              <Route>
-
-                {/* PROTECTED/LAZY LOADED ADMINDASHBOARD */}
-                <Route
-                  path="/customer/admin"
-                  element={
-                    <ProtectedRoute>
-                      <AdminDashboard />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route path="/" element={<Home screenWidth={screenWidth} />} />
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/about" element={<AboutUs />} />
-                <Route path="/reset-password/:token" element={<ResetPassword />} />
-                <Route path="/registration" element={<RegistrationPage />} />
-                <Route path="/details" element={<AccountDetails />} />
-                <Route path="/shop" element={<Shop />} />
-                <Route path="/checkout/:step" element={<CheckoutPage />} />
-                <Route path="/refund" element={<RefundPolicy />} />
-                <Route path="/terms" element={<TermAndConditions />} />
-                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                <Route path="/success" element={<SuccessPage />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/shipping-policy" element={<ShippingPolicy />} />
-              </Route>
-            </Routes>
+        {(!isAdminDashboardRoute) && <TopBar screenWidth={screenWidth} />}
+        {!isAgeVerified && !isExcludedRoute &&
+          <Suspense fallback={<CircularProgress />}>
+            <AgeVerification onVerify={handleVerify} />
           </Suspense>
-          <Suspense fallback={
+        }
+        <Suspense fallback={
+          <Backdrop open={true} style={{ zIndex: 9999, color: '#fff' }}>
             <CircularProgress color="inherit" />
-          }>
-            <Footer />
-          </Suspense>
-        </CartProvider>
-      </AuthProvider>
-    </div >
+          </Backdrop>
+
+        }>
+          <Routes>
+            <Route>
+
+              {/* PROTECTED/LAZY LOADED ADMINDASHBOARD */}
+              <Route
+                path="/customer/admin"
+                element={
+                  <ProtectedRoute>
+                    <AdminDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/" element={<Home screenWidth={screenWidth} />} />
+              <Route path="/test" element={<Test />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/about" element={<AboutUs />} />
+              <Route path="/reset-password/:token" element={<ResetPassword />} />
+              <Route path="/registration" element={<RegistrationPage />} />
+              <Route path="/details" element={<AccountDetails />} />
+              <Route path="/shop" element={<Shop />} />
+              <Route path="/checkout/:step" element={<CheckoutPage />} />
+              <Route path="/refund" element={<RefundPolicy />} />
+              <Route path="/terms" element={<TermAndConditions />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/success" element={<SuccessPage />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/shipping-policy" element={<ShippingPolicy />} />
+            </Route>
+          </Routes>
+        </Suspense>
+        <Suspense fallback={
+          <CircularProgress color="inherit" />
+        }>
+          <Footer />
+        </Suspense>
+      </CartProvider>
+    </AuthProvider>
+
   )
 }
 

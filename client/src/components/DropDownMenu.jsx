@@ -77,6 +77,7 @@ const DropdownMenu = ({ isVisible, onLinkClick }) => {
     };
 
 
+
     useEffect(() => {
         // Check screen width on mount
         if (window.innerWidth <= 900) {

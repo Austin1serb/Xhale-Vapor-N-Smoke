@@ -15,7 +15,6 @@ app.use(
         origin: frontEndDomain,
         credentials: true,
     }),
-
     express.json({ limit: "50mb" }),
     express.urlencoded({ limit: "50mb", extended: true }),
     (cookieParser()),

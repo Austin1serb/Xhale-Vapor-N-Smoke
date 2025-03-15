@@ -10,7 +10,8 @@ import LoadingModal from '../components/Common/LoadingModal';
 import { useAuth } from '../components/Utilities/useAuth';
 import ShippingDetailsComponent from '../components/ShippingDetailsComponent';
 import BrandIcon from '../assets/cbdtextwicon.webp'
-import '../Styles/CheckoutPage.css'
+import '../Styles/CheckoutPage.scss'
+import WorldpayPaymentForm from '../components/WorldpayPaymentForm';
 
 const CheckoutPage = () => {
     useEffect(() => {
@@ -19,7 +20,6 @@ const CheckoutPage = () => {
     }, []);
 
 
-    const [isSquareSdkLoaded, setIsSquareSdkLoaded] = useState(false);
     const navigate = useNavigate();
     const { step } = useParams();
     const activeStep = parseInt(step) - 1;
@@ -92,46 +92,45 @@ const CheckoutPage = () => {
 
 
 
-    const loadSquareSdk = () => {
-        setIsSquareSdkLoaded(false);
+    const [isWorldpaySdkLoaded, setIsWorldpaySdkLoaded] = useState(false);
+
+    const loadWorldpaySdk = () => {
+        setIsWorldpaySdkLoaded(false);
 
         const script = document.createElement('script');
-        script.src = "https://web.squarecdn.com/v1/square.js"; // URL for production
-        script.type = "text/javascript";
-        script.async = false;
-        script.onload = () => setIsSquareSdkLoaded(true);
+        script.src = "https://try.access.worldpay.com/access-checkout/v1/checkout.js"; // For production, use the production URL/remove try.
+        script.async = true;
+        script.onload = () => setIsWorldpaySdkLoaded(true);
         script.onerror = () => {
-            // Handle error loading the script
-            console.error('Failed to load Square SDK');
-            // Optionally, update the state to reflect the error
+            console.error('Failed to load Worldpay SDK');
+
         };
         document.body.appendChild(script);
     };
 
-    const cleanupSquareSdk = () => {
-        // Remove the Square SDK script from the DOM
-        const squareScript = document.querySelector('script[src="https://web.squarecdn.com/v1/square.js"]');
-        if (squareScript) {
-            document.body.removeChild(squareScript);
+    const cleanupWorldpaySdk = () => {
+        // Remove the Worldpay SDK script from the DOM
+        const worldpayScript = document.querySelector('script[src="https://try.access.worldpay.com/access-checkout/v1/checkout.js"]');
+        if (worldpayScript) {
+            document.body.removeChild(worldpayScript);
         }
 
         // Reset any related state variables if necessary
-        setIsSquareSdkLoaded(false);
-
-        // Additional cleanup tasks if required
+        setIsWorldpaySdkLoaded(false);
 
     };
 
     useEffect(() => {
-        if (activeStep === 3 && !isSquareSdkLoaded) {
-            loadSquareSdk();
+        if (activeStep === 3 && !isWorldpaySdkLoaded) {
+            loadWorldpaySdk();
         } else if (activeStep !== 3) {
-            cleanupSquareSdk()
+            cleanupWorldpaySdk();
         }
         if (activeStep === 0 && isGuestUser()) {
             handleOpenSnackbar();
         }
-    }, [activeStep, isSquareSdkLoaded]);
+    }, [activeStep, isWorldpaySdkLoaded]);
+
 
 
     const onPaymentProcess = (paymentToken) => {
@@ -582,10 +581,9 @@ const CheckoutPage = () => {
                                     setShippingDetails={setShippingDetails}
                                 />}
                                 {activeStep === 3 && (
-                                    isSquareSdkLoaded ? (
-                                        <SquarePaymentForm
-                                            onPaymentProcess={onPaymentProcess}
-                                            paymentForm={window.SqPaymentForm}
+                                    isWorldpaySdkLoaded ? (
+                                        <WorldpayPaymentForm
+                                            isWorldpaySdkLoaded={isWorldpaySdkLoaded}
                                             shippingDetails={shippingDetails}
                                             back={handleBack}
                                             errors={paymentError}

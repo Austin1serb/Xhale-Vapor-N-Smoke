@@ -67,8 +67,8 @@
 }
 
 .cartSummary-checkout-text {
-
     margin-right: 0.4em;
+    margin-left: 0.4em;
 }
 
 .cart-checkout-button {
@@ -117,8 +117,13 @@
     color: white;
 }
 
+@media (min-width: 685px) {
+    .cartSummary-checkout-text2 {
+        display: none;
+    }
+}
 
-@media (max-width: 600px) {
+@media (max-width: 685px) {
     .cartSummary-checkout-button {
         flex-direction: column;
 
@@ -162,6 +167,7 @@
 
 .checkout-shipping {
     margin-bottom: 20px;
+    height: 217px;
 }
 
 .checkout-shipping-contact {
@@ -189,10 +195,17 @@
 }
 
 .checkout-shipping-item-container {
+    height: 91.5px;
     width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+@media(max-width:400px) {
+    .checkout-shipping-item-container {
+        height: auto
+    }
 }
 
 .checkout-shipping-item-0 {
@@ -250,6 +263,11 @@
     margin-left: 5px;
 }
 
+@media(max-width:501px) {
+    .checkout-shipping {
+        height: auto;
+    }
+}
 
 
 
@@ -279,6 +297,7 @@
 
 
 /* PAYMENT FORM CSS */
+
 .checkout-paymentForm-SQUARE {
     display: flex;
     align-items: center;
@@ -324,6 +343,168 @@
     width: 200px;
     margin-left: -40px;
 }
+
+
+.card-container {
+
+    width: 41.875rem;
+    height: 28.4375rem;
+    background-color: var(--black);
+    font-family: 'Questrial', sans-serif;
+    position: relative;
+    z-index: 1;
+
+
+}
+
+//@use postcss-cssnext;
+
+.card-super-container {
+    --black: #525252;
+    --orange: #FFB000;
+    --white: #F7FBFC;
+    --grey: #C2C2C2;
+}
+
+#page {
+    width: 100%;
+    height: 100vh;
+    background-color: whitesmoke;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.card {
+    width: 17.5rem;
+    height: 11rem;
+    background-color: var(--white);
+    border-radius: .7rem;
+    padding: 1.3rem 1.6rem;
+    position: absolute;
+    top: 2.75rem;
+    right: 4.0rem;
+
+    &:after {
+        content: '';
+        display: block;
+        width: 20.5rem;
+        height: 15rem;
+        background-color: #2A2A2A;
+        border-radius: .7rem;
+        position: absolute;
+        top: 2.7rem;
+        right: -1.5rem;
+        transform: rotate(8deg);
+        z-index: -1;
+    }
+}
+
+.chip-brand {
+    display: flex;
+    justify-content: space-between;
+
+}
+
+.chip-svg {
+    height: 70px;
+    width: 38px;
+
+}
+
+.card-icon-svg {
+    transform: scale(1.4);
+}
+
+
+form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    position: relative;
+
+    & label {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        font-size: .90rem;
+        color: #C2C2C2;
+        margin-top: .35rem;
+    }
+
+    & label[for=name] {
+        width: 72%;
+    }
+
+    & label[for=date] {
+        width: 22%;
+        margin-left: 6%;
+    }
+
+    & label[for=cvc] {
+        width: 15%;
+        position: absolute;
+        right: 7%;
+        bottom: -1.5rem;
+    }
+
+    & label[for=remember] {
+        width: auto;
+        height: 2.8rem;
+        font-size: .7rem;
+        position: absolute;
+        left: -1.5rem;
+        bottom: -10rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: row-reverse;
+
+        & input {
+            margin-right: .5rem;
+            filter: invert(100%) hue-rotate(30deg) brightness(1.7);
+            color: red;
+            height: 1rem;
+            width: 1rem;
+        }
+    }
+
+    & input {
+        border: none;
+        border-bottom: 1px solid var(--grey);
+        outline: none;
+        background-color: transparent;
+        font-size: 1.1rem;
+        padding: .2rem 0;
+
+        &#cvc {
+            color: white;
+        }
+    }
+
+    & button {
+        height: 2.8rem;
+        width: 11.8rem;
+        font-size: .8rem;
+        position: absolute;
+        bottom: -10rem;
+        left: 10rem;
+        background-color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+
+        & .fa-angle-right {
+            font-size: 2rem;
+            position: absolute;
+            left: 72%;
+        }
+    }
+}
+
+
 
 @media(max-width:1000px) {
     .checkout-paymentForm-SQUARE {

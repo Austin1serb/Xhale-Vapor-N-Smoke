@@ -92,8 +92,8 @@ const BestSellersSection = () => {
         margin: '20px',
     }
     return (
-        <Box className="best-seller-container" ref={loaderRef} >
-            <h1 className='best-seller-header' >Our Customer Favorites</h1 >
+        <Box component='section' className="best-seller-container" ref={loaderRef} >
+            <h2 className='best-seller-header' >Our Customer Favorites</h2 >
             {isLoading ? ( // Check if products are loading
                 <Grid container spacing={3}>
                     <ProductSkeleton count={3} />

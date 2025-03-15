@@ -203,9 +203,10 @@ const TopBar = ({ screenWidth }) => {
         }
     };
     return (
-        <>
-            <Box className='app-bar' sx={{ flexGrow: 1, mb: 10 }}  >
+      
+            <Box component='nav' className='app-bar' sx={{ flexGrow: 1, mb: 10 }}  >
                 <AppBar
+                component='div'
                     sx={{
                         background: '#F5F5F5',
                         boxShadow: 'none',
@@ -364,7 +365,7 @@ const TopBar = ({ screenWidth }) => {
                     </Box>
                 </Drawer >
             </Box >
-        </>
+      
     );
 };
 

@@ -11,7 +11,7 @@ router.route('/paginate/').get(ProductsController.getAllPaginate);
 
 router.route('/:id').get(ProductsController.getOne);
 
-router.use(isAdmin, verifyToken);
+//router.use(isAdmin, verifyToken);
 router.route('/').post(ProductsController.createOne);
 router.route('/:id').put(ProductsController.updateOne);
 router.route('/:id').delete(ProductsController.deleteOne);

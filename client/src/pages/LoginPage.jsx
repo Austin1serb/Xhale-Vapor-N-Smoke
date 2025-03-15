@@ -32,9 +32,7 @@ const LoginPage = () => {
 
 
     const [openSnackbar, setOpenSnackbar] = React.useState(false);
-    //FORGOT PASSWORD LOGIC
     const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
-    //const ForgotPassword = React.lazy(() => import('./ForgotPassword'));
 
     const { setIsLoggedIn } = useAuth();
     const [email, setEmail] = useState('');

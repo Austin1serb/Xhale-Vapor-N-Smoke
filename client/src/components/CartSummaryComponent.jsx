@@ -6,7 +6,7 @@ import Tooltip from '@mui/material/Tooltip';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import { Link } from 'react-router-dom';
-import '../Styles/CheckoutPage.css'
+import '../Styles/CheckoutPage.scss'
 const CartSummaryComponent = ({ cartItems, shippingCost, total, removeFromCart, adjustQuantity, next, step, setFullCost }) => {
     // Helper function to format cost display
     const formatCost = (cost) => {

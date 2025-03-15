@@ -20,8 +20,8 @@ router.post('/register', registerLimiter, CustomersController.createOne);
 router.post('/logout', CustomersController.logoutUser);
 router.post('/refresh', tokenRefreshLimiter, CustomersController.refreshToken);
 // Routes below require authentication
-router.use(verifyToken); // Apply verifyToken middleware to routes below
-router.get('/', isAdmin, CustomersController.getAll);// verify is admin for this route
+//router.use(verifyToken); // Apply verifyToken middleware to routes below
+router.get('/', CustomersController.getAll);// verify is admin for this route
 router.get('/:id', CustomersController.getOne);
 router.put('/:id', CustomersController.updateOne);
 router.delete('/:id', CustomersController.deleteOne);
