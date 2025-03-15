@@ -11,7 +11,7 @@ const SquarePaymentForm = ({ onPaymentProcess, shippingDetails, back, errors, to
     const locationId = process.env.REACT_APP_SQUARE_LOCATION_ID_SANDBOX;
 
 
-    const handleTokenRecieved = (paymentToken) => {
+    const handleTokenReceived = (paymentToken) => {
         // Call your onPaymentProcess function with the paymentToken
         onPaymentProcess(paymentToken);
     };
@@ -43,7 +43,7 @@ const SquarePaymentForm = ({ onPaymentProcess, shippingDetails, back, errors, to
                 <PaymentForm
                     applicationId={applicationId}
                     locationId={locationId}
-                    cardTokenizeResponseReceived={handleTokenRecieved}
+                    cardTokenizeResponseReceived={handleTokenReceived}
                 >
                     <Typography color={'primary'}>Will be Charged: ${total.grandTotal.toFixed(2)}</Typography>
                     <CreditCard />

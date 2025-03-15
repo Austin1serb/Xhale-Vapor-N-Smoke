@@ -1,4 +1,3 @@
-const square = require('square');
 const { v4: uuidv4 } = require('uuid');
 const nodemailer = require('nodemailer');
 
@@ -6,11 +5,15 @@ const { Client, Environment, ApiError } = require("square");
 
 const client = new Client({
     accessToken: process.env.SQUARE_ACCESS_TOKEN,
-    environment: Environment.Production,
+    environment: "sandbox"
 
 });
 const { refundsApi } = client
 const paymentsApi = client.paymentsApi;
+
+
+const emailUsername = process.env.EMAIL_USERNAME;
+const emailPassword = process.env.EMAIL_PASSWORD;
 
 
 function convertBigIntToString(obj) {
@@ -53,6 +56,7 @@ const processPayment = async (req, res) => {
 
 
     try {
+        // console.log("Request body received:", req.body);
 
         const response = await paymentsApi.createPayment({
             sourceId: sourceId,
@@ -109,29 +113,31 @@ const processPayment = async (req, res) => {
     } catch (error) {
         // This catch block will handle both payment processing errors
         // and email sending errors
-        console.error('Error occurred:', error);
-        res.status(500).json({ error: error.message });
+        console.error('Error occurred:::', JSON.parse(error.body));
+
+        res.status(500).json({ error: JSON.parse(error.body) });
     }
 };
 
 
-
-
 async function sendReceiptEmail(cost, notes, estimatedShipping, orderDetails, last4, emailReceiptUrl) {
 
-    let trackingNumber = orderDetails.shippingMethod.trackingNumber ? orderDetails.shippingMethod.trackingNumber : 'Not avaliable yet.'
+    let trackingNumber = orderDetails.shippingMethod.trackingNumber ? orderDetails.shippingMethod.trackingNumber : 'Not available yet.'
     let trackingUrls = orderDetails.shippingMethod.trackingUrl ? orderDetails.shippingMethod.trackingUrl : 'Soon'
     let transporter = nodemailer.createTransport({
-        host: "smtp.office365.com",
-        port: 587,
-        secure: false,
+        // host: "smtp.office365.com",
+        // port: 587,
+        // secure: false,
+        host: "smtp.gmail.com",
+        port: 465,
+        secure: true,
         auth: {
-            user: process.env.EMAIL_USERNAME,
-            pass: process.env.EMAIL_PASSWORD
+            user: emailUsername,
+            pass: emailPassword
         },
-        tls: {
-            ciphers: 'SSLv3'
-        }
+        // tls: {
+        //     ciphers: 'SSLv3'
+        // }
     });
 
 
@@ -162,7 +168,7 @@ async function sendReceiptEmail(cost, notes, estimatedShipping, orderDetails, la
     }
 
     let mailOptions = {
-        from: 'customerservices@herbanaturalco.com', // Your email address
+        from: emailUsername, // Your email address
         to: `${orderDetails.customerEmail}`, // Customer's email address
         subject: 'Thank You for Your Purchase!',
         html: `

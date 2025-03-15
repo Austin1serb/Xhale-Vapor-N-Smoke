@@ -11,8 +11,8 @@ import { useAuth } from '../components/Utilities/useAuth';
 import ShippingDetailsComponent from '../components/ShippingDetailsComponent';
 import BrandIcon from '../assets/cbdtextwicon.webp'
 import '../Styles/CheckoutPage.scss'
-import WorldpayPaymentForm from '../components/WorldpayPaymentForm';
 
+const sdkUrl ="https://sandbox.web.squarecdn.com/v1/square.js"
 const CheckoutPage = () => {
     useEffect(() => {
         document.title = "Checkout - Complete Your Herba Natural Purchase";
@@ -20,6 +20,7 @@ const CheckoutPage = () => {
     }, []);
 
 
+    const [isSquareSdkLoaded, setIsSquareSdkLoaded] = useState(false);
     const navigate = useNavigate();
     const { step } = useParams();
     const activeStep = parseInt(step) - 1;
@@ -92,45 +93,47 @@ const CheckoutPage = () => {
 
 
 
-    const [isWorldpaySdkLoaded, setIsWorldpaySdkLoaded] = useState(false);
-
-    const loadWorldpaySdk = () => {
-        setIsWorldpaySdkLoaded(false);
+    const loadSquareSdk = () => {
+        setIsSquareSdkLoaded(false);
 
         const script = document.createElement('script');
-        script.src = "https://try.access.worldpay.com/access-checkout/v1/checkout.js"; // For production, use the production URL/remove try.
+        script.src =  script.src = sdkUrl
+        script.type = "text/javascript";
         script.async = true;
-        script.onload = () => setIsWorldpaySdkLoaded(true);
+        script.onload = () => setIsSquareSdkLoaded(true);
         script.onerror = () => {
-            console.error('Failed to load Worldpay SDK');
-
+            // Handle error loading the script
+            console.error('Failed to load Square SDK');
+            // Optionally, update the state to reflect the error
         };
         document.body.appendChild(script);
     };
 
-    const cleanupWorldpaySdk = () => {
-        // Remove the Worldpay SDK script from the DOM
-        const worldpayScript = document.querySelector('script[src="https://try.access.worldpay.com/access-checkout/v1/checkout.js"]');
-        if (worldpayScript) {
-            document.body.removeChild(worldpayScript);
-        }
+    // const cleanupSquareSdk = () => {
+    //     // Remove the Square SDK script from the DOM
+    //     const squareScript = document.querySelector('script[src="https://sandbox.web.squarecdn.com/v1/square.js"]');
 
-        // Reset any related state variables if necessary
-        setIsWorldpaySdkLoaded(false);
+    //     if (squareScript) {
+    //         document.body.removeChild(squareScript);
+    //     }
 
-    };
+    //     // Reset any related state variables if necessary
+    //     setIsSquareSdkLoaded(false);
+
+    //     // Additional cleanup tasks if required
+
+    // };
 
     useEffect(() => {
-        if (activeStep === 3 && !isWorldpaySdkLoaded) {
-            loadWorldpaySdk();
+        if (activeStep === 3 && !isSquareSdkLoaded) {
+            loadSquareSdk();
         } else if (activeStep !== 3) {
-            cleanupWorldpaySdk();
+            // cleanupSquareSdk()
         }
         if (activeStep === 0 && isGuestUser()) {
             handleOpenSnackbar();
         }
-    }, [activeStep, isWorldpaySdkLoaded]);
-
+    }, [activeStep, isSquareSdkLoaded]);
 
 
     const onPaymentProcess = (paymentToken) => {
@@ -166,7 +169,7 @@ const CheckoutPage = () => {
 
 
                 // Check if payment was successful
-                if (paymentResult.success === true) {
+                if (paymentResult?.success === true) {
                     orderData.transactionId = paymentResult.response.result.payment.id;
                     orderData.paymentStatus = 'Paid';
 
@@ -197,21 +200,19 @@ const CheckoutPage = () => {
                     clearCart()
                     // Navigate to success page after all processes are complete
                     navigate('/success', { state: { paymentResult: paymentResult } });
-                } else {
-                    // Handle payment processing failure
+                } else if(paymentResult.error.code==="INVALID_EXPIRATION"){ 
+                    setPaymentError('Invalid expiration date')
+            
                     console.error('Payment processing failed:', paymentResult);
-
-
                 }
             } else {
-
                 console.error('Missing payment token');
             }
         } catch (error) {
             console.error('Error during finalizing order and payment:', error);
+        
         } finally {
-            setIsLoading(false); // Stop loading state after all processes are complete or an error occurs
-
+            setIsLoading(false); 
         }
     };
 
@@ -272,34 +273,52 @@ const CheckoutPage = () => {
 
 
     const processPaymentAsync = async (paymentToken, paymentAmount, orderData) => {
-        try {
-            const response = await fetch('http://localhost:8000/api/payment/process-payment', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    sourceId: paymentToken.token, //'cnon:card-nonce-ok', // or sourceId: paymentToken.token,
-                    amount: paymentAmount,
-                    cost: fullCost, // Ensure 'fullCost' is defined in your context
-                    notes: notes, // Ensure 'notes' is defined in your context
-                    estimatedShipping: estimatedShipping, // Ensure 'estimatedShipping' is defined in your context
-                    orderDetails: orderData,
-                    last4: paymentToken.details.card.last4
-                }),
-            });
+    try {
+        const response = await fetch('http://localhost:8000/api/payment/process-payment', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                sourceId: paymentToken.token, // Use the payment token provided by Square
+                amount: paymentAmount,
+                cost: fullCost,
+                notes: notes,
+                estimatedShipping: estimatedShipping,
+                orderDetails: orderData,
+                last4: paymentToken.details.card.last4
+            }),
+        });
 
-            if (!response.ok) {
-                throw new Error(`Payment processing failed: HTTP ${response.status} - ${await response.text()}`);
-            }
+        // Check if response is successful
+        if (!response.ok) {
+            const errorText = await response.text(); // Get the error message from the response
+            console.error(`Payment processing failed: HTTP ${response.status} - ${errorText}`);
+            
+            // Parse the error response from Square
+            const errorResponse = errorText ? JSON.parse(errorText) : {};
+            console.log('errorResponse: ', errorResponse);
+            const errorDetail = errorResponse.error.errors[0]?.code || 'An unknown error occurred. Please try again later.';
+            
+            // Set the error message to be displayed to the user
+            setPaymentError(errorDetail);
 
-            return await response.json();
-        } catch (error) {
-            console.error('Error processing payment:', error);
-            setPaymentError('There was a problem processing your payment')
-            return null; // Return null in case of error
+            // Optionally, log the error for debugging
+            console.error("Error details from Square:", errorResponse.error.errors);
+            return null;
         }
-    };
+
+        // If payment is successful, return the result
+        return await response.json();
+
+    } catch (error) {
+        console.error('Error processing payment:', error);
+
+        // Display a generic error message to the user
+        setPaymentError('There was a problem processing your payment. Please try again.');
+        return null; // Return null in case of error
+    }
+};
 
 
 
@@ -581,9 +600,10 @@ const CheckoutPage = () => {
                                     setShippingDetails={setShippingDetails}
                                 />}
                                 {activeStep === 3 && (
-                                    isWorldpaySdkLoaded ? (
-                                        <WorldpayPaymentForm
-                                            isWorldpaySdkLoaded={isWorldpaySdkLoaded}
+                                    isSquareSdkLoaded ? (
+                                        <SquarePaymentForm
+                                            onPaymentProcess={onPaymentProcess}
+                                            paymentForm={window.SqPaymentForm}
                                             shippingDetails={shippingDetails}
                                             back={handleBack}
                                             errors={paymentError}

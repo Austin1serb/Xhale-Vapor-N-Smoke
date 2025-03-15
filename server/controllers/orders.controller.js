@@ -4,17 +4,25 @@ const Product = require('../models/products.model')
 const moment = require('moment')
 const nodemailer = require('nodemailer');
 
+
+const emailUsername = process.env.EMAIL_USERNAME;
+const emailPassword = process.env.EMAIL_PASSWORD;
 let transporter = nodemailer.createTransport({
-    host: "smtp.office365.com",
-    port: 587,
-    secure: false,
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+
+    // host: "smtp.office365.com",
+    // port: 587,
+    // secure: false,
     auth: {
-        user: process.env.EMAIL_USERNAME,
-        pass: process.env.EMAIL_PASSWORD
+        user: emailUsername,
+        pass: emailPassword
     },
-    tls: {
-        ciphers: 'SSLv3'
-    }
+    // for office 365
+    // tls: {
+    //     ciphers: 'SSLv3'
+    // }
 });
 function generateProductsHtml(orderDetails) {
     if (orderDetails && Array.isArray(orderDetails.products)) {
@@ -47,10 +55,11 @@ async function sendReceiptEmail(orderDetails) {
     // Construct the list of products with quantities and prices
 
     let productsHtml = generateProductsHtml(orderDetails);
+    console.log('orderDetails: ', orderDetails);
 
     let mailOptions2 = {
-        from: 'customerservices@herbanaturalco.com', // Your email address
-        to: 'customerservices@herbanaturalco.com', // Owner's email address
+        from: emailUsername, // Your email address
+        to: emailUsername, // Owner's email address
         subject: 'New Order Notification - HerbaNaturalCo',
         html: `
         <div style="font-family: Arial, sans-serif; color: #444; background-color: #f4f4f4; padding: 20px;">
@@ -120,7 +129,7 @@ async function sendShippedEmail(orderDetails) {
 
 
     let mailOptions = {
-        from: 'customerservices@herbanaturalco.com',
+        from: emailUsername,
         to: orderDetails.customerEmail,
         subject: 'Your Order Has Been Shipped - HerbaNaturalCo',
         html: `
@@ -157,7 +166,7 @@ async function sendDeliveredEmail(orderDetails) {
 
 
     let mailOptions = {
-        from: 'customerservices@herbanaturalco.com',
+        from: emailUsername,
         to: orderDetails.customerEmail,
         subject: 'Your Order Has Been Delivered - HerbaNaturalCo',
         html: `
@@ -191,7 +200,7 @@ async function sendCanceledEmail(orderDetails) {
     let productsHtml = generateProductsHtml(orderDetails);
 
     let mailOptions = {
-        from: 'customerservices@herbanaturalco.com',
+        from: emailUsername,
         to: orderDetails.customerEmail,
         subject: 'Your Order Has Been Canceled - HerbaNaturalCo',
         html: `
@@ -546,7 +555,7 @@ module.exports = {
 
 //            }
 //        ],
-//        address: "Austin Serb, 330 4th st, krikland, wa, 98033, US",
+//        address: "Austin Serb, 330 4th st, kirkland, wa, 98033, US",
 //        shippingMethod: existingOrderTemplate.shippingMethod, // Copy from template or customize
 //        totalAmount: {
 //            grandTotal: 12.00,

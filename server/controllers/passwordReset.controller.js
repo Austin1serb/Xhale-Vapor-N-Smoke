@@ -18,7 +18,10 @@ exports.forgotPassword = async (req, res) => {
 
             // Email logic
             let transporter = nodemailer.createTransport({
-                host: "smtp.office365.com",
+                // host: "smtp.office365.com",
+                host: "smtp.gmail.com",
+                port: 465,
+                secure: true,
                 auth: {
                     user: process.env.EMAIL_USERNAME,
                     pass: process.env.EMAIL_PASSWORD

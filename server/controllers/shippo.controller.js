@@ -66,6 +66,9 @@ exports.createShippoLabel = async (req, res) => {
         // Assuming orderDetails contains necessary shipment information
         const { shippingDetails } = req.body;
 
+        // console.log("Shipping Details:", shippingDetails);
+
+
         const shipment = {
             address_from: addressFrom,
             address_to: {
@@ -86,6 +89,7 @@ exports.createShippoLabel = async (req, res) => {
             carrier_account: shippingDetails.carrier_account,
             servicelevel_token: shippingDetails.servicelevel.token,
             label_file_type: 'PDF',
+            test: true,
         });
 
         res.json(label); // Send the label data back to the client

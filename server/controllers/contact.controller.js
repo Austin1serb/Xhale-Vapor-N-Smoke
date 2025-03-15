@@ -5,7 +5,10 @@ const sendContactEmail = async (req, res) => {
 
     // Set up Nodemailer transporter
     let transporter = nodemailer.createTransport({
-        host: "smtp.office365.com",
+        port: 465,
+        secure: true,
+        host: "smtp.gmail.com",
+        // host: "smtp.office365.com",
         auth: {
             user: process.env.EMAIL_USERNAME,
             pass: process.env.EMAIL_PASSWORD

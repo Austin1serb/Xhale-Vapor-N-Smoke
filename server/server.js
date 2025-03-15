@@ -48,7 +48,9 @@ const paymentRoutes = require('./routes/payment.routes');
 const passwordResetRoutes = require('./routes/passwordReset.routes')
 const contactRouter = require('./routes/contact.routes');
 
-
+app.get('/', (req, res) => {
+    res.send('Hello World');
+});
 app.use('/api', passwordResetRoutes);
 app.use("/api/", suggestionsRoutes);
 app.use('/api/payment', paymentRoutes);
