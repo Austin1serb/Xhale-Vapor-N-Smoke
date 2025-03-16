@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const cors = require('cors')
 const express = require('express');
 const app = express();
-const port = process.env.PORT;
+const port = process.env.PORT || 8000;
 const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const bodyParser = require('body-parser');
@@ -28,7 +28,7 @@ app.use(helmet({
             styleSrc: ["'self'", 'https://fonts.googleapis.com', "'unsafe-inline'"],
             fontSrc: ["'self'", 'https://fonts.gstatic.com'],
             imgSrc: ["'self'", 'https://res.cloudinary.com'],
-            connectSrc: ["'self'", 'https://connect.squareup.com', 'http://localhost:8080'],
+            connectSrc: ["'self'", 'https://connect.squareup.com', 'http://localhost:8000'],
             frameSrc: ["'self'"],
             objectSrc: ["'none'"],
             // Add other directives as needed
