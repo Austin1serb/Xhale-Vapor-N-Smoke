@@ -19,6 +19,7 @@ import {
 } from '@mui/material';
 import { useAuth } from '../components/Utilities/useAuth';
 import ForgotPassword from '../components/ForgotPassword';
+import { BACKEND_URL } from '../utils/secrets';
 
 const AccountDetails = () => {
     useEffect(() => {
@@ -76,7 +77,7 @@ const AccountDetails = () => {
 
     const fetchOrders = async (orderIds) => {
         const orders = await Promise.all(orderIds.map(orderId =>
-            fetch(`http://localhost:8000/api/order/${orderId}`, { credentials: 'include' })
+            fetch(`${BACKEND_URL}/api/order/${orderId}`, { credentials: 'include' })
                 .then(response => response.json())
                 .catch(error => {
                     console.error('Error fetching order:', orderId, error)
@@ -89,7 +90,7 @@ const AccountDetails = () => {
     const fetchCustomerData = async (userId) => {
         setLoadingPage(true);
         try {
-            const response = await fetch(`http://localhost:8000/api/customer/${userId}`, { credentials: 'include' });
+            const response = await fetch(`${BACKEND_URL}/api/customer/${userId}`, { credentials: 'include' });
             if (!response.ok) throw new Error('Network response was not ok');
 
             const customerData = await response.json();
@@ -123,7 +124,7 @@ const AccountDetails = () => {
         setLoading(true)
 
         try {
-            const response = await fetch(`http://localhost:8000/api/customer/${customer._id}`, {
+            const response = await fetch(`${BACKEND_URL}/api/customer/${customer._id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -172,7 +173,7 @@ const AccountDetails = () => {
 
     const handleDeleteAccount = () => {
 
-        fetch(`http://localhost:8000/api/customer/${customer._id}`, {
+        fetch(`${BACKEND_URL}/api/customer/${customer._id}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',

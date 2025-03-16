@@ -6,6 +6,7 @@ import { jwtDecode } from 'jwt-decode';
 import { useAuth } from './Utilities/useAuth';
 import '../Styles/CheckoutPage.scss'
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import { BACKEND_URL } from '../utils/secrets';
 const InformationComponent = ({ next, back, onShippingDetailsSubmit, formData }) => {
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
@@ -62,7 +63,7 @@ const InformationComponent = ({ next, back, onShippingDetailsSubmit, formData })
     }, []);
     const fetchCustomerData = (userId) => {
 
-        fetch(`http://localhost:8000/api/customer/${userId}`, {
+        fetch(`${BACKEND_URL}/api/customer/${userId}`, {
             credentials: 'include'
         })
             .then((response) => {
@@ -229,8 +230,8 @@ const InformationComponent = ({ next, back, onShippingDetailsSubmit, formData })
                 // New guest user or guest user with updated information
                 if (!customerId || customerId.startsWith('guest-') || !doesFormDataMatchLocalStorage(data)) {
                     const url = customerId && !customerId.startsWith('guest-')
-                        ? `http://localhost:8000/api/guest/${customerId}` // URL for updating existing guest
-                        : `http://localhost:8000/api/guest`; // URL for creating new guest
+                        ? `${BACKEND_URL}/api/guest/${customerId}` // URL for updating existing guest
+                        : `${BACKEND_URL}/api/guest`; // URL for creating new guest
 
                     const method = customerId && !customerId.startsWith('guest-') ? 'PUT' : 'POST';
 
@@ -260,7 +261,7 @@ const InformationComponent = ({ next, back, onShippingDetailsSubmit, formData })
                 }
             } else {
                 const { email, firstName, lastName, ...dataToSend } = data;
-                response = await fetch(`http://localhost:8000/api/customer/${localStorage.getItem('customerId')}`, {
+                response = await fetch(`${BACKEND_URL}/api/customer/${localStorage.getItem('customerId')}`, {
                     method: 'PUT', // Use POST for creating or PUT for updating
 
                     headers: {

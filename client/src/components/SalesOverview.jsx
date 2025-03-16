@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { BarChart } from '@mui/x-charts/BarChart';
-import { Box, Button, Card, CardContent, CircularProgress, Grid, Typography } from '@mui/material';
+import { Box, Button, Card, CardContent, CircularProgress, Grid2, Typography } from '@mui/material';
 import { axisClasses } from '@mui/x-charts';
 import OrderDetails from './OrderDetails';
+import { BACKEND_URL } from '../utils/secrets';
 
 
 
@@ -143,20 +144,20 @@ const SalesOverview = () => {
 
 
                 // Fetch guest data
-                const guestDataResponse = await fetchData('http://localhost:8000/api/guest', signal);
+                const guestDataResponse = await fetchData(`${BACKEND_URL}/api/guest`, signal);
                 setGuestData(guestDataResponse);
 
 
 
                 // Fetch products
-                const productData = await fetchData('http://localhost:8000/api/product', signal);
+                const productData = await fetchData(`${BACKEND_URL}/api/product`, signal);
                 setProducts(productData);
                 setTotalProducts(productData.length);
 
 
 
                 // Fetch orders
-                const orderData = await fetchData('http://localhost:8000/api/order', signal);
+                const orderData = await fetchData(`${BACKEND_URL}/api/order`, signal);
                 const sortedOrders = orderData.sort((a, b) => new Date(b.orderDate) - new Date(a.orderDate)).slice(0, 5);
                 setRecentOrders(sortedOrders);
                 setTotalOrders(orderData.length);
@@ -167,7 +168,7 @@ const SalesOverview = () => {
 
 
                 // Fetch customer data
-                const customerData = await fetchData('http://localhost:8000/api/customer', signal);
+                const customerData = await fetchData(`${BACKEND_URL}/api/customer`, signal);
 
                 // Separate out admins from customers
                 const admins = customerData.filter(customer => customer.isAdmin);
@@ -182,7 +183,7 @@ const SalesOverview = () => {
                 setRecentAdmins(admins.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 5));
 
                 // Fetch top selling products
-                const data = await fetchData('http://localhost:8000/api/order/best-sellers-six-months', signal);
+                const data = await fetchData(`${BACKEND_URL}/api/order/best-sellers-six-months`, signal);
 
                 const aggregatedData = aggregateSalesData(data);
                 const chartData = transformAndSortDataForChart(aggregatedData);
@@ -220,7 +221,7 @@ const SalesOverview = () => {
         sx: {
             [`.${axisClasses.left} .${axisClasses.label}`]: {
                 transform: 'translate(50px, -190px) ',
-                //rotate 90 degress
+                //rotate 90 degrees
 
 
 
@@ -309,65 +310,65 @@ const SalesOverview = () => {
     return (
         <Box sx={{ m: 5 }}>
             <Typography p={3} textAlign={'center'} variant='h4'>SALES OVERVIEW</Typography>
-            <Grid container spacing={3}>
+            <Grid2 container spacing={3}>
                 {/* Display summary widgets */}
-                <Grid item xs={6} md={4} lg={2}>
+                <Grid2 item xs={6} md={4} lg={2}>
                     <Card>
                         <CardContent>
                             <Typography variant="body1" gutterBottom>Total Products:</Typography>
                             <Typography variant="body2">{totalProducts}</Typography>
                         </CardContent>
                     </Card>
-                </Grid>
-                <Grid item xs={6} md={4} lg={2}>
+                </Grid2>
+                <Grid2 item xs={6} md={4} lg={2}>
                     <Card>
                         <CardContent>
                             <Typography variant="body1" gutterBottom>Total Orders:</Typography>
                             <Typography variant="body2">{totalOrders}</Typography>
                         </CardContent>
                     </Card>
-                </Grid>
-                <Grid item xs={6} md={4} lg={2}>
+                </Grid2>
+                <Grid2 item xs={6} md={4} lg={2}>
                     <Card>
                         <CardContent>
                             <Typography variant="body1" gutterBottom>Total Sales:</Typography>
                             <Typography variant="body2">{totalSales.toFixed(2)}</Typography>
                         </CardContent>
                     </Card>
-                </Grid>
-                <Grid item xs={6} md={4} lg={2}>
+                </Grid2>
+                <Grid2 item xs={6} md={4} lg={2}>
                     <Card>
                         <CardContent>
                             <Typography variant="body1" gutterBottom>Pending Orders:</Typography>
                             <Typography variant="body2">{pendingOrders}</Typography>
                         </CardContent>
                     </Card>
-                </Grid>
-                <Grid item xs={6} md={4} lg={2}>
+                </Grid2>
+                <Grid2 item xs={6} md={4} lg={2}>
                     <Card>
                         <CardContent>
                             <Typography variant="body1" gutterBottom>Total Admins: </Typography>
                             <Typography variant="body2">{totalAdmins}</Typography>
                         </CardContent>
                     </Card>
-                </Grid>
-                <Grid item xs={6} md={4} lg={2}>
+                </Grid2>
+                <Grid2 item xs={6} md={4} lg={2}>
                     <Card>
                         <CardContent>
                             <Typography variant="body1" gutterBottom>Total Accounts:  </Typography>
                             <Typography variant="body2">{totalCustomers}</Typography>
                         </CardContent>
                     </Card>
-                </Grid>
-                <Grid item xs={12} md={4} lg={6} >
+                </Grid2>
+                <Grid2 item xs={12} md={4} lg={6} >
                     <Card>
                         <CardContent >
                             <Typography variant="body1" gutterBottom>Recent Customer Registrations: </Typography>
                             <Typography variant="body2"> {recentCustomers.map(customer => <li key={customer._id}>{customer.firstName} {customer.lastName} - {customer.email}</li>)}</Typography>
                         </CardContent>
                     </Card>
-                </Grid>
-                <Grid item xs={12} md={8} lg={6}>
+                </Grid2>
+                <Grid2 item xs={12} md={8} lg={6}>
                     <Card>
                         <CardContent>
                             <Typography variant="body1">Guest Information:</Typography>
@@ -387,9 +388,9 @@ const SalesOverview = () => {
 
                         </CardContent>
                     </Card>
-                </Grid>
+                </Grid2>
 
-                <Grid item xs={12} md={8} lg={12}>
+                <Grid2 item xs={12} md={8} lg={12}>
                     <Card>
                         <CardContent>
                             <Typography variant="body1">Latest Orders:</Typography>
@@ -410,7 +411,7 @@ const SalesOverview = () => {
                             ))}
                         </CardContent>
                     </Card>
-                </Grid>
+                </Grid2>
 
 
 
@@ -445,7 +446,7 @@ const SalesOverview = () => {
                     series={chartSeries}
                     {...chartSetting}
                 />
-            </Grid>
+            </Grid2>
         </Box>
     );
 }

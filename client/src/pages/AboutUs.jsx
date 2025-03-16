@@ -4,6 +4,7 @@ import { Accordion, AccordionDetails, AccordionSummary, Box, Button, CircularPro
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import brandIcon from '../assets/brandIconSmall.webp'
 import { Link, useLocation } from 'react-router-dom';
+import { BACKEND_URL } from '../utils/secrets';
 const QuickView = React.lazy(() => import('../components/QuickView'));
 
 const AboutUs = () => {
@@ -37,7 +38,7 @@ const AboutUs = () => {
 
     const fetchBestSellers = () => {
         setIsLoading(true);
-        fetch('http://localhost:8000/api/product/bestsellers?limit=3')
+        fetch(`${BACKEND_URL}/api/product/bestsellers?limit=3`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');

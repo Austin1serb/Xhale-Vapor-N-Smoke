@@ -151,7 +151,7 @@ module.exports = {
                     httpOnly: true,
                     secure: true, // Use secure in production
                     maxAge: 86600000, // Refresh token expiry in milliseconds
-                    sameSite: 'Lax',
+                    sameSite: 'None',
                 });
 
                 console.log('Tokens refreshed');
@@ -213,7 +213,7 @@ module.exports = {
                 httpOnly: true,
                 secure: true, // use secure in production
                 maxAge: 43300000/* refresh token expiry in milliseconds */,
-                sameSite: 'Lax',
+                sameSite: 'None',
             });
 
             // Send the initial access token  to the client
@@ -268,7 +268,7 @@ module.exports = {
                     httpOnly: true,
                     secure: true,
                     maxAge: 43300000/* refresh token expiry in milliseconds */,
-                    sameSite: 'Lax',
+                    sameSite: 'None',
                 });
                 // Send the new access token and refresh token to the client
                 return res.json({ message: 'Login successful', accessToken, });

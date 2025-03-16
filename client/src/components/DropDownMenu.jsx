@@ -3,6 +3,7 @@ import React, { Suspense, useEffect, useState } from 'react';
 import '../Styles/DropDownMenu.css';
 import { Link } from 'react-router-dom';
 import { Collapse } from '@mui/material';
+import { BACKEND_URL } from '../utils/secrets';
 
 
 const QuickView = React.lazy(() => import('../components/QuickView'));
@@ -20,7 +21,7 @@ const DropdownMenu = ({ isVisible, onLinkClick }) => {
 
         setLoading(true);
         try {
-            const response = await fetch('http://localhost:8000/api/product/featured?limit=3');
+            const response = await fetch(`${BACKEND_URL}/api/product/featured?limit=3`);
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);

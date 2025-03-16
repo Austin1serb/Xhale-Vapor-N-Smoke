@@ -20,6 +20,7 @@ import Alert from '@mui/material/Alert';
 import { jwtDecode } from 'jwt-decode';
 import GuestCheckoutPage from '../components/GuestCheckout';
 import { useAuth } from '../components/Utilities/useAuth';
+import { BACKEND_URL } from '../utils/secrets';
 
 
 
@@ -178,7 +179,7 @@ const RegistrationPage = () => {
 
             };
 
-            const response = await fetch('http://localhost:8000/api/customer/register', {
+            const response = await fetch(`${BACKEND_URL}/api/customer/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

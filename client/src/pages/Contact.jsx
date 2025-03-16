@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { TextField, Button, Typography, Container, CircularProgress } from '@mui/material';
 import { Link } from 'react-router-dom';
+import { BACKEND_URL } from '../utils/secrets';
 
 const Contact = () => {
     useEffect(() => {
@@ -28,7 +29,7 @@ const Contact = () => {
         setIsLoading(true);
         try {
             // Send a POST request to the server
-            await axios.post('http://localhost:8000/api/contact', formData);
+            await axios.post(`${BACKEND_URL}/api/contact`, formData);
             // Handle response here
             setSubmitStatus('Message sent successfully.');
             // Reset form

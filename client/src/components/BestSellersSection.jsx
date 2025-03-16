@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import '../Styles/BestSellersSection.css'
 import { Link } from 'react-router-dom';
+import { BACKEND_URL } from '../utils/secrets';
 
 const BestSellersSection = () => {
     const [bestSellers, setBestSellers] = useState([]);
@@ -63,7 +64,7 @@ const BestSellersSection = () => {
 
     const fetchBestSellers = () => {
         setIsLoading(true);
-        fetch('http://localhost:8000/api/product/bestsellers?limit=3')
+        fetch(`${BACKEND_URL}/api/product/bestsellers?limit=3`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');

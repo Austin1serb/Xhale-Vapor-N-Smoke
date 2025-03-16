@@ -5,6 +5,7 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { format, addDays } from 'date-fns';
 import ShippingDetailsComponent from './ShippingDetailsComponent';
+import { BACKEND_URL } from '../utils/secrets';
 const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, back, isLoading, onShippingOptionsChange, handleCheckout, setEstimatedShipping, lastAddress, setLastAddress, shipmentOptions, setShipmentOptions, fullCost, setShippingDetails }) => {
 
 
@@ -73,7 +74,7 @@ const ShippingComponent = ({ cartItems, shippingDetails, onShippingCostChange, b
             setLoading(true);
 
 
-            const backendUrl = 'http://localhost:8000/api/shippo';
+            const backendUrl = `${BACKEND_URL}/api/shippo`;
             const shipmentDetails = {
 
                 addressTo: {

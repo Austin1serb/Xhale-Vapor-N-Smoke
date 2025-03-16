@@ -3,6 +3,7 @@ import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { TextField, Select, MenuItem, Snackbar, FormControl, InputLabel, Box, CircularProgress, Typography, Card, CardContent, Button } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 import OrderDetails from './OrderDetails';
+import { BACKEND_URL } from '../utils/secrets';
 
 
 const OrderList = () => {
@@ -25,7 +26,7 @@ const OrderList = () => {
 
     useEffect(() => {
 
-        fetch('http://localhost:8000/api/order', {
+        fetch(`${BACKEND_URL}/api/order`, {
             credentials: 'include',
         })
             .then((response) => response.json())
@@ -47,7 +48,7 @@ const OrderList = () => {
         const isConfirmed = window.confirm('Are you sure you want to delete this order? - It will be permanently deleted');
         setLoading(true);
         if (isConfirmed) {
-            fetch(`http://localhost:8000/api/order/${orderId}`, {
+            fetch(`${BACKEND_URL}/api/order/${orderId}`, {
                 method: 'DELETE',
                 credentials: 'include',
                 headers: {
@@ -119,7 +120,7 @@ const OrderList = () => {
             const newStatus = event.target.value;
             setLoading(true);
             // Send a PUT request to update the order status
-            fetch(`http://localhost:8000/api/order/${orderId}`, {
+            fetch(`${BACKEND_URL}/api/order/${orderId}`, {
                 method: 'PUT',
                 credentials: 'include',
                 headers: {

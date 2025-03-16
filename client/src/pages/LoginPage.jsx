@@ -21,6 +21,7 @@ import Alert from '@mui/material/Alert';
 import GuestCheckoutPage from '../components/GuestCheckout';
 import ForgotPassword from '../components/ForgotPassword';
 import { useAuth } from '../components/Utilities/useAuth';
+import { BACKEND_URL } from '../utils/secrets';
 
 const LoginPage = () => {
     useEffect(() => {
@@ -84,7 +85,7 @@ const LoginPage = () => {
         try {
             setLoading(true);
             // Make an API request to your backend for login
-            const response = await fetch('http://localhost:8000/api/customer/login', {
+            const response = await fetch(`${BACKEND_URL}/api/customer/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

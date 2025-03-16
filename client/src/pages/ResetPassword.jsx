@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button, CircularProgress, TextField, Typography } from '@mui/material';
+import { BACKEND_URL } from '../utils/secrets';
 
 const ResetPassword = () => {
     useEffect(() => {
@@ -39,7 +40,7 @@ const ResetPassword = () => {
         try {
 
             setLoading(true);
-            const response = await fetch('http://localhost:8000/api/reset-password', {
+            const response = await fetch(`${BACKEND_URL}/api/reset-password`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: { 'Content-Type': 'application/json' },

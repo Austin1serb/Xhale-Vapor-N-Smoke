@@ -5,6 +5,7 @@ import { Box, Typography, TextField, Button, Grid, Skeleton, InputAdornment, Ico
 import axios from 'axios';
 import { useCart } from '../components/CartContext.jsx';
 import { Link, useLocation } from 'react-router-dom';
+import { BACKEND_URL } from '../utils/secrets.js';
 
 
 const QuickView = React.lazy(() => import('../components/QuickView'));
@@ -70,7 +71,7 @@ const Shop = () => {
         // Include the filter in the search URL
         const newFilter = queryParams.get('filter') || '';
         setFilter(newFilter);
-        const url = `http://localhost:8000/api/product/search?term=${encodeURIComponent(searchTerm)}&filter=${filter}&pageSize=${pageSize}`;
+        const url = `${BACKEND_URL}/api/product/search?term=${encodeURIComponent(searchTerm)}&filter=${filter}&pageSize=${pageSize}`;
 
         axios.get(url)
             .then(response => {
@@ -151,7 +152,7 @@ const Shop = () => {
         setProducts([]);
         setSearchTerm('')
         setPage(1);
-        const url = `http://localhost:8000/api/product/paginate/?page=1&pageSize=${pageSize}&filter=${newFilter}`;
+        const url = `${BACKEND_URL}/api/product/paginate/?page=1&pageSize=${pageSize}&filter=${newFilter}`;
         fetchProducts(url)
 
     }, [location.search]);
@@ -174,7 +175,7 @@ const Shop = () => {
                 console.log('fetching')
                 setLoadingMore(true);
                 // Fetch the next page of products
-                const url = `http://localhost:8000/api/product/paginate/?page=${page}&pageSize=${pageSize}&filter=${filter}`;
+                const url = `${BACKEND_URL}/api/product/paginate/?page=${page}&pageSize=${pageSize}&filter=${filter}`;
                 axios.get(url)
                     .then(response => {
                         const newProducts = response.data.products.filter(np => !products.some(p => p._id === np._id));
@@ -207,7 +208,7 @@ const Shop = () => {
         setLoadingMore(false); // Reset loading states
         const newFilter = queryParams.get('filter') || '';
         setFilter(newFilter);
-        fetchProducts(`http://localhost:8000/api/product/paginate/?page=1&pageSize=${pageSize}&filter=${filter}`);
+        fetchProducts(`${BACKEND_URL}/api/product/paginate/?page=1&pageSize=${pageSize}&filter=${filter}`);
     };
 
     // Modified handleSearchChange to reset state when search is cleared

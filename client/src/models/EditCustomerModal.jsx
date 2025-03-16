@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Box, Typography, TextField, Button, Grid } from '@mui/material';
+import { BACKEND_URL } from '../utils/secrets';
 
 const EditCustomerModal = ({ open, onClose, customer, updateCustomerList, isViewOnly = false }) => {
     const [formData, setFormData] = useState({
@@ -41,7 +42,7 @@ const EditCustomerModal = ({ open, onClose, customer, updateCustomerList, isView
     };
 
     const handleSubmit = () => {
-        fetch(`http://localhost:8000/api/customer/${customer._id}`, {
+        fetch(`${BACKEND_URL}/api/customer/${customer._id}`, {
             method: 'PUT',
             credentials: 'include',
             headers: {

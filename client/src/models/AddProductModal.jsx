@@ -19,6 +19,7 @@ import ImageUpload from './ImageUpload';
 import StrengthFeaturedControl from './StrengthFeaturedControl';
 import SEOSection from './SEOSection';
 import ShippingInput from './ShippingInput';
+import { BACKEND_URL } from '../utils/secrets';
 
 const initialProductData = {
     brand: '',
@@ -196,7 +197,7 @@ const AddProductModal = ({ open, onClose, onAddProduct, selectedProduct, onUpdat
 
 
 
-    const API_URL = 'http://localhost:8000/api/product/';
+    const API_URL = `${BACKEND_URL}/api/product/`;
     const HEADERS = {
         'Content-Type': 'application/json',
     };

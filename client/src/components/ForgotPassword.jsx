@@ -1,5 +1,6 @@
 import { Button, CircularProgress, IconButton, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
+import { BACKEND_URL } from "../utils/secrets";
 
 // ForgotPassword.jsx
 const ForgotPassword = ({ close, type, resetEmail, startCountdown, countdown, isButtonDisabled }) => {
@@ -33,7 +34,7 @@ const ForgotPassword = ({ close, type, resetEmail, startCountdown, countdown, is
         try {
             setLoading(true);
 
-            const response = await fetch('http://localhost:8000/api/forgot-password', {
+            const response = await fetch(`${BACKEND_URL}/api/forgot-password`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: { 'Content-Type': 'application/json' },

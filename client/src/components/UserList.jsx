@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import EditCustomerModal from '../models/EditCustomerModal';
+import { BACKEND_URL } from '../utils/secrets';
 
 
 const UserList = () => {
@@ -26,8 +27,8 @@ const UserList = () => {
     const confirmDeleteUser = () => {
 
         const url = userTypeToDelete === 'customer'
-            ? `http://localhost:8000/api/customer/${userToDelete}`
-            : `http://localhost:8000/api/guest/${userToDelete}`;
+            ? `${BACKEND_URL}/api/customer/${userToDelete}`
+            : `${BACKEND_URL}/api/guest/${userToDelete}`;
 
         fetchData(url, { method: 'DELETE' })
             .then(() => {
@@ -77,8 +78,8 @@ const UserList = () => {
 
         try {
             const [customers, guests] = await Promise.all([
-                fetchData('http://localhost:8000/api/customer'),
-                fetchData('http://localhost:8000/api/guest')
+                fetchData(`${BACKEND_URL}/api/customer`),
+                fetchData(`${BACKEND_URL}/api/guest`)
             ]);
 
             setUsers({ customers, guests });
@@ -95,7 +96,7 @@ const UserList = () => {
 
 
     const handleMakeAdmin = (customerId) => {
-        fetchData(`http://localhost:8000/api/customer/${customerId}`, {
+        fetchData(`${BACKEND_URL}/api/customer/${customerId}`, {
             method: 'PUT',
             body: JSON.stringify({ isAdmin: true })
         })
@@ -123,7 +124,7 @@ const UserList = () => {
             return;
         }
 
-        fetchData(`http://localhost:8000/api/customer/${adminId}`, {
+        fetchData(`${BACKEND_URL}/api/customer/${adminId}`, {
             method: 'PUT',
             body: JSON.stringify({ isAdmin: false })
         }

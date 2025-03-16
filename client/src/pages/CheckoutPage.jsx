@@ -11,6 +11,7 @@ import { useAuth } from '../components/Utilities/useAuth';
 import ShippingDetailsComponent from '../components/ShippingDetailsComponent';
 import BrandIcon from '../assets/cbdtextwicon.webp'
 import '../Styles/CheckoutPage.scss'
+import { BACKEND_URL } from '../utils/secrets';
 
 const sdkUrl ="https://sandbox.web.squarecdn.com/v1/square.js"
 const CheckoutPage = () => {
@@ -274,7 +275,7 @@ const CheckoutPage = () => {
 
     const processPaymentAsync = async (paymentToken, paymentAmount, orderData) => {
     try {
-        const response = await fetch('http://localhost:8000/api/payment/process-payment', {
+        const response = await fetch(`${BACKEND_URL}/api/payment/process-payment`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -327,7 +328,7 @@ const CheckoutPage = () => {
 
     const createOrderAsync = async (orderData) => {
         try {
-            const orderResponse = await fetch('http://localhost:8000/api/order/create', {
+            const orderResponse = await fetch(`${BACKEND_URL}/api/order/create`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -351,7 +352,7 @@ const CheckoutPage = () => {
 
     const createShippingLabelAsync = async (shippingDetails) => {
         try {
-            const backendUrl = 'http://localhost:8000/api/shippo/create';
+            const backendUrl = `${BACKEND_URL}/api/shippo/create`;
             const response = await fetch(backendUrl, {
                 method: 'POST',
                 headers: {
@@ -378,7 +379,7 @@ const CheckoutPage = () => {
 
     const updateCustomerDataAsync = async (customerId, data) => {
         try {
-            await fetch(`http://localhost:8000/api/customer/${customerId}`, {
+            await fetch(`${BACKEND_URL}/api/customer/${customerId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -396,7 +397,7 @@ const CheckoutPage = () => {
 
     const updateGuestDataAsync = async (customerId, data) => {
         try {
-            await fetch(`http://localhost:8000/api/guest/${customerId}`, {
+            await fetch(`${BACKEND_URL}/api/guest/${customerId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

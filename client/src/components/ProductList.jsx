@@ -3,8 +3,9 @@ import { Typography, Button, Box, CircularProgress } from '@mui/material';
 import AddProductModal from '../models/AddProductModal.jsx';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import DetailsView from './DetailsView.jsx';
+import { BACKEND_URL } from '../utils/secrets.js';
 
-const API_URL = 'http://localhost:8000/api/product/';
+const API_URL = `${BACKEND_URL}/api/product/`;
 
 const ProductList = () => {
     const [detailsViewOpen, setDetailsViewOpen] = useState(false);
@@ -107,7 +108,7 @@ const ProductList = () => {
         const confirmDelete = window.confirm('Are you sure you want to delete this product?');
 
         if (confirmDelete) {
-            fetch(`http://localhost:8000/api/product/${productId}`, {
+            fetch(`${BACKEND_URL}/api/product/${productId}`, {
                 credentials: 'include',
                 method: 'DELETE',
             })

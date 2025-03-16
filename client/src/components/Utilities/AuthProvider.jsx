@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import AuthContext from './AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
+import { BACKEND_URL } from '../../utils/secrets';
 
 
 const AuthProvider = ({ children }) => {
@@ -55,7 +56,7 @@ const AuthProvider = ({ children }) => {
 
     const logout = async (attempt = 1) => {
         try {
-            const response = await fetch('http://localhost:8000/api/customer/logout', {
+            const response = await fetch(`${BACKEND_URL}/api/customer/logout`, {
                 method: 'POST',
                 credentials: 'include',
             });
@@ -124,7 +125,7 @@ const AuthProvider = ({ children }) => {
         try {
 
 
-            const response = await fetch('http://localhost:8000/api/customer/refresh', {
+            const response = await fetch(`${BACKEND_URL}/api/customer/refresh`, {
                 method: 'POST',
                 credentials: 'include',
             });

@@ -4,4 +4,4 @@ User-agent: *
 Disallow: /api/
 Disallow: /admin/
 
-Sitemap: http://localhost:3000/sitemap.xml
+Sitemap: https://herbanaturalco.com//sitemap.xml
