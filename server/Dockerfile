@@ -1,20 +1,39 @@
-# Step 1: Use an official Node.js image as a base
-FROM node:18-alpine
+# syntax = docker/dockerfile:1
 
-# Step 2: Set the working directory to /server
-WORKDIR /server
+# Adjust NODE_VERSION as desired
+ARG NODE_VERSION=20.16.0
+FROM node:${NODE_VERSION}-slim AS base
 
-# Step 3: Copy the package.json and package-lock.json (or yarn.lock) files to install dependencies
-COPY package*.json ./
+LABEL fly_launch_runtime="Node.js"
 
-# Step 4: Install the server dependencies
-RUN npm install
+# Node.js app lives here
+WORKDIR /app
 
-# Step 5: Copy the rest of the server-side code into the container
-COPY / .
+# Set production environment
+ENV NODE_ENV="production"
 
-# Step 6: Expose the port that your app will use (assuming port 8080 for Fly.io)
-EXPOSE 8080
 
-# Step 7: Start the app using the server.js file
-CMD ["node", "server.js"]
+# Throw-away build stage to reduce size of final image
+FROM base AS build
+
+# Install packages needed to build node modules
+RUN apt-get update -qq && \
+  apt-get install --no-install-recommends -y build-essential node-gyp pkg-config python-is-python3
+
+# Install node modules
+COPY package-lock.json package.json ./
+RUN npm ci
+
+# Copy application code
+COPY . .
+
+
+# Final stage for app image
+FROM base
+
+# Copy built application
+COPY --from=build /app /app
+
+# Start the server by default, this can be overwritten at runtime
+EXPOSE 3000
+CMD [ "npm", "run", "start" ]
