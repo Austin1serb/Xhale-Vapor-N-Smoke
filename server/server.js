@@ -28,7 +28,7 @@ app.use(helmet({
             styleSrc: ["'self'", 'https://fonts.googleapis.com', "'unsafe-inline'"],
             fontSrc: ["'self'", 'https://fonts.gstatic.com'],
             imgSrc: ["'self'", 'https://res.cloudinary.com'],
-            connectSrc: ["'self'", 'https://connect.squareup.com', 'http://localhost:8000'],
+            connectSrc: ["'self'", 'https://connect.squareup.com', 'http://localhost:8080'],
             frameSrc: ["'self'"],
             objectSrc: ["'none'"],
             // Add other directives as needed
@@ -66,4 +66,6 @@ app.use('/api/contact', contactRouter);
 
 
 
-app.listen(port, () => console.log(`Listening on port: ${port}`));
+app.listen(port, '0.0.0.0', () => {
+    console.log(`Server is running on port ${port}`);
+});
