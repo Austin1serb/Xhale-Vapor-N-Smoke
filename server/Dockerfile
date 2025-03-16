@@ -5,13 +5,13 @@ FROM node:18-alpine
 WORKDIR /server
 
 # Step 3: Copy the package.json and package-lock.json (or yarn.lock) files to install dependencies
-COPY server/package*.json ./
+COPY package*.json ./
 
 # Step 4: Install the server dependencies
 RUN npm install
 
 # Step 5: Copy the rest of the server-side code into the container
-COPY server/ .
+COPY / .
 
 # Step 6: Expose the port that your app will use (assuming port 8080 for Fly.io)
 EXPOSE 8080
