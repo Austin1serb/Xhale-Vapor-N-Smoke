@@ -11,7 +11,7 @@
 - **Shippo API** for real-time shipping cost calculation & label generation
 - **Google Places API** for address autocomplete at checkout
 - **Cloudinary** for image storage and optimization
-- Achieved **high Lighthouse scores** for both mobile and desktop
+- Custom user authentication, with Role Based Acceess
 - Fully integrated **product CRUD**, **checkout flow**, and **order fulfillment**
 
 ---
